@@ -202,24 +202,22 @@ export const Header: React.FC = () => {
         fixed top-0 left-0 w-full z-40 transition-all duration-300 ease-in-out bg-white border-b border-gray-200
         ${isVisible ? 'translate-y-0 shadow-sm' : '-translate-y-full shadow-none'}
       `}>
-        {/* Top Utility Links - Hidden on Mobile */}
-        <div className="hidden md:block bg-slate-50 border-b border-gray-100 py-[0.8rem]">
+        {/* Top Utility Links - Premium Subtle Style */}
+        <div className="hidden md:block bg-[#F8F9FA] border-b border-gray-100 py-2">
           <Container>
-            <div className="flex justify-end gap-6 text-[13px] text-gray-500 items-center">
+            <div className="flex justify-end gap-5 text-[12px] text-gray-500 font-medium items-center">
               {user ? (
-                // Logged In View
                 <>
-                  <span className="font-bold text-gray-700">{user.displayName || user.email}님 안녕하세요</span>
-                  <Link to="/mypage" className="hover:text-[#FF5B60] transition-colors">마이페이지</Link>
-                  <button onClick={logout} className="hover:text-[#FF5B60] transition-colors">로그아웃</button>
-                  <Link to="/cs" className="hover:text-[#FF5B60] transition-colors font-medium">고객센터</Link>
+                  <span className="text-gray-900">{user.displayName || user.email}님 안녕하세요</span>
+                  <div className="w-px h-3 bg-gray-300 mx-1" />
+                  <button onClick={logout} className="hover:text-gray-900 transition-colors">로그아웃</button>
+                  <Link to="/cs" className="hover:text-gray-900 transition-colors">고객센터</Link>
                 </>
               ) : (
-                // Logged Out View
                 <>
-                  <Link to="/login" className="hover:text-[#FF5B60] transition-colors">로그인</Link>
-                  <Link to="/signup" className="hover:text-[#FF5B60] transition-colors">회원가입</Link>
-                  <Link to="/cs" className="hover:text-[#FF5B60] transition-colors font-medium">고객센터</Link>
+                  <Link to="/login" className="hover:text-gray-900 transition-colors">로그인</Link>
+                  <Link to="/signup" className="hover:text-gray-900 transition-colors">회원가입</Link>
+                  <Link to="/cs" className="hover:text-gray-900 transition-colors">고객센터</Link>
                 </>
               )}
             </div>
@@ -236,47 +234,34 @@ export const Header: React.FC = () => {
                 <span className="text-[10px] md:text-xs text-gray-400 font-medium mt-0.5 whitespace-nowrap hidden sm:block tracking-[1px]">| 대전형 MICE 행사 통합운영 플랫폼</span>
               </a>
 
-              {/* Desktop Spacer */}
               <div className="hidden md:block flex-1" />
 
-              {/* Search Bar */}
-              <div className="flex-1 md:flex-none min-w-0 max-w-sm md:w-[280px] ml-1 md:ml-0">
-                <div className="relative group">
+              {/* Right Aligned Area: Search + Actions */}
+              <div className="flex items-center gap-4 md:gap-6 justify-end">
+                
+                {/* Search Bar (from Option A style) */}
+                <div className="hidden md:flex relative group w-[220px]">
                   <input
                     type="text"
-                    placeholder="무엇을 도와드릴까요?"
-                    className="w-full pl-5 pr-14 py-2.5 md:py-3 rounded-full bg-slate-100 border-none focus:ring-2 focus:ring-[#FF5B60]/20 focus:bg-white transition-all text-[12px] md:text-sm text-gray-700 placeholder-gray-400 font-normal"
+                    placeholder="검색어 입력..."
+                    className="w-full pl-4 pr-10 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:border-[#FF5B60] focus:ring-1 focus:ring-[#FF5B60] focus:bg-white transition-all text-sm text-slate-700 placeholder-slate-400"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         const target = e.target as HTMLInputElement;
-                        if (target.value.trim()) {
-                          window.location.href = `/search?q=${encodeURIComponent(target.value)}`;
-                        }
+                        if (target.value.trim()) window.location.href = `/search?q=${encodeURIComponent(target.value)}`;
                       }
                     }}
                   />
-                  <button
-                    className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF5B60] transition-colors"
-                    onClick={(e) => {
-                      const input = e.currentTarget.parentElement?.querySelector('input');
-                      if (input && input.value.trim()) {
-                        window.location.href = `/search?q=${encodeURIComponent(input.value)}`;
-                      }
-                    }}
-                  >
-                    <Search size={18} className="md:w-5 md:h-5" />
-                  </button>
+                  <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 </div>
-              </div>
 
-              {/* Desktop Actions */}
-              <div className="hidden md:flex items-center gap-0.5 md:gap-1">
+              {/* Desktop Actions (Icons Only) */}
+              <div className="hidden md:flex items-center gap-2">
                 <Link
                   to={user ? "/mypage" : "/login"}
-                  className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-slate-600 transition-colors rounded-xl md:rounded-full hover:bg-slate-100 hover:text-[#FF5B60]"
-                  title={user ? "마이페이지" : "로그인"}
+                  className="w-12 h-12 flex items-center justify-center text-gray-800 transition-colors rounded-full hover:bg-gray-100"
                 >
-                  <ProfileIcon className="w-6 h-6 md:w-7 md:h-7" />
+                  <ProfileIcon className="w-7 h-7" />
                 </Link>
                 <NotificationDropdown
                   notifications={notifications}
@@ -286,39 +271,25 @@ export const Header: React.FC = () => {
                 />
               </div>
 
-              {/* Mobile Actions */}
-              <div className="flex items-center md:hidden gap-0.5">
-                <NotificationDropdown
-                  notifications={notifications}
-                  unreadCount={unreadCount}
-                  onMarkAllRead={handleMarkAllRead}
-                  onNotificationClick={handleNotificationClick}
-                />
-                <button
-                  className="w-10 h-10 flex items-center justify-center text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
-                  onClick={() => setShowMobileMenu(true)}
-                >
-                  <MenuIcon className="w-6 h-6" />
-                </button>
               </div>
             </div>
           </Container>
         </div>
 
-        {/* Global Navigation - Also sticky and reveals with header */}
+        {/* Premium GNB - Centered and Generous Spacing */}
         <div className="border-t border-b border-gray-100 relative bg-white shadow-sm">
           <Container>
-            <div className="relative">
-              <nav className="flex items-center gap-6 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x">
+            <div className="relative flex justify-center w-full">
+              <nav className="flex items-center justify-center gap-8 md:gap-14 overflow-x-auto no-scrollbar scroll-smooth snap-x">
                 <div
                   className="hidden md:block"
                   onMouseEnter={() => setShowDesktopMenu(true)}
                   onMouseLeave={() => setShowDesktopMenu(false)}
                 >
                   <button
-                    className={`flex items-center gap-2 whitespace-nowrap text-[14px] md:text-[15px] font-bold px-1 py-3 border-b-[3px] transition-all ${showDesktopMenu ? 'text-[#FF5B60] border-[#FF5B60]' : 'text-[#FF5B60] border-transparent hover:border-[#FF5B60]/40'}`}
+                    className={`flex items-center gap-2 whitespace-nowrap text-[15px] font-bold px-4 py-4 border-b-[3px] transition-all text-[#FF5B60] ${showDesktopMenu ? 'border-[#FF5B60]' : 'border-transparent hover:border-[#FF5B60]'}`}
                   >
-                    <MenuIcon className="w-[18px] h-[18px]" /> 전체메뉴
+                    <MenuIcon className="w-[18px] h-[18px]" /> 전체 서비스
                   </button>
                 </div>
 
@@ -330,9 +301,9 @@ export const Header: React.FC = () => {
                     <Link
                       key={item.id}
                       to={linkUrl}
-                      className={`whitespace-nowrap text-[14px] md:text-[15px] font-bold transition-all px-1 py-3 border-b-[3px] ${isCurrent
+                      className={`whitespace-nowrap text-[15px] font-bold transition-all px-4 py-4 border-b-[3px] ${isCurrent
                         ? 'text-[#FF5B60] border-[#FF5B60]'
-                        : 'text-slate-700 border-transparent hover:text-[#FF5B60] hover:border-[#FF5B60]/40'
+                        : 'text-gray-900 border-transparent hover:border-gray-900'
                         }`}
                     >
                       {item.name}
