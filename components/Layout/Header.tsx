@@ -240,7 +240,7 @@ export const Header: React.FC = () => {
               <div className="hidden md:block flex-1" />
 
               {/* Search Bar */}
-              <div className="flex-1 md:flex-none min-w-0 max-w-sm md:w-[380px] ml-1 md:ml-0">
+              <div className="flex-1 md:flex-none min-w-0 max-w-sm md:w-[280px] ml-1 md:ml-0">
                 <div className="relative group">
                   <input
                     type="text"
@@ -306,7 +306,7 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Global Navigation - Also sticky and reveals with header */}
-        <div className="border-t border-gray-100 relative bg-white">
+        <div className="border-t border-b border-gray-100 relative bg-white shadow-sm">
           <Container>
             <div className="relative">
               <nav className="flex items-center gap-6 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x">
@@ -316,7 +316,7 @@ export const Header: React.FC = () => {
                   onMouseLeave={() => setShowDesktopMenu(false)}
                 >
                   <button
-                    className={`flex items-center gap-2 whitespace-nowrap text-sm font-medium px-1 py-3 border-b-2 transition-all ${showDesktopMenu ? 'text-[#FF5B60] border-[#FF5B60]' : 'text-[#FF5B60] border-transparent hover:border-[#FF5B60]'}`}
+                    className={`flex items-center gap-2 whitespace-nowrap text-[14px] md:text-[15px] font-bold px-1 py-3 border-b-[3px] transition-all ${showDesktopMenu ? 'text-[#FF5B60] border-[#FF5B60]' : 'text-[#FF5B60] border-transparent hover:border-[#FF5B60]/40'}`}
                   >
                     <MenuIcon className="w-[18px] h-[18px]" /> 전체메뉴
                   </button>
@@ -330,9 +330,9 @@ export const Header: React.FC = () => {
                     <Link
                       key={item.id}
                       to={linkUrl}
-                      className={`whitespace-nowrap text-[13px] md:text-sm font-medium transition-all px-1 py-3 border-b-2 ${isCurrent
+                      className={`whitespace-nowrap text-[14px] md:text-[15px] font-bold transition-all px-1 py-3 border-b-[3px] ${isCurrent
                         ? 'text-[#FF5B60] border-[#FF5B60]'
-                        : 'text-slate-500 border-transparent hover:text-[#FF5B60] hover:border-gray-200'
+                        : 'text-slate-700 border-transparent hover:text-[#FF5B60] hover:border-[#FF5B60]/40'
                         }`}
                     >
                       {item.name}
