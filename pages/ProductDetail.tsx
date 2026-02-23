@@ -218,12 +218,12 @@ const getCategorizedGroups = (items: Product[], menuItems: NavMenuItem[], tabTyp
     if (tabType === 'additional') {
       const childMenu = menuItems.find(m => m.name === cat && m.category);
       if (childMenu && childMenu.category) {
-         groupName = childMenu.category;
-         const parentMenu = menuItems.find(m => m.name === groupName && !m.category);
-         if (parentMenu) order = parentMenu.display_order;
+        groupName = childMenu.category;
+        const parentMenu = menuItems.find(m => m.name === groupName && !m.category);
+        if (parentMenu) order = parentMenu.display_order;
       } else {
-         const menu = menuItems.find(m => m.name === cat && !m.category);
-         if (menu) order = menu.display_order;
+        const menu = menuItems.find(m => m.name === cat && !m.category);
+        if (menu) order = menu.display_order;
       }
     } else {
       const menu = menuItems.find(m => m.name === cat);
@@ -304,9 +304,9 @@ const OptionListTypeA = ({
         const menuB = childMenus.find(m => m.name === catB);
         const orderA = menuA ? menuA.display_order : 999;
         const orderB = menuB ? menuB.display_order : 999;
-        
+
         if (orderA !== orderB) return orderA - orderB;
-        
+
         // Final fallback: creation date (newest first)
         const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
         const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
@@ -1146,10 +1146,14 @@ export const ProductDetailPage: React.FC = () => {
             <div className="hidden lg:block">
               <div className="sticky top-24 space-y-4">
                 <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-                  <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="font-bold text-lg text-gray-900 mb-2 flex items-center gap-2">
                     <ShoppingBag size={20} className="text-[#FF5B60]" />
                     예약 요약
                   </h3>
+                  <p className="text-[14px] text-gray-500 leading-[1.4] mb-6">
+                    상기 금액은 기본 운영 기준 구성에 대한 최소 금액이며,<br />
+                    행사 규모 및 일정에 따라 조정될 수 있습니다.
+                  </p>
 
                   {/* Selected Dates */}
                   <div className="space-y-3 text-sm">
@@ -1326,10 +1330,14 @@ export const ProductDetailPage: React.FC = () => {
         {/* Expanded Content */}
         {mobileBarExpanded && (
           <div className="p-4 max-h-[60vh] overflow-y-auto">
-            <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="font-bold text-lg text-gray-900 mb-2 flex items-center gap-2">
               <ShoppingBag size={20} className="text-[#FF5B60]" />
               예약 요약
             </h3>
+            <p className="text-[14px] text-gray-500 leading-[1.4] mb-6">
+              상기 금액은 기본 운영 기준 구성에 대한 최소 금액이며,<br />
+              행사 규모 및 일정에 따라 조정될 수 있습니다.
+            </p>
 
             {/* Summary Details */}
             <div className="space-y-3 text-sm">
@@ -1464,354 +1472,354 @@ export const ProductDetailPage: React.FC = () => {
                     </h1>
                   </div>
 
-              {/* Document Info Table */}
-              <table
-                className="w-full border-collapse mb-6"
-                style={{ fontSize: "12px" }}
-              >
-                <tbody>
-                  <tr>
-                    <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold w-24 text-center">
-                      문서번호
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2 w-48">
-                      Q-{new Date().getFullYear()}
-                      {String(new Date().getMonth() + 1).padStart(2, "0")}
-                      {String(new Date().getDate()).padStart(2, "0")}-
-                      {String(Math.floor(Math.random() * 10000)).padStart(
-                        4,
-                        "0",
-                      )}
-                    </td>
-                    <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold w-24 text-center">
-                      발행일자
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2">
-                      {new Date().toLocaleDateString("ko-KR")}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold text-center">
-                      유효기간
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2">
-                      발행일로부터 30일
-                    </td>
-                    <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold text-center">
-                      담당자
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2">영업팀</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {/* Recipient & Supplier Info */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                {/* Recipient */}
-                <div>
-                  <p className="font-bold text-sm mb-2 border-b border-gray-900 pb-1">
-                    【 수 신 】
-                  </p>
+                  {/* Document Info Table */}
                   <table
-                    className="w-full border-collapse"
-                    style={{ fontSize: "11px" }}
+                    className="w-full border-collapse mb-6"
+                    style={{ fontSize: "12px" }}
                   >
                     <tbody>
                       <tr>
-                        <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold w-16 text-center">
-                          상호명
+                        <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold w-24 text-center">
+                          문서번호
                         </td>
-                        <td className="border border-gray-400 px-2 py-1">
-                          {userProfile?.company_name || '(미기재)'}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold text-center">
-                          담당자
-                        </td>
-                        <td className="border border-gray-400 px-2 py-1">
-                          {userProfile?.manager_name || userProfile?.name || '(미기재)'}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold text-center">
-                          연락처
-                        </td>
-                        <td className="border border-gray-400 px-2 py-1">
-                          {userProfile?.phone || '(미기재)'}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                {/* Supplier */}
-                <div>
-                  <p className="font-bold text-sm mb-2 border-b border-gray-900 pb-1">
-                    【 발 신 】
-                  </p>
-                  <table
-                    className="w-full border-collapse"
-                    style={{ fontSize: "11px" }}
-                  >
-                    <tbody>
-                      <tr>
-                        <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold w-16 text-center">
-                          상호명
-                        </td>
-                        <td className="border border-gray-400 px-2 py-1 relative">
-                          행사어때 (휴먼파트너)
-                          <span className="absolute right-2 top-0 text-[#FF5B60] text-[10px] font-bold">
-                            [인]
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold text-center">
-                          대표자
-                        </td>
-                        <td className="border border-gray-400 px-2 py-1">
-                          이기섭
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold text-center">
-                          연락처
-                        </td>
-                        <td className="border border-gray-400 px-2 py-1">
-                          010-4074-6967
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Rental Period Info */}
-              <table
-                className="w-full border-collapse mb-6"
-                style={{ fontSize: "12px" }}
-              >
-                <tbody>
-                  <tr>
-                    <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold w-24 text-center">
-                      대여기간
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2">
-                      {startDate ? startDate.toLocaleDateString("ko-KR") : "-"}{" "}
-                      ~ {endDate ? endDate.toLocaleDateString("ko-KR") : "-"} (
-                      {days}일간)
-                    </td>
-                    <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold w-24 text-center">
-                      예상인원
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2 w-32">
-                      {expectedPeople || "-"}명
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {/* Main Title */}
-              <p className="font-bold text-sm mb-2">■ 견적 내역</p>
-
-              {/* Quote Table */}
-              <table
-                className="w-full border-collapse mb-4"
-                style={{ fontSize: "11px" }}
-              >
-                <thead>
-                  <tr className="bg-gray-800 text-white">
-                    <th className="border border-gray-600 px-3 py-2 text-center font-bold w-12">
-                      No
-                    </th>
-                    <th className="border border-gray-600 px-3 py-2 text-left font-bold">
-                      품목
-                    </th>
-                    <th className="border border-gray-600 px-3 py-2 text-center font-bold w-16">
-                      수량
-                    </th>
-                    <th className="border border-gray-600 px-3 py-2 text-right font-bold w-24">
-                      단가
-                    </th>
-                    <th className="border border-gray-600 px-3 py-2 text-right font-bold w-28">
-                      금액
-                    </th>
-                    <th className="border border-gray-600 px-3 py-2 text-center font-bold w-20">
-                      비고
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Base Product */}
-                  <tr>
-                    <td className="border border-gray-400 px-3 py-2 text-center">
-                      1
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2 font-medium">
-                      {product.name}
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2 text-center">
-                      {days}일
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2 text-right">
-                      {product.price?.toLocaleString()}
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2 text-right font-medium">
-                      {((product.price || 0) * days).toLocaleString()}
-                    </td>
-                    <td className="border border-gray-400 px-3 py-2 text-center text-gray-500">
-                      기본
-                    </td>
-                  </tr>
-                  {/* Basic Components (기본 구성) */}
-                  {product.basic_components &&
-                    product.basic_components.map((item, idx) => (
-                      <tr key={`basic-${idx}`} className="bg-blue-50">
-                        <td className="border border-gray-400 px-3 py-1.5 text-center text-gray-400">
-                          -
-                        </td>
-                        <td className="border border-gray-400 px-3 py-1.5 pl-6 text-gray-700">
-                          {item.name}
-                          {item.model_name && (
-                            <span className="text-gray-400 ml-1">
-                              ({item.model_name})
-                            </span>
+                        <td className="border border-gray-400 px-3 py-2 w-48">
+                          Q-{new Date().getFullYear()}
+                          {String(new Date().getMonth() + 1).padStart(2, "0")}
+                          {String(new Date().getDate()).padStart(2, "0")}-
+                          {String(Math.floor(Math.random() * 10000)).padStart(
+                            4,
+                            "0",
                           )}
                         </td>
-                        <td className="border border-gray-400 px-3 py-1.5 text-center">
-                          {item.quantity}
+                        <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold w-24 text-center">
+                          발행일자
                         </td>
-                        <td className="border border-gray-400 px-3 py-1.5 text-right text-gray-400">
-                          -
-                        </td>
-                        <td className="border border-gray-400 px-3 py-1.5 text-right text-gray-400">
-                          -
-                        </td>
-                        <td className="border border-gray-400 px-3 py-1.5 text-center text-blue-600">
-                          기본포함
+                        <td className="border border-gray-400 px-3 py-2">
+                          {new Date().toLocaleDateString("ko-KR")}
                         </td>
                       </tr>
-                    ))}
-                  {/* Selected Options */}
-                  {selectedSummary.map((opt, idx) => (
-                    <tr key={idx}>
-                      <td className="border border-gray-400 px-3 py-2 text-center">
-                        {(product.basic_components?.length || 0) + idx + 2}
-                      </td>
-                      <td className="border border-gray-400 px-3 py-2">
-                        {opt.name}
-                      </td>
-                      <td className="border border-gray-400 px-3 py-2 text-center">
-                        {opt.qty}
-                      </td>
-                      <td className="border border-gray-400 px-3 py-2 text-right">
-                        {(opt.subtotal / opt.qty).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-400 px-3 py-2 text-right">
-                        {(opt.subtotal * days).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-400 px-3 py-2 text-center text-gray-500">
-                        추가
-                      </td>
-                    </tr>
-                  ))}
-                  {/* Empty rows for cleaner look */}
-                  {selectedSummary.length === 0 &&
-                    !product.basic_components?.length && (
                       <tr>
-                        <td
-                          colSpan={6}
-                          className="border border-gray-400 px-3 py-4 text-center text-gray-400"
-                        >
-                          추가 옵션 없음
+                        <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold text-center">
+                          유효기간
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2">
+                          발행일로부터 30일
+                        </td>
+                        <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold text-center">
+                          담당자
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2">영업팀</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  {/* Recipient & Supplier Info */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {/* Recipient */}
+                    <div>
+                      <p className="font-bold text-sm mb-2 border-b border-gray-900 pb-1">
+                        【 수 신 】
+                      </p>
+                      <table
+                        className="w-full border-collapse"
+                        style={{ fontSize: "11px" }}
+                      >
+                        <tbody>
+                          <tr>
+                            <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold w-16 text-center">
+                              상호명
+                            </td>
+                            <td className="border border-gray-400 px-2 py-1">
+                              {userProfile?.company_name || '(미기재)'}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold text-center">
+                              담당자
+                            </td>
+                            <td className="border border-gray-400 px-2 py-1">
+                              {userProfile?.manager_name || userProfile?.name || '(미기재)'}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold text-center">
+                              연락처
+                            </td>
+                            <td className="border border-gray-400 px-2 py-1">
+                              {userProfile?.phone || '(미기재)'}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Supplier */}
+                    <div>
+                      <p className="font-bold text-sm mb-2 border-b border-gray-900 pb-1">
+                        【 발 신 】
+                      </p>
+                      <table
+                        className="w-full border-collapse"
+                        style={{ fontSize: "11px" }}
+                      >
+                        <tbody>
+                          <tr>
+                            <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold w-16 text-center">
+                              상호명
+                            </td>
+                            <td className="border border-gray-400 px-2 py-1 relative">
+                              행사어때 (휴먼파트너)
+                              <span className="absolute right-2 top-0 text-[#FF5B60] text-[10px] font-bold">
+                                [인]
+                              </span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold text-center">
+                              대표자
+                            </td>
+                            <td className="border border-gray-400 px-2 py-1">
+                              이기섭
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-400 bg-gray-100 px-2 py-1 font-bold text-center">
+                              연락처
+                            </td>
+                            <td className="border border-gray-400 px-2 py-1">
+                              010-4074-6967
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Rental Period Info */}
+                  <table
+                    className="w-full border-collapse mb-6"
+                    style={{ fontSize: "12px" }}
+                  >
+                    <tbody>
+                      <tr>
+                        <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold w-24 text-center">
+                          대여기간
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2">
+                          {startDate ? startDate.toLocaleDateString("ko-KR") : "-"}{" "}
+                          ~ {endDate ? endDate.toLocaleDateString("ko-KR") : "-"} (
+                          {days}일간)
+                        </td>
+                        <td className="border border-gray-400 bg-gray-100 px-3 py-2 font-bold w-24 text-center">
+                          예상인원
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2 w-32">
+                          {expectedPeople || "-"}명
                         </td>
                       </tr>
-                    )}
-                </tbody>
-              </table>
+                    </tbody>
+                  </table>
 
-              {/* Total Section */}
-              <table
-                className="w-full border-collapse mb-8"
-                style={{ fontSize: "12px" }}
-              >
-                <tbody>
-                  <tr>
-                    <td className="border-2 border-gray-800 bg-gray-100 px-4 py-3 font-bold text-center w-24 whitespace-nowrap">
-                      공급가액
-                    </td>
-                    <td className="border-2 border-gray-800 px-4 py-3 text-right font-medium whitespace-nowrap">
-                      {Math.round(totalPrice / 1.1).toLocaleString()}원
-                    </td>
-                    <td className="border-2 border-gray-800 bg-gray-100 px-4 py-3 font-bold text-center w-20 whitespace-nowrap">
-                      부가세
-                    </td>
-                    <td className="border-2 border-gray-800 px-4 py-3 text-right font-medium whitespace-nowrap">
-                      {Math.round(
-                        totalPrice - totalPrice / 1.1,
-                      ).toLocaleString()}
-                      원
-                    </td>
-                    <td className="border-2 border-gray-800 bg-gray-800 text-white px-4 py-3 font-bold text-center w-24 whitespace-nowrap">
-                      합계금액
-                    </td>
-                    <td className="border-2 border-gray-800 px-4 py-3 text-right font-bold text-lg text-[#FF5B60] whitespace-nowrap">
-                      {totalPrice.toLocaleString()}원
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                  {/* Main Title */}
+                  <p className="font-bold text-sm mb-2">■ 견적 내역</p>
 
-              {/* Notes Section */}
-              <div className="mb-6">
-                <p className="font-bold text-sm mb-2">■ 유의사항</p>
-                <div
-                  className="border border-gray-400 p-3"
-                  style={{ fontSize: "11px", lineHeight: "1.7" }}
-                >
-                  <ul className="list-disc pl-4 space-y-1.5 text-gray-700">
-                    <li>본 견적서의 유효기간은 발행일로부터 30일입니다.</li>
-                    <li>
-                      상기 금액은 부가가치세(VAT 10%)가 포함된 금액입니다.
-                    </li>
-                    <li>
-                      대여 일정 및 장소에 따라 운송비가 별도로 청구될 수
-                      있습니다.
-                    </li>
-                    <li>
-                      현장 설치 및 철거가 필요한 경우 별도 협의가 필요합니다.
-                    </li>
-                    <li>
-                      대여 물품의 파손 또는 분실 시 수리비 또는 원가를 청구할 수
-                      있습니다.
-                    </li>
-                    <li>
-                      예약 확정을 위해 계약금(총 금액의 50%) 선입금이
-                      필요합니다.
-                    </li>
-                  </ul>
+                  {/* Quote Table */}
+                  <table
+                    className="w-full border-collapse mb-4"
+                    style={{ fontSize: "11px" }}
+                  >
+                    <thead>
+                      <tr className="bg-gray-800 text-white">
+                        <th className="border border-gray-600 px-3 py-2 text-center font-bold w-12">
+                          No
+                        </th>
+                        <th className="border border-gray-600 px-3 py-2 text-left font-bold">
+                          품목
+                        </th>
+                        <th className="border border-gray-600 px-3 py-2 text-center font-bold w-16">
+                          수량
+                        </th>
+                        <th className="border border-gray-600 px-3 py-2 text-right font-bold w-24">
+                          단가
+                        </th>
+                        <th className="border border-gray-600 px-3 py-2 text-right font-bold w-28">
+                          금액
+                        </th>
+                        <th className="border border-gray-600 px-3 py-2 text-center font-bold w-20">
+                          비고
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Base Product */}
+                      <tr>
+                        <td className="border border-gray-400 px-3 py-2 text-center">
+                          1
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2 font-medium">
+                          {product.name}
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2 text-center">
+                          {days}일
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2 text-right">
+                          {product.price?.toLocaleString()}
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2 text-right font-medium">
+                          {((product.price || 0) * days).toLocaleString()}
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2 text-center text-gray-500">
+                          기본
+                        </td>
+                      </tr>
+                      {/* Basic Components (기본 구성) */}
+                      {product.basic_components &&
+                        product.basic_components.map((item, idx) => (
+                          <tr key={`basic-${idx}`} className="bg-blue-50">
+                            <td className="border border-gray-400 px-3 py-1.5 text-center text-gray-400">
+                              -
+                            </td>
+                            <td className="border border-gray-400 px-3 py-1.5 pl-6 text-gray-700">
+                              {item.name}
+                              {item.model_name && (
+                                <span className="text-gray-400 ml-1">
+                                  ({item.model_name})
+                                </span>
+                              )}
+                            </td>
+                            <td className="border border-gray-400 px-3 py-1.5 text-center">
+                              {item.quantity}
+                            </td>
+                            <td className="border border-gray-400 px-3 py-1.5 text-right text-gray-400">
+                              -
+                            </td>
+                            <td className="border border-gray-400 px-3 py-1.5 text-right text-gray-400">
+                              -
+                            </td>
+                            <td className="border border-gray-400 px-3 py-1.5 text-center text-blue-600">
+                              기본포함
+                            </td>
+                          </tr>
+                        ))}
+                      {/* Selected Options */}
+                      {selectedSummary.map((opt, idx) => (
+                        <tr key={idx}>
+                          <td className="border border-gray-400 px-3 py-2 text-center">
+                            {(product.basic_components?.length || 0) + idx + 2}
+                          </td>
+                          <td className="border border-gray-400 px-3 py-2">
+                            {opt.name}
+                          </td>
+                          <td className="border border-gray-400 px-3 py-2 text-center">
+                            {opt.qty}
+                          </td>
+                          <td className="border border-gray-400 px-3 py-2 text-right">
+                            {(opt.subtotal / opt.qty).toLocaleString()}
+                          </td>
+                          <td className="border border-gray-400 px-3 py-2 text-right">
+                            {(opt.subtotal * days).toLocaleString()}
+                          </td>
+                          <td className="border border-gray-400 px-3 py-2 text-center text-gray-500">
+                            추가
+                          </td>
+                        </tr>
+                      ))}
+                      {/* Empty rows for cleaner look */}
+                      {selectedSummary.length === 0 &&
+                        !product.basic_components?.length && (
+                          <tr>
+                            <td
+                              colSpan={6}
+                              className="border border-gray-400 px-3 py-4 text-center text-gray-400"
+                            >
+                              추가 옵션 없음
+                            </td>
+                          </tr>
+                        )}
+                    </tbody>
+                  </table>
+
+                  {/* Total Section */}
+                  <table
+                    className="w-full border-collapse mb-8"
+                    style={{ fontSize: "12px" }}
+                  >
+                    <tbody>
+                      <tr>
+                        <td className="border-2 border-gray-800 bg-gray-100 px-4 py-3 font-bold text-center w-24 whitespace-nowrap">
+                          공급가액
+                        </td>
+                        <td className="border-2 border-gray-800 px-4 py-3 text-right font-medium whitespace-nowrap">
+                          {Math.round(totalPrice / 1.1).toLocaleString()}원
+                        </td>
+                        <td className="border-2 border-gray-800 bg-gray-100 px-4 py-3 font-bold text-center w-20 whitespace-nowrap">
+                          부가세
+                        </td>
+                        <td className="border-2 border-gray-800 px-4 py-3 text-right font-medium whitespace-nowrap">
+                          {Math.round(
+                            totalPrice - totalPrice / 1.1,
+                          ).toLocaleString()}
+                          원
+                        </td>
+                        <td className="border-2 border-gray-800 bg-gray-800 text-white px-4 py-3 font-bold text-center w-24 whitespace-nowrap">
+                          합계금액
+                        </td>
+                        <td className="border-2 border-gray-800 px-4 py-3 text-right font-bold text-lg text-[#FF5B60] whitespace-nowrap">
+                          {totalPrice.toLocaleString()}원
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  {/* Notes Section */}
+                  <div className="mb-6">
+                    <p className="font-bold text-sm mb-2">■ 유의사항</p>
+                    <div
+                      className="border border-gray-400 p-3"
+                      style={{ fontSize: "11px", lineHeight: "1.7" }}
+                    >
+                      <ul className="list-disc pl-4 space-y-1.5 text-gray-700">
+                        <li>본 견적서의 유효기간은 발행일로부터 30일입니다.</li>
+                        <li>
+                          상기 금액은 부가가치세(VAT 10%)가 포함된 금액입니다.
+                        </li>
+                        <li>
+                          대여 일정 및 장소에 따라 운송비가 별도로 청구될 수
+                          있습니다.
+                        </li>
+                        <li>
+                          현장 설치 및 철거가 필요한 경우 별도 협의가 필요합니다.
+                        </li>
+                        <li>
+                          대여 물품의 파손 또는 분실 시 수리비 또는 원가를 청구할 수
+                          있습니다.
+                        </li>
+                        <li>
+                          예약 확정을 위해 계약금(총 금액의 50%) 선입금이
+                          필요합니다.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div
+                    className="text-center pt-4 border-t border-gray-300"
+                    style={{ fontSize: "11px" }}
+                  >
+                    <p className="text-gray-500">
+                      본 견적서는 정식 계약서가 아니며, 최종 계약 시 세부 사항이
+                      변경될 수 있습니다.
+                    </p>
+                    <p className="text-gray-600 mt-2 font-medium">
+                      행사어때 (휴먼파트너) | 사업자등록번호: 314-07-32520 | 대전
+                      유성구 지족로 282번길 17
+                    </p>
+                    <p className="text-gray-500 mt-1">
+                      Tel. 010-4074-6967 | Email. micepartner@micepartner.co.kr
+                    </p>
+                  </div>
                 </div>
               </div>
-
-              {/* Footer */}
-              <div
-                className="text-center pt-4 border-t border-gray-300"
-                style={{ fontSize: "11px" }}
-              >
-                <p className="text-gray-500">
-                  본 견적서는 정식 계약서가 아니며, 최종 계약 시 세부 사항이
-                  변경될 수 있습니다.
-                </p>
-                <p className="text-gray-600 mt-2 font-medium">
-                  행사어때 (휴먼파트너) | 사업자등록번호: 314-07-32520 | 대전
-                  유성구 지족로 282번길 17
-                </p>
-                <p className="text-gray-500 mt-1">
-                  Tel. 010-4074-6967 | Email. micepartner@micepartner.co.kr
-                </p>
-              </div>
-            </div>
-            </div>
             </div>
 
             {/* Modal Actions */}
