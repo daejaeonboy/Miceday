@@ -105,7 +105,11 @@ export const CMSManager: React.FC = () => {
         setUploading(true);
         try {
             const imageUrl = await uploadImage(file);
-            setFormData({ ...formData, image_url: imageUrl });
+            if (activeTab === 'alliance') {
+                setFormData({ ...formData, logo_url: imageUrl });
+            } else {
+                setFormData({ ...formData, image_url: imageUrl });
+            }
         } catch (error) {
             console.error('Upload failed:', error);
             alert('이미지 업로드에 실패했습니다.');
@@ -292,8 +296,8 @@ export const CMSManager: React.FC = () => {
                                         </span>
                                         {activeTab === 'banners' && (
                                             <span className={`text-xs px-2 py-0.5 rounded border ${item.banner_type === 'hero'
-                                                    ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                                    : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                                                ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                                : 'bg-indigo-50 text-indigo-700 border-indigo-200'
                                                 }`}>
                                                 {item.banner_type === 'hero' ? '메인 슬라이드' : '프로모션'}
                                             </span>
@@ -310,10 +314,10 @@ export const CMSManager: React.FC = () => {
                                         {activeTab === 'alliance' && (
                                             <>
                                                 <span className={`text-[11px] font-bold px-2 py-0.5 rounded border
-                                                    ${item.category1 === 'MICE 시설분과' ? 'text-[#e69b00] bg-[#fff9ea] border-[#ffe099]' : 
-                                                      item.category1 === 'MICE 기획 · 운영분과' || item.category1 === 'MICE 기획분과' ? 'text-[#3b5bdb] bg-[#edf2ff] border-[#bac8ff]' :
-                                                      item.category1 === 'MICE 지원분과' ? 'text-[#0ca678] bg-[#e6fcf5] border-[#63e6be]' :
-                                                      'text-gray-600 bg-gray-100 border-gray-300'}`}
+                                                    ${item.category1 === 'MICE 시설분과' ? 'text-[#e69b00] bg-[#fff9ea] border-[#ffe099]' :
+                                                        item.category1 === 'MICE 기획 · 운영분과' || item.category1 === 'MICE 기획분과' ? 'text-[#3b5bdb] bg-[#edf2ff] border-[#bac8ff]' :
+                                                            item.category1 === 'MICE 지원분과' ? 'text-[#0ca678] bg-[#e6fcf5] border-[#63e6be]' :
+                                                                'text-gray-600 bg-gray-100 border-gray-300'}`}
                                                 >
                                                     {item.category1 === 'MICE 기획분과' ? 'MICE 기획 · 운영분과' : item.category1}
                                                 </span>
