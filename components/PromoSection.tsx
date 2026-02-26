@@ -148,7 +148,7 @@ export const PromoSection: React.FC = () => {
                     </div>
 
                     {/* Text Content */}
-                    <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end text-white z-10">
+                    <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end text-white z-10 pointer-events-none">
                       <h3 className="text-xl md:text-2xl font-semibold whitespace-pre-line mb-1 text-white tracking-tight">
                         {item.title}
                       </h3>
@@ -161,9 +161,9 @@ export const PromoSection: React.FC = () => {
                   </>
                 );
 
-                const linkWrapperClass = "relative aspect-[4/3] sm:aspect-auto sm:h-64 md:h-80 group overflow-hidden block rounded-2xl cursor-pointer min-w-[85%] sm:min-w-[calc(50%-8px)] snap-center flex-shrink-0";
+                const linkWrapperClass = "relative aspect-[16/10] w-[300px] md:w-[calc(50%-0.5rem)] group overflow-hidden block rounded-2xl cursor-pointer snap-start flex-shrink-0 bg-slate-100 shadow-sm border border-slate-100";
 
-                return isExternal ? (
+                const BannerElement = isExternal ? (
                   <a
                     key={item.id}
                     href={linkTo}
@@ -182,6 +182,8 @@ export const PromoSection: React.FC = () => {
                     {BannerContent}
                   </Link>
                 );
+                
+                return BannerElement;
               })}
             </div>
           </div>

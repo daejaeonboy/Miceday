@@ -11,17 +11,25 @@ export function Footer() {
     };
 
     return (
-        <footer className="bg-white border-t border-gray-200 pt-10 pb-20 md:pb-8 text-sm text-gray-600">
-            <Container>
-                {/* TOP LAYER: Links */}
-                <div className="flex flex-wrap gap-x-4 md:gap-x-8 gap-y-3 mb-8 pb-6 border-b border-gray-100 text-[13px] md:text-sm font-semibold text-gray-600">
-                    <Link to="/" className="hover:text-black transition-colors whitespace-nowrap">홈</Link>
-                    <Link to="/cs" className="hover:text-[#FF5B60] font-bold text-[#FF5B60] transition-colors whitespace-nowrap">고객센터</Link>
-                    <Link to="/company" className="cursor-pointer hover:text-black transition-colors whitespace-nowrap">회사소개</Link>
-                    <Link to="/terms" className="cursor-pointer hover:text-black transition-colors whitespace-nowrap">이용약관</Link>
-                    <Link to="/privacy" className="cursor-pointer hover:text-black font-bold text-gray-800 transition-colors whitespace-nowrap">개인정보처리방침</Link>
-                </div>
+        <footer className="bg-white border-t border-gray-200 pt-0 pb-20 md:pb-8 text-sm text-gray-600">
+            {/* TOP LAYER: Links (Full width border) */}
+            <div className="w-full border-b border-gray-200 py-6 mb-8">
+                <Container>
+                    <div className="flex flex-wrap items-center gap-x-4 md:gap-x-6 text-[13px] md:text-sm font-semibold text-gray-600">
+                        <Link to="/" className="hover:text-black transition-colors whitespace-nowrap flex items-center h-full">홈</Link>
+                        <span className="w-px h-3.5 bg-gray-200 hidden md:block"></span>
+                        <Link to="/cs" className="hover:text-[#FF5B60] font-bold text-[#FF5B60] transition-colors whitespace-nowrap flex items-center h-full">고객센터</Link>
+                        <span className="w-px h-3.5 bg-gray-200 hidden md:block"></span>
+                        <Link to="/company" className="cursor-pointer hover:text-black transition-colors whitespace-nowrap flex items-center h-full">회사소개</Link>
+                        <span className="w-px h-3.5 bg-gray-200 hidden md:block"></span>
+                        <Link to="/terms" className="cursor-pointer hover:text-black transition-colors whitespace-nowrap flex items-center h-full">이용약관</Link>
+                        <span className="w-px h-3.5 bg-gray-200 hidden md:block"></span>
+                        <Link to="/privacy" className="cursor-pointer hover:text-black font-bold text-gray-800 transition-colors whitespace-nowrap flex items-center h-full">개인정보처리방침</Link>
+                    </div>
+                </Container>
+            </div>
 
+            <Container>
                 {/* BOTTOM LAYER: 3 Columns on PC */}
                 <div className="flex flex-col lg:flex-row justify-between items-start gap-8 lg:gap-10">
                     

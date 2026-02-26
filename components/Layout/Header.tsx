@@ -40,7 +40,7 @@ const NotificationDropdown = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <button
         className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-slate-600 transition-colors rounded-xl md:rounded-full hover:bg-slate-100 ${isOpen ? "text-[#FF5B60] bg-red-50" : ""}`}
         onClick={() => setIsOpen(!isOpen)}
@@ -280,7 +280,7 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Main Header Area */}
-        <div className="py-3 md:py-4 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="py-3 md:py-4 bg-white/80 backdrop-blur-md border-b border-gray-100 relative z-50">
           <Container>
             <div className="flex items-center justify-between gap-4 md:gap-8">
               {/* Logo and Subtitle */}
@@ -320,14 +320,14 @@ export const Header: React.FC = () => {
                 </div>
 
                 {/* Actions (Both Mobile & Desktop) */}
-                <div className="flex items-center gap-0">
+                <div className="flex items-center gap-0 relative z-50">
                   <Link
                     to={user ? "/mypage" : "/login"}
                     className="hidden md:flex w-10 h-10 md:w-12 md:h-12 items-center justify-center text-gray-800 transition-colors rounded-full hover:bg-gray-100"
                   >
                     <ProfileIcon className="w-6 h-6 md:w-7 md:h-7" />
                   </Link>
-                  <div>
+                  <div className="relative z-[60]">
                     <NotificationDropdown
                       notifications={notifications}
                       unreadCount={unreadCount}
@@ -349,7 +349,7 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Premium GNB - Centered and Generous Spacing */}
-        <div className="border-t border-b border-gray-100 relative bg-white shadow-sm">
+        <div className="border-t border-b border-gray-100 relative bg-white shadow-sm z-40">
           <Container>
             <div className="relative flex justify-start w-full">
               <nav className="flex items-center justify-between sm:justify-start sm:gap-6 md:gap-2 w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth snap-x md:-ml-4 px-0">

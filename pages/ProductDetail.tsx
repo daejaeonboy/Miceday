@@ -1184,11 +1184,11 @@ export const ProductDetailPage: React.FC = () => {
                     </button>
                   ))}
                 </div>
-                <div className="p-6 min-h-[200px]">
+                <div className={`min-h-[200px] ${activeTab === 'detail' ? '' : 'p-6'}`}>
                   {activeTab === "detail" &&
                     (product.description ? (
                       <div
-                        className="prose prose-slate max-w-none"
+                        className="prose prose-slate max-w-none w-full [&>p]:m-0 [&>img]:w-full [&>img]:m-0"
                         dangerouslySetInnerHTML={{
                           __html: product.description.replace(/\n/g, "<br/>"),
                         }}
