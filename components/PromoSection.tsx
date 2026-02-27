@@ -176,7 +176,7 @@ export const PromoSection: React.FC = () => {
                   </>
                 );
 
-                const linkWrapperClass = "relative aspect-[16/13] md:aspect-[16/10] w-[290px] md:w-[calc(50%-0.6rem)] group overflow-hidden block rounded-2xl cursor-pointer snap-start flex-shrink-0 bg-slate-100 shadow-sm border border-slate-100";
+                const linkWrapperClass = "relative aspect-[16/20] md:aspect-[16/10] w-[290px] md:w-[calc(50%-0.6rem)] group overflow-hidden block rounded-2xl cursor-pointer snap-start flex-shrink-0 bg-slate-100 shadow-sm border border-slate-100";
 
                 const BannerElement = isExternal ? (
                   <a
