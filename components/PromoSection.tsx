@@ -82,18 +82,20 @@ export const PromoSection: React.FC = () => {
       <Container>
         {/* Tabs */}
         <div className="flex w-full mb-10 bg-gray-100/80 p-1.5 rounded-2xl overflow-hidden relative border border-gray-200">
-          {/* Sliding Indicator */}
-          {tabs.length > 0 && (
-            <div 
-              className="absolute top-1.5 bottom-1.5 left-0 transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) z-0"
-              style={{ 
-                width: `${100 / tabs.length}%`,
-                transform: `translateX(${tabs.findIndex(t => t.id === activeTabId) * 100}%)`,
-              }}
-            >
-              <div className="mx-1.5 h-full bg-[#FF5B60] rounded-xl shadow-lg shadow-[#FF5B60]/20" />
-            </div>
-          )}
+          {/* Sliding Indicator Container - Matches inner padded area for perfect alignment */}
+          <div className="absolute inset-1.5 z-0 pointer-events-none">
+            {tabs.length > 0 && (
+              <div 
+                className="h-full transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1)"
+                style={{ 
+                  width: `${100 / tabs.length}%`,
+                  transform: `translateX(${tabs.findIndex(t => t.id === activeTabId) * 100}%)`,
+                }}
+              >
+                <div className="h-full bg-[#FF5B60] rounded-xl shadow-lg shadow-[#FF5B60]/20 mx-0.5" />
+              </div>
+            )}
+          </div>
 
           {tabs.map((tab) => (
             <button
