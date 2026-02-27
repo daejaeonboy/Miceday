@@ -83,7 +83,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
             <button
               key={`${cat}-${idx}`}
               onClick={() => setActiveCategory(cat)}
-              className={`h-[34px] md:h-[40px] min-w-[80px] md:min-w-[100px] px-3 md:px-4 rounded-lg text-[13px] md:text-[15px] font-bold transition-all border flex-shrink-0 text-center shadow-sm hover:shadow
+              className={`h-[40px] min-w-[100px] px-4 rounded-lg text-[14px] md:text-[15px] font-semibold transition-all border flex-shrink-0 text-center shadow-sm hover:shadow
                 ${activeCategory === cat
                   ? 'bg-[#FF5B60] text-white border-[#FF5B60]'
                   : 'bg-white text-slate-600 border-slate-200 hover:border-[#FF5B60] hover:text-[#FF5B60]'

@@ -117,10 +117,10 @@ export const MyPage: React.FC = () => {
                                 <Link to="/mypage" className="text-sm font-bold text-[#FF5B60] block w-full text-left py-2 px-2 rounded hover:bg-[#FF5B60]/5">
                                     예약 내역
                                 </Link>
-                                <Link to="#" className="text-sm text-gray-500 block w-full text-left py-2 px-2 rounded hover:bg-gray-50 hover:text-black" onClick={(e) => { e.preventDefault(); alert('준비 중인 기능입니다.'); }}>
+                                <Link to="/mypage/info" className="text-sm text-gray-500 block w-full text-left py-2 px-2 rounded hover:bg-gray-50 hover:text-black">
                                     내 정보 관리
                                 </Link>
-                                <Link to="#" className="text-sm text-gray-500 block w-full text-left py-2 px-2 rounded hover:bg-gray-50 hover:text-black" onClick={(e) => { e.preventDefault(); alert('준비 중인 기능입니다.'); }}>
+                                <Link to="/mypage/inquiry" className="text-sm text-gray-500 block w-full text-left py-2 px-2 rounded hover:bg-gray-50 hover:text-black">
                                     1:1 문의 내역
                                 </Link>
                             </div>
@@ -221,11 +221,8 @@ export const MyPage: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Right: Actions & Price */}
-                                            <div className="flex flex-col items-end gap-4 flex-shrink-0 min-w-[180px]">
-                                                <div className="text-2xl font-bold text-[#FF5B60] tracking-tight">
-                                                    {booking.total_price.toLocaleString()}원
-                                                </div>
+                                            {/* Right: Actions */}
+                                            <div className="flex flex-col items-end gap-4 flex-shrink-0">
                                                 <div className="flex gap-2 w-full md:w-auto">
                                                     {(booking.selected_options?.length || 0) + (booking.basic_components?.length || 0) > 0 && (
                                                         <button
@@ -321,11 +318,8 @@ export const MyPage: React.FC = () => {
                                                                                  <div className="flex justify-between items-start">
                                                                                      <div>
                                                                                          <p className="font-bold text-gray-800 text-lg leading-tight">{opt.name}</p>
-                                                                                         <p className="text-xs text-gray-500 mt-1">{opt.price.toLocaleString()}원 × {opt.quantity}개</p>
                                                                                      </div>
-                                                                                     <div className="text-right">
-                                                                                          <span className="text-lg font-bold text-[#FF5B60]">{(opt.price * opt.quantity).toLocaleString()}원</span>
-                                                                                     </div>
+                                                                                     <span className="text-lg font-bold text-[#FF5B60] whitespace-nowrap ml-2">{opt.quantity}개</span>
                                                                                  </div>
                                                                              </div>
                                                                          </div>

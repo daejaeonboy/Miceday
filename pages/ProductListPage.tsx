@@ -148,7 +148,7 @@ export const ProductListPage: React.FC = () => {
                         <button
                             key={`${cat}-${idx}`}
                             onClick={() => setActiveCategory(cat)}
-                            className={`h-[40px] min-w-[100px] px-4 rounded-lg text-[14px] md:text-[15px] font-bold transition-all border
+                            className={`h-[40px] min-w-[100px] px-4 rounded-lg text-[14px] md:text-[15px] font-semibold transition-all border
                                 ${activeCategory === cat
                                     ? 'bg-[#FF5B60] text-white border-[#FF5B60] shadow-sm'
                                     : 'bg-white text-slate-600 border-slate-200 hover:border-[#FF5B60] hover:text-[#FF5B60]'

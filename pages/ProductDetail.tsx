@@ -22,6 +22,7 @@ import {
   Check,
   RotateCcw,
   CheckCircle,
+  XCircle,
   ListPlus,
   PlusCircle,
 
@@ -107,8 +108,8 @@ const OptionItem = ({
         <h5 className="font-bold text-gray-900 text-sm sm:text-[15px] leading-snug line-clamp-1">
           {item.name}
         </h5>
-        <p className="text-[11px] sm:text-xs text-gray-400 mt-0.5 line-clamp-1">
-          {item.description || item.model_name || "상세 설명 없음"}
+        <p className="text-[11px] sm:text-xs text-gray-400 mt-0.5 line-clamp-2 sm:line-clamp-1">
+          {item.short_description || item.description || item.model_name || "상세 설명 없음"}
         </p>
         <p className="text-sm font-bold text-[#FF5B60] mt-0.5">
           {item.price ? `${item.price.toLocaleString()}원` : "가격문의"}
@@ -436,6 +437,14 @@ export const ProductDetailPage: React.FC = () => {
   const [showQuoteModal, setShowQuoteModal] = useState(false);
   const quoteRef = useRef<HTMLDivElement>(null);
 
+  // Booking Result Modal State
+  const [bookingModal, setBookingModal] = useState<{
+    show: boolean;
+    message: string;
+    type: 'success' | 'error' | 'info';
+    onClose?: () => void;
+  }>({ show: false, message: '', type: 'info' });
+
   // Mobile Floating Bar Expand State (Solution 2)
   const [mobileBarExpanded, setMobileBarExpanded] = useState(false);
 
@@ -592,8 +601,12 @@ export const ProductDetailPage: React.FC = () => {
   const handleBooking = async () => {
     if (!product || !startDate || !endDate || !id) return;
     if (!user) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
+      setBookingModal({
+        show: true,
+        message: '로그인이 필요합니다.',
+        type: 'info',
+        onClose: () => navigate('/login'),
+      });
       return;
     }
     setIsBooking(true);
@@ -605,9 +618,11 @@ export const ProductDetailPage: React.FC = () => {
         endDate.toISOString().split("T")[0],
       );
       if (!isAvailable) {
-        setAvailabilityError(
-          "선택한 날짜에 이미 예약이 있습니다. 다른 날짜를 선택해주세요.",
-        );
+        setBookingModal({
+          show: true,
+          message: '선택한 날짜에 이미 예약이 있습니다.\n다른 날짜를 선택해주세요.',
+          type: 'error',
+        });
         setIsBooking(false);
         return;
       }
@@ -700,11 +715,19 @@ export const ProductDetailPage: React.FC = () => {
         "/mypage" // Link to mypage
       );
 
-      alert("예약이 완료되었습니다! 마이페이지에서 확인하세요.");
-      navigate("/mypage");
+      setBookingModal({
+        show: true,
+        message: '예약이 완료되었습니다!\n마이페이지에서 확인하세요.',
+        type: 'success',
+        onClose: () => navigate('/mypage'),
+      });
     } catch (error) {
       console.error("Booking failed", error);
-      alert("예약 처리에 실패했습니다.");
+      setBookingModal({
+        show: true,
+        message: '예약 처리에 실패했습니다.\n잠시 후 다시 시도해주세요.',
+        type: 'error',
+      });
     } finally {
       setIsBooking(false);
     }
@@ -1930,6 +1953,50 @@ export const ProductDetailPage: React.FC = () => {
                 닫기
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Booking Result Modal */}
+      {bookingModal.show && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => {
+          setBookingModal(prev => ({ ...prev, show: false }));
+          bookingModal.onClose?.();
+        }}>
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+          <div
+            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[360px] p-8 text-center animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-5">
+              {bookingModal.type === 'success' && (
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle size={32} className="text-green-500" />
+                </div>
+              )}
+              {bookingModal.type === 'error' && (
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                  <XCircle size={32} className="text-red-500" />
+                </div>
+              )}
+              {bookingModal.type === 'info' && (
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                  <AlertCircle size={32} className="text-blue-500" />
+                </div>
+              )}
+            </div>
+            <p className="text-gray-800 font-semibold text-base leading-relaxed whitespace-pre-line mb-8">
+              {bookingModal.message}
+            </p>
+            <button
+              onClick={() => {
+                setBookingModal(prev => ({ ...prev, show: false }));
+                bookingModal.onClose?.();
+              }}
+              className="w-full py-3 bg-[#FF5B60] text-white font-bold rounded-xl hover:bg-[#E04F54] transition-colors shadow-sm"
+            >
+              확인
+            </button>
           </div>
         </div>
       )}
