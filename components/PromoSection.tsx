@@ -162,9 +162,6 @@ export const PromoSection: React.FC = () => {
                         <div className="absolute inset-0 bg-black/5"></div>
                       </div>
                       
-                      <div className="absolute top-4 left-4 px-2 py-1 bg-[#FF5B60] text-white text-[9px] font-black uppercase tracking-widest rounded shadow-lg z-20">
-                        Promotion
-                      </div>
                     </div>
 
                     {/* Text Area - Separated from image for better clarity */}
