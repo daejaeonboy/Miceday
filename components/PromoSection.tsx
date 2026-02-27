@@ -81,15 +81,15 @@ export const PromoSection: React.FC = () => {
     <div className="pb-16 bg-white">
       <Container>
         {/* Tabs */}
-        <div className="flex w-full mb-10 bg-slate-50 p-1.5 rounded-2xl overflow-hidden border border-slate-200/60 shadow-inner">
+        <div className="flex w-full mb-8 bg-gray-100 rounded-xl overflow-hidden">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTabId(tab.id || null)}
-              className={`flex-1 py-3 md:py-4 text-center text-[13px] md:text-[15px] font-bold transition-all duration-300 rounded-xl
+              className={`flex-1 py-2.5 md:py-4 text-center text-[14px] md:text-base font-[650] transition-colors relative
                 ${activeTabId === tab.id
-                  ? 'bg-white text-[#FF5B60] shadow-md border border-slate-100'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                  ? 'bg-[#FF5B60] text-white'
+                  : 'text-gray-600 hover:text-[#FF5B60] hover:bg-gray-200'
                 }`}
             >
               {tab.name}
