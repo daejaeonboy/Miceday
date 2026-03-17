@@ -7,8 +7,8 @@ export const CompanyIntro: React.FC = () => {
     return (
         <div className="bg-white min-h-screen">
             <Helmet>
-                <title>회사소개 - micepartner | 행사어때</title>
-                <meta name="description" content="micepartner 회사소개. 최고의 행사 파트너로서 고객의 성공적인 비즈니스를 지원합니다." />
+                <title>회사소개 - 마이스파트너 | 행사어때</title>
+                <meta name="description" content="마이스파트너는 10년 이상의 행사 운영 노하우를 바탕으로 최적의 행사 환경을 제공하는 전문가 집단입니다." />
             </Helmet>
 
             {/* Hero Section */}

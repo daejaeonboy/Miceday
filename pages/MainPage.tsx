@@ -104,8 +104,8 @@ export const MainPage: React.FC = () => {
     return (
         <main>
             <Helmet>
-                <title>행사어때 | 종합 행사 장비 렌탈 플랫폼</title>
-                <meta name="description" content="행사에 필요한 모든 것, 행사어때에서 한 번에 렌탈하세요. 음향, 조명, 영상, 무대 장비 등 프리미엄 장비 렌탈 서비스." />
+                <title>행사어때 | 마이스파트너 - 종합 행사 통합 플랫폼</title>
+                <meta name="description" content="행사어때는 음향, 조명, 영상 등 최신 행사 장비 렌탈부터 전문가의 공간 연출까지 제안하는 종합 MICE 플랫폼입니다." />
                 <link rel="canonical" href="https://micepartner.co.kr/" />
             </Helmet>
             <PopupManager />

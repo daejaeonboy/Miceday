@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Container } from "../ui/Container";
 import { NAV_LINKS, TOP_LINKS } from "../../constants";
 import { getActiveSections, Section } from "../../src/api/sectionApi";
@@ -118,6 +118,7 @@ const NotificationDropdown = ({
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [navItems, setNavItems] = useState<Section[]>([]);
   const [allMenuItems, setAllMenuItems] = useState<NavMenuItem[]>([]);
   const [loadingNav, setLoadingNav] = useState(true);
@@ -359,6 +360,7 @@ export const Header: React.FC = () => {
                   onMouseLeave={() => setShowDesktopMenu(false)}
                 >
                   <button
+                    onClick={() => navigate("/products")}
                     className={`flex items-center gap-2 whitespace-nowrap text-[15px] font-[550] px-4 py-4 border-b-2 transition-all ${showDesktopMenu ? "text-[#FF5B60] border-[#FF5B60]" : "text-gray-900 border-transparent hover:text-[#FF5B60] hover:border-[#FF5B60]"}`}
                   >
                     <MenuIcon className="w-[18px] h-[18px]" /> 전체 서비스
