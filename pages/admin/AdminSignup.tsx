@@ -87,7 +87,7 @@ export const AdminSignup: React.FC = () => {
             <div className="w-full max-w-md">
                 {/* Logo/Header */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[#39B54A] rounded-2xl mb-4">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[#39B54A] rounded-lg mb-4">
                         <Shield className="text-white" size={32} />
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900">관리자 회원가입</h1>
@@ -95,7 +95,7 @@ export const AdminSignup: React.FC = () => {
                 </div>
 
                 {/* Signup Form */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-8">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {error && (
                             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">

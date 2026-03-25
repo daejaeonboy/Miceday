@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /mypage/
 
-Sitemap: https://micepartner.co.kr/sitemap.xml
+Sitemap: https://miceday.co.kr/sitemap.xml

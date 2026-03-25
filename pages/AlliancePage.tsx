@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/seo/Seo';
 import { Container } from '../components/ui/Container';
 import { Search, MapPin, Phone, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
@@ -55,10 +55,11 @@ export const AlliancePage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>대전·충청 MICE 얼라이언스 - 회원사 소개</title>
-        <meta name="description" content="대전·충청 MICE 얼라이언스(DCMA) 회원사 소개 및 안내입니다." />
-      </Helmet>
+      <Seo
+        title="대전·충청 MICE 얼라이언스 회원사 소개 | 행사어때"
+        description="대전·충청 MICE 얼라이언스(DCMA) 회원사 소개와 안내를 확인할 수 있습니다."
+        canonical="/alliance"
+      />
 
       <div className="bg-white min-h-screen pb-20">
 
@@ -119,7 +120,7 @@ export const AlliancePage: React.FC = () => {
           ) : currentItems.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 mb-16">
               {currentItems.map((member) => (
-                <div key={member.id} className="flex flex-col sm:flex-row border border-gray-200 hover:border-gray-400 transition-colors bg-white rounded-xl overflow-hidden min-h-[200px] sm:h-[200px]">
+                <div key={member.id} className="flex flex-col sm:flex-row border border-gray-200 hover:border-gray-400 transition-colors bg-white rounded-lg overflow-hidden min-h-[200px] sm:h-[200px]">
                   {/* Left: Logo Area (Light Gray Box) */}
                   <div className="w-full sm:w-[200px] bg-[#f5f5f5] flex items-center justify-center p-6 flex-shrink-0">
                     {member.logo_url && (

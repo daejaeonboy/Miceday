@@ -86,15 +86,15 @@ export const InquiryManager: React.FC = () => {
 
             {/* Status Cards */}
             <div className="grid grid-cols-3 gap-4 mb-6">
-                <button onClick={() => setFilter('all')} className={`p-4 rounded-2xl border transition-all ${filter === 'all' ? 'bg-[#39B54A] text-white border-[#39B54A] shadow-lg shadow-[#39B54A]/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+                <button onClick={() => setFilter('all')} className={`p-4 rounded-lg border transition-all ${filter === 'all' ? 'bg-[#39B54A] text-white border-[#39B54A] shadow-lg shadow-[#39B54A]/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
                     <div className={`text-2xl font-extrabold ${filter === 'all' ? 'text-white' : 'text-slate-900'}`}>{inquiries.length}</div>
                     <div className={`text-xs font-bold ${filter === 'all' ? 'text-white/80' : 'text-slate-500'}`}>전체 문의</div>
                 </button>
-                <button onClick={() => setFilter('pending')} className={`p-4 rounded-2xl border transition-all ${filter === 'pending' ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-500/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+                <button onClick={() => setFilter('pending')} className={`p-4 rounded-lg border transition-all ${filter === 'pending' ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-500/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
                     <div className={`text-2xl font-extrabold ${filter === 'pending' ? 'text-white' : 'text-orange-500'}`}>{pendingCount}</div>
                     <div className={`text-xs font-bold ${filter === 'pending' ? 'text-white/80' : 'text-slate-500'}`}>답변 대기</div>
                 </button>
-                <button onClick={() => setFilter('answered')} className={`p-4 rounded-2xl border transition-all ${filter === 'answered' ? 'bg-green-500 text-white border-green-500 shadow-lg shadow-green-500/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+                <button onClick={() => setFilter('answered')} className={`p-4 rounded-lg border transition-all ${filter === 'answered' ? 'bg-green-500 text-white border-green-500 shadow-lg shadow-green-500/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
                     <div className={`text-2xl font-extrabold ${filter === 'answered' ? 'text-white' : 'text-green-500'}`}>{answeredCount}</div>
                     <div className={`text-xs font-bold ${filter === 'answered' ? 'text-white/80' : 'text-slate-500'}`}>답변 완료</div>
                 </button>
@@ -102,7 +102,7 @@ export const InquiryManager: React.FC = () => {
 
             {/* Inquiry List */}
             {filteredInquiries.length === 0 ? (
-                <div className="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-20 text-center">
+                <div className="bg-white rounded-lg border-2 border-dashed border-slate-200 p-20 text-center">
                     <MessageSquare size={48} className="mx-auto mb-4 text-slate-300" />
                     <p className="text-slate-500 font-medium text-lg">
                         {filter === 'all' ? '등록된 문의가 없습니다.' : filter === 'pending' ? '대기 중인 문의가 없습니다.' : '답변 완료된 문의가 없습니다.'}
@@ -111,7 +111,7 @@ export const InquiryManager: React.FC = () => {
             ) : (
                 <div className="space-y-3">
                     {filteredInquiries.map((item) => (
-                        <div key={item.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
+                        <div key={item.id} className="bg-white rounded-lg border border-slate-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
                             {/* Header */}
                             <div
                                 className="p-5 cursor-pointer flex items-center gap-4"
@@ -160,33 +160,33 @@ export const InquiryManager: React.FC = () => {
                             {expandedId === item.id && (
                                 <div className="px-5 pb-5 space-y-4 animate-fadeIn">
                                     {/* Customer Info */}
-                                    <div className="flex gap-4 text-xs text-slate-500 bg-slate-50 p-3 rounded-xl">
+                                    <div className="flex gap-4 text-xs text-slate-500 bg-slate-50 p-3 rounded-lg">
                                         <span>이름: <strong>{item.user_name || '-'}</strong></span>
                                         <span>이메일: <strong>{item.user_email || '-'}</strong></span>
                                         <span>회사: <strong>{item.company_name || '-'}</strong></span>
                                     </div>
 
                                     {/* Question */}
-                                    <div className="bg-slate-50 p-4 rounded-xl">
+                                    <div className="bg-slate-50 p-4 rounded-lg">
                                         <span className="text-xs font-bold text-slate-500 mb-2 block">📩 문의 내용</span>
                                         <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{item.content}</p>
                                     </div>
 
                                     {/* Answer Form */}
-                                    <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                                    <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
                                         <span className="text-xs font-bold text-blue-600 mb-2 block">✏️ 답변 작성</span>
                                         <textarea
                                             value={answerText}
                                             onChange={(e) => setAnswerText(e.target.value)}
                                             placeholder="답변을 작성해주세요..."
                                             rows={4}
-                                            className="w-full px-4 py-3 rounded-xl border border-blue-200 bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm resize-none"
+                                            className="w-full px-4 py-3 rounded-lg border border-blue-200 bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm resize-none"
                                         />
                                         <div className="flex justify-end mt-3">
                                             <button
                                                 onClick={() => handleAnswer(item.id!)}
                                                 disabled={saving || !answerText.trim()}
-                                                className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all disabled:bg-slate-300 shadow-lg shadow-blue-600/20"
+                                                className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition-all disabled:bg-slate-300 shadow-lg shadow-blue-600/20"
                                             >
                                                 {saving ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
                                                 {item.status === 'answered' ? '답변 수정' : '답변 등록'}

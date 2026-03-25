@@ -5,6 +5,8 @@ import { getUserBookings, Booking } from '../src/api/bookingApi';
 import { getProducts } from '../src/api/productApi';
 import { useAuth } from '../src/context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { Seo } from '../components/seo/Seo';
+import { NOINDEX_ROBOTS } from '../src/seo';
 
 export const MyPage: React.FC = () => {
     const { user, userProfile, logout } = useAuth();
@@ -94,20 +96,34 @@ export const MyPage: React.FC = () => {
 
     if (!user) {
         return (
-            <div className="py-20 text-center">
-                <p className="text-gray-500 mb-4">로그인이 필요합니다.</p>
-                <Link to="/login" className="text-[#39B54A] underline">로그인하기</Link>
-            </div>
+            <>
+                <Seo
+                    title="내 예약 내역 | 행사어때"
+                    description="행사어때 회원 전용 예약 내역 페이지입니다."
+                    canonical="/mypage"
+                    robots={NOINDEX_ROBOTS}
+                />
+                <div className="py-20 text-center">
+                    <p className="text-gray-500 mb-4">로그인이 필요합니다.</p>
+                    <Link to="/login" className="text-[#39B54A] underline">로그인하기</Link>
+                </div>
+            </>
         );
     }
 
     return (
         <div className="py-12 bg-gray-50 min-h-screen">
+            <Seo
+                title="내 예약 내역 | 행사어때"
+                description="행사어때 회원 전용 예약 내역 페이지입니다."
+                canonical="/mypage"
+                robots={NOINDEX_ROBOTS}
+            />
             <Container>
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Sidebar / User Profile Summary */}
                     <div className="md:w-1/4">
-                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center">
+                        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm text-center">
                             <div className="w-20 h-20 bg-[#B3C1D4] rounded-full mx-auto mb-4 flex items-center justify-center">
                                 <User size={32} className="text-[#39B54A]" />
                             </div>
@@ -138,14 +154,14 @@ export const MyPage: React.FC = () => {
                                 <Loader2 className="animate-spin text-[#39B54A]" size={40} />
                             </div>
                         ) : bookings.length === 0 ? (
-                            <div className="bg-white p-12 rounded-xl border border-gray-200 text-center">
+                            <div className="bg-white p-12 rounded-lg border border-gray-200 text-center">
                                 <p className="text-gray-500 mb-4">예약 내역이 없습니다.</p>
                                 <Link to="/products" className="text-[#39B54A] underline">상품 둘러보기</Link>
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {bookings.map((booking) => (
-                                    <div key={booking.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6 transition-all hover:shadow-md">
+                                    <div key={booking.id} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-6 transition-all hover:shadow-md">
                                         {/* Mobile/Tablet Layout (Visible on screens < lg) */}
                                         <div 
                                             className="lg:hidden cursor-pointer active:bg-gray-50 transition-colors"
@@ -179,7 +195,7 @@ export const MyPage: React.FC = () => {
                                                             const el = document.getElementById(`details-${booking.id}`);
                                                             if (el) el.classList.toggle('hidden');
                                                         }}
-                                                        className="w-full py-4 bg-[#39B54A] text-white rounded-xl text-base font-bold hover:bg-[#2F9A3F] transition-all shadow-md active:scale-[0.98]"
+                                                        className="w-full py-4 bg-[#39B54A] text-white rounded-lg text-base font-bold hover:bg-[#2F9A3F] transition-all shadow-md active:scale-[0.98]"
                                                     >
                                                         예약 내역보기
                                                     </button>
@@ -197,7 +213,7 @@ export const MyPage: React.FC = () => {
                                         >
                                             <div className="flex gap-8 items-center flex-grow">
                                                 {/* Left: Image */}
-                                                <div className="w-32 h-32 bg-gray-100 rounded-2xl overflow-hidden flex-shrink-0 shadow-sm border border-gray-100">
+                                                <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 shadow-sm border border-gray-100">
                                                     <img
                                                         src={booking.products?.image_url || 'https://picsum.photos/seed/booking/200/200'}
                                                         alt={booking.products?.name || '상품'}

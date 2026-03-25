@@ -112,14 +112,14 @@ export const GnbManager = () => {
                 </button>
             </div>
 
-            <div className="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
+            <div className="flex-1 bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col overflow-hidden">
                 <div className="p-4 border-b bg-slate-50 flex items-center gap-2">
                     <List size={18} className="text-[#39B54A]" />
                     <h3 className="font-bold">GNB 항목 목록</h3>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
                     {items.length === 0 ? (
-                        <div className="text-center py-12 text-slate-400 bg-slate-50 rounded-xl border border-dashed">
+                        <div className="text-center py-12 text-slate-400 bg-slate-50 rounded-lg border border-dashed">
                             등록된 GNB 메뉴가 없습니다.
                         </div>
                     ) : (
@@ -162,7 +162,7 @@ export const GnbManager = () => {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
                         <div className="flex justify-between items-center p-5 border-b">
                             <h3 className="font-bold text-lg">{editingItem ? 'GNB 메뉴 수정' : 'GNB 메뉴 추가'}</h3>
                             <button onClick={closeModal}><X size={24} className="text-slate-400 hover:text-slate-600 transition-colors" /></button>
@@ -170,19 +170,19 @@ export const GnbManager = () => {
                         <form onSubmit={handleSubmit} className="p-6 space-y-5">
                             <div>
                                 <label className="block text-sm font-bold text-slate-800 mb-1.5">메뉴명 (표시할 텍스트)</label>
-                                <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#39B54A] outline-none transition-all" placeholder="예: 회사소개" />
+                                <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#39B54A] outline-none transition-all" placeholder="예: 회사소개" />
                             </div>
 
                             <div>
                                 <label className="block text-sm font-bold text-slate-800 mb-1.5">이동 링크 (페이지 경로)</label>
-                                <input required type="text" value={formData.link} onChange={e => setFormData({ ...formData, link: e.target.value })} className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#39B54A] outline-none transition-all text-sm" placeholder="예: /company 또는 /product-list?sectionId=..." />
+                                <input required type="text" value={formData.link} onChange={e => setFormData({ ...formData, link: e.target.value })} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#39B54A] outline-none transition-all text-sm" placeholder="예: /company 또는 /product-list?sectionId=..." />
                                 <p className="text-xs text-slate-400 mt-1.5">클릭 시 이동할 주소를 입력해주세요.</p>
                             </div>
 
                             <div className="flex justify-between gap-4">
                                 <div className="flex-1">
                                     <label className="block text-sm font-bold text-slate-800 mb-1.5">표시 순서</label>
-                                    <input required type="number" value={formData.display_order} onChange={e => setFormData({ ...formData, display_order: Number(e.target.value) })} className="w-full px-4 py-2.5 border border-slate-200 rounded-xl outline-none transition-all" />
+                                    <input required type="number" value={formData.display_order} onChange={e => setFormData({ ...formData, display_order: Number(e.target.value) })} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg outline-none transition-all" />
                                 </div>
                                 <div className="flex items-center pt-7">
                                     <label className="flex items-center gap-2 cursor-pointer group">
@@ -193,8 +193,8 @@ export const GnbManager = () => {
                             </div>
 
                             <div className="pt-4 flex justify-end gap-3">
-                                <button type="button" onClick={closeModal} className="px-5 py-2.5 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-colors">취소</button>
-                                <button type="submit" disabled={saving} className="px-5 py-2.5 bg-[#39B54A] text-white font-bold rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50 min-w-[100px]">
+                                <button type="button" onClick={closeModal} className="px-5 py-2.5 bg-slate-100 text-slate-600 font-bold rounded-lg hover:bg-slate-200 transition-colors">취소</button>
+                                <button type="submit" disabled={saving} className="px-5 py-2.5 bg-[#39B54A] text-white font-bold rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 min-w-[100px]">
                                     {saving ? '저장 중...' : '저장하기'}
                                 </button>
                             </div>

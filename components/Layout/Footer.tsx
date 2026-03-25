@@ -81,7 +81,7 @@ export function Footer() {
                                 개인정보보호책임자 : 이기섭(hm_solution@naver.com)
                             </p>
                             <p className="mt-5 text-[11px] text-gray-400 font-medium">
-                                Copyright © 2024 micepartner. All rights reserved.
+                                Copyright © 2024 행사어때. All rights reserved.
                             </p>
                         </div>
                     </div>

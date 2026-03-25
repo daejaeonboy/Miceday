@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmailVerification = void 0;
+exports.sendEmailVerification = exports.sitemapXml = void 0;
 const functions = require("firebase-functions");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const https = require("https");
 const corsHandler = cors({ origin: true });
 dotenv.config();
+const SITE_URL = "https://miceday.co.kr";
+const SUPABASE_REST_URL = "https://zwxvjlnzhjmsuwjnwvqv.supabase.co/rest/v1";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3eHZqbG56aGptc3V3am53dnF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1ODcwNjIsImV4cCI6MjA4NTE2MzA2Mn0.GA0nRGSMr9XxXHc1VhpSeSB2hnaZknO2ojedpsTWrw4";
 // 이메일 발송을 위한 Transporter 생성
 // Firebase Functions (.env 사용)
 const normalizeEnvValue = (value) => {
@@ -15,6 +19,77 @@ const normalizeEnvValue = (value) => {
     }
     return value.trim().replace(/^['"]|['"]$/g, "");
 };
+const xmlEscape = (value) => value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+const fetchJson = (url, headers) => new Promise((resolve, reject) => {
+    const request = https.get(url, { headers }, (response) => {
+        let rawData = "";
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => {
+            rawData += chunk;
+        });
+        response.on("end", () => {
+            const statusCode = response.statusCode || 500;
+            if (statusCode >= 400) {
+                reject(new Error(`Request failed with status ${statusCode}: ${rawData}`));
+                return;
+            }
+            try {
+                resolve(JSON.parse(rawData));
+            }
+            catch (error) {
+                reject(error);
+            }
+        });
+    });
+    request.on("error", reject);
+});
+const sitemapEntry = (loc, changefreq, priority, lastmod) => `  <url>
+    <loc>${xmlEscape(loc)}</loc>
+${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ""}    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`;
+exports.sitemapXml = functions.https.onRequest(async (req, res) => {
+    if (req.method !== "GET") {
+        res.status(405).send("Method Not Allowed");
+        return;
+    }
+    try {
+        const today = new Date().toISOString().slice(0, 10);
+        const products = await fetchJson(`${SUPABASE_REST_URL}/products?select=id,created_at&product_type=eq.basic&order=created_at.desc`, {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        });
+        const staticEntries = [
+            sitemapEntry(`${SITE_URL}/`, "daily", "1.0", today),
+            sitemapEntry(`${SITE_URL}/products`, "daily", "0.8", today),
+            sitemapEntry(`${SITE_URL}/company`, "monthly", "0.7", today),
+            sitemapEntry(`${SITE_URL}/alliance`, "monthly", "0.7", today),
+            sitemapEntry(`${SITE_URL}/cs`, "monthly", "0.6", today),
+            sitemapEntry(`${SITE_URL}/terms`, "yearly", "0.3", today),
+            sitemapEntry(`${SITE_URL}/privacy`, "yearly", "0.3", today),
+        ];
+        const productEntries = products
+            .filter((product) => Boolean(product.id))
+            .map((product) => sitemapEntry(`${SITE_URL}/products/${product.id}`, "weekly", "0.7", product.created_at ? new Date(product.created_at).toISOString().slice(0, 10) : null));
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${[...staticEntries, ...productEntries].join("\n")}
+</urlset>
+`;
+        res.set("Content-Type", "application/xml; charset=utf-8");
+        res.set("Cache-Control", "public, max-age=3600, s-maxage=3600");
+        res.status(200).send(xml);
+    }
+    catch (error) {
+        console.error("Failed to generate sitemap.xml", error);
+        res.status(500).send("Failed to generate sitemap.xml");
+    }
+});
 exports.sendEmailVerification = functions.https.onRequest((req, res) => {
     // CORS 처리
     corsHandler(req, res, async () => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container } from '../components/ui/Container';
 import { Loader2 } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { Seo } from '../components/seo/Seo';
 import { getProducts, Product } from '../src/api/productApi';
 import { getProductsBySection } from '../src/api/sectionApi';
 import { getAllNavMenuItems } from '../src/api/cmsApi';
@@ -134,18 +135,31 @@ export const ProductListPage: React.FC = () => {
         return false;
     });
 
+    const pageTitle = currentGroup || urlTitle || (activeCategory !== '전체' ? activeCategory : '전체 상품');
+    const canonicalParams = new URLSearchParams();
+    if (urlCategory) canonicalParams.set('category', urlCategory);
+    const canonicalPath = canonicalParams.toString() ? `/products?${canonicalParams.toString()}` : '/products';
+    const pageDescription = currentGroup || activeCategory !== '전체'
+        ? `행사어때에서 ${pageTitle} 관련 행사 상품과 서비스를 확인해보세요. 대전 MICE 행사 운영에 필요한 장비와 구성을 한 곳에서 비교할 수 있습니다.`
+        : '행사어때의 전체 상품 목록입니다. 대전 MICE 행사 운영에 필요한 장비와 서비스를 한 곳에서 비교하고 상담할 수 있습니다.';
+
     return (
-        <div className="pt-8 pb-12 bg-white">
+        <div className="pt-12 md:pt-16 pb-16 md:pb-24 bg-white">
+            <Seo
+                title={`${pageTitle} | 행사어때`}
+                description={pageDescription}
+                canonical={canonicalPath}
+            />
             <Container>
-                <div className="mb-6">
+                <div className="mb-8">
                     {/* Title Logic: Use Current Group Name if available, otherwise URL Title or Active Category */}
                     <h1 className="text-3xl font-bold text-gray-900">
-                        {currentGroup || urlTitle || (activeCategory !== '전체' ? activeCategory : "모든 상품")}
+                        {pageTitle}
                     </h1>
                 </div>
 
                 {/* Category Filter */}
-                <div className="flex flex-wrap gap-4 mb-6">
+                <div className="flex flex-wrap gap-4 mb-8 md:mb-10">
                     {displayedCategories.map((cat, idx) => (
                         <button
                             key={`${cat}-${idx}`}
@@ -191,14 +205,14 @@ export const ProductListPage: React.FC = () => {
                                 <div className="space-y-1">
                                     <h3 className="font-bold text-gray-900 line-clamp-1">{product.name}</h3>
 
-                                    <div className="flex flex-col">
+                                    <div className="flex items-baseline gap-2">
                                         {product.discount_rate && product.discount_rate > 0 && (
-                                            <span className="text-[#39B54A] font-bold text-sm block">
+                                            <span className="text-[#39B54A] font-bold text-lg leading-none">
                                                 {product.discount_rate}%
                                             </span>
                                         )}
                                         <span className="font-bold text-lg">
-                                            {product.price?.toLocaleString()}원/일
+                                            {product.price?.toLocaleString()}원
                                         </span>
                                     </div>
 

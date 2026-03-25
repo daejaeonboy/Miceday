@@ -511,7 +511,7 @@ export const ProductManager = () => {
             {/* 메인 폼 모달 */}
             {showForm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-[1000px] max-h-[90vh] flex flex-col">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-[1000px] max-h-[90vh] flex flex-col">
                         <div className="flex justify-between p-4 border-b bg-slate-50 rounded-t-xl">
                             <h3 className="font-bold text-lg">{editingProduct ? '상품 수정' : '새 상품 등록'} <span className="text-sm font-normal text-slate-400">({formData.product_type})</span></h3>
                             <button onClick={resetForm} className="text-slate-400 hover:text-red-500"><X size={24} /></button>
@@ -569,7 +569,7 @@ export const ProductManager = () => {
                                 </div>
                                 <div className="space-y-4">
                                     <label className="block text-sm font-bold text-slate-700">대표 이미지</label>
-                                    <div onClick={() => fileInputRef.current?.click()} className="w-full h-48 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-all overflow-hidden relative border-slate-300">
+                                    <div onClick={() => fileInputRef.current?.click()} className="w-full h-48 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-all overflow-hidden relative border-slate-300">
                                         {formData.image_url ? <img src={formData.image_url} className="w-full h-full object-cover" /> : <div className="text-center text-slate-400"><Upload size={40} className="mx-auto mb-2" /><span className="text-sm">클릭하여 업로드</span></div>}
                                         {uploading && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><Loader2 className="animate-spin text-[#39B54A]" /></div>}
                                     </div>
@@ -594,7 +594,7 @@ export const ProductManager = () => {
                                     <h4 className="font-bold text-lg flex items-center gap-2"><Grid3X3 size={22} className="text-[#39B54A]" /> 패키지 구성 세부 설정</h4>
 
                                     {/* 기본 구성품 */}
-                                    <div className="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                    <div className="bg-slate-50 p-5 rounded-lg border border-slate-200">
                                         <div className="flex justify-between items-center mb-4">
                                             <span className="font-bold text-slate-800 underline decoration-blue-200 underline-offset-4">기본 필수 구성품 (가격 포함)</span>
                                             <button type="button" onClick={() => setFormData({ ...formData, basic_components: [...formData.basic_components, { name: '', quantity: 1 }] })} className="text-xs bg-white border border-slate-300 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-all font-bold">+ 항목 추가</button>
@@ -625,7 +625,7 @@ export const ProductManager = () => {
                                         { id: 'cooperative', label: '협력 업체 옵션 활성화', state: useCooperative, setState: setUseCooperative, key: 'cooperative_components', desc: '고객이 공통 협력 업체 목록에서 선택할 수 있도록 합니다.' },
                                         { id: 'additional', label: '추가 물품 옵션 활성화', state: useAdditional, setState: setUseAdditional, key: 'additional_components', desc: '고객이 공통 추가 물품 목록에서 선택할 수 있도록 합니다.' }
                                     ].map(opt => (
-                                        <div key={opt.id} className="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                        <div key={opt.id} className="bg-slate-50 p-5 rounded-lg border border-slate-200">
                                             <div className="flex flex-col gap-2">
                                                 <div className="flex items-center gap-3">
                                                     <input
@@ -655,8 +655,8 @@ export const ProductManager = () => {
                         </form>
 
                         <div className="p-4 border-t bg-slate-50 flex gap-4 rounded-b-xl">
-                            <button type="button" onClick={resetForm} className="flex-1 py-3 border border-slate-300 rounded-xl bg-white hover:bg-slate-100 font-bold transition-all">취소</button>
-                            <button type="submit" onClick={(e) => { e.preventDefault(); handleSubmit(e); }} disabled={saving} className="flex-1 py-3 bg-[#39B54A] text-white rounded-xl flex items-center justify-center gap-2 hover:bg-slate-800 disabled:bg-slate-300 shadow-lg font-bold transition-all">
+                            <button type="button" onClick={resetForm} className="flex-1 py-3 border border-slate-300 rounded-lg bg-white hover:bg-slate-100 font-bold transition-all">취소</button>
+                            <button type="submit" onClick={(e) => { e.preventDefault(); handleSubmit(e); }} disabled={saving} className="flex-1 py-3 bg-[#39B54A] text-white rounded-lg flex items-center justify-center gap-2 hover:bg-slate-800 disabled:bg-slate-300 shadow-lg font-bold transition-all">
                                 {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                                 <span>{editingProduct ? '수정사항 저장' : '등록하기'}</span>
                             </button>
@@ -666,7 +666,7 @@ export const ProductManager = () => {
             )}
 
             {/* 상품 리스트 테이블 */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden mt-8 border border-slate-100">
+            <div className="bg-white rounded-lg shadow-xl overflow-hidden mt-8 border border-slate-100">
                 <table className="w-full">
                     <thead className="bg-[#39B54A] text-white">
                         <tr>
@@ -700,7 +700,7 @@ export const ProductManager = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-4">
-                                            {p.image_url ? <img src={p.image_url} className="w-12 h-12 object-cover rounded-xl shadow-sm" /> : <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-300"><ImageIcon size={20} /></div>}
+                                            {p.image_url ? <img src={p.image_url} className="w-12 h-12 object-cover rounded-lg shadow-sm" /> : <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-300"><ImageIcon size={20} /></div>}
                                             <div className="font-bold text-slate-800">{p.name}</div>
                                         </div>
                                     </td>

@@ -15,7 +15,7 @@
         }
     ],
     "hosting": {
-        "site": "human-partner",
+        "target": "miceday",
         "public": "dist",
         "ignore": [
             "firebase.json",
@@ -26,6 +26,10 @@
             {
                 "source": "/api/email/verify",
                 "function": "sendEmailVerification"
+            },
+            {
+                "source": "/sitemap.xml",
+                "function": "sitemapXml"
             },
             {
                 "source": "**",

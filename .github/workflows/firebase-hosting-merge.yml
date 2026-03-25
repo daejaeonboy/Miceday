@@ -1,4 +1,4 @@
-name: Deploy to Firebase Hosting on PR and merge
+name: Deploy Miceday to Firebase Hosting
 
 on:
   push:
@@ -10,8 +10,11 @@ on:
 
 jobs:
   build_and_preview:
+    name: Preview deploy for miceday.co.kr
     if: "${{ github.event_name == 'pull_request' }}"
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_PROJECT_ID: human-partner
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
@@ -20,11 +23,14 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_HUMAN_PARTNER }}"
-          projectId: human-partner
+          projectId: ${{ env.FIREBASE_PROJECT_ID }}
 
   build_and_deploy:
+    name: Live deploy for miceday.co.kr
     if: "${{ github.event_name == 'push' }}"
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_PROJECT_ID: human-partner
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
@@ -33,5 +39,5 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_HUMAN_PARTNER }}"
-          projectId: human-partner
+          projectId: ${{ env.FIREBASE_PROJECT_ID }}
           channelId: live

@@ -42,7 +42,7 @@ const NotificationDropdown = ({
   return (
     <div className="relative z-50">
       <button
-        className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-slate-600 transition-colors rounded-xl md:rounded-full hover:bg-slate-100 ${isOpen ? "text-[#39B54A] bg-green-50" : ""}`}
+        className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-slate-600 transition-colors rounded-lg md:rounded-full hover:bg-slate-100 ${isOpen ? "text-[#39B54A] bg-green-50" : ""}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <BellIcon className="w-6 h-6 md:w-7 md:h-7" />
@@ -59,7 +59,7 @@ const NotificationDropdown = ({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+          <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
             <div className="flex items-center justify-between p-3 border-b border-gray-50 bg-gray-50/50">
               <span className="font-bold text-gray-900 text-sm">알림</span>
               {unreadCount > 0 && (
@@ -290,12 +290,12 @@ export const Header: React.FC = () => {
                 className="flex-shrink-0 flex items-center gap-1.5 md:gap-2"
               >
                 <img
-                  src="/logo.png"
+                  src="/logo3.png"
                   alt="행사어때"
-                  className="h-[22px] md:h-6 object-contain"
+                  className="h-6 md:h-8 object-contain"
                 />
                 <span className="text-[0.8rem] text-gray-400 font-medium mt-0.5 whitespace-nowrap hidden sm:block tracking-[1px]">
-                  | 대전형 MICE 행사 통합운영 플랫폼
+                  | 대전 MICE 행사 통합운영 플랫폼
                 </span>
               </a>
 
@@ -308,7 +308,7 @@ export const Header: React.FC = () => {
                   <input
                     type="text"
                     placeholder="무엇을 도와드릴까요?"
-                    className="w-full h-[44px] md:h-auto pl-4 md:pl-5 pr-10 md:pr-12 py-0 md:py-2.5 rounded-xl bg-[#F1F5F9] border border-slate-200 focus:border-[#39B54A] focus:ring-1 focus:ring-[#39B54A] focus:bg-white transition-all text-[14px] md:text-sm text-slate-700 placeholder-slate-400 text-ellipsis overflow-hidden whitespace-nowrap"
+                    className="w-full h-[44px] md:h-auto pl-4 md:pl-5 pr-10 md:pr-12 py-0 md:py-2.5 rounded-lg bg-[#F1F5F9] border border-slate-200 focus:border-[#39B54A] focus:ring-1 focus:ring-[#39B54A] focus:bg-white transition-all text-[14px] md:text-sm text-slate-700 placeholder-slate-400 text-ellipsis overflow-hidden whitespace-nowrap"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         const target = e.target as HTMLInputElement;

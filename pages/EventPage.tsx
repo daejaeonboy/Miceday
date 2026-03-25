@@ -1,17 +1,20 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/seo/Seo';
 import { Container } from '../components/ui/Container';
+import { NOINDEX_ROBOTS } from '../src/seo';
 
 export const EventPage: React.FC = () => {
   return (
     <>
-      <Helmet>
-        <title>EVENT - 행사어때</title>
-        <meta name="description" content="진행 중인 이벤트 목록입니다." />
-      </Helmet>
+      <Seo
+        title="이벤트 준비중 | 행사어때"
+        description="행사어때 이벤트 페이지 준비중입니다."
+        canonical="/event"
+        robots={NOINDEX_ROBOTS}
+      />
       <div className="pt-24 pb-16 bg-gray-50 min-h-screen">
         <Container>
-          <div className="text-center py-20 px-6 max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100">
+          <div className="text-center py-20 px-6 max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-gray-100">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">EVENT</h1>
             <p className="text-gray-500">이벤트 페이지 준비중입니다.</p>
           </div>

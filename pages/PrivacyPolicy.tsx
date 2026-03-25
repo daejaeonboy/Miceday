@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/seo/Seo';
 import { Container } from '../components/ui/Container';
 
 const policySections: Array<{ title: string; items: string[] }> = [
@@ -114,13 +114,11 @@ const policySections: Array<{ title: string; items: string[] }> = [
 export const PrivacyPolicy: React.FC = () => {
   return (
     <div className="min-h-screen bg-white pb-20">
-      <Helmet>
-        <title>개인정보처리방침 - 행사어때 | humanpartner</title>
-        <meta
-          name="description"
-          content="행사어때 서비스의 개인정보처리방침입니다. 수집 항목, 이용 목적, 보유 기간, 이용자 권리 및 보호조치를 안내합니다."
-        />
-      </Helmet>
+      <Seo
+        title="개인정보처리방침 | 행사어때"
+        description="행사어때 서비스의 개인정보처리방침입니다. 수집 항목, 이용 목적, 보유 기간, 이용자 권리 및 보호조치를 안내합니다."
+        canonical="/privacy"
+      />
 
       <Container className="max-w-4xl py-20">
         <h1 className="mb-10 border-b pb-4 text-3xl font-bold text-gray-900">개인정보처리방침</h1>

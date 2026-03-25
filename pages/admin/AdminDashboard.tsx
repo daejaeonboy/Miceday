@@ -96,7 +96,7 @@ export const AdminDashboard = () => {
                     {isRoot ? (
                         <div className="space-y-8">
                             {/* Welcome Section */}
-                            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
                                 <h2 className="text-2xl font-bold mb-2 text-gray-900">안녕하세요, {userProfile?.name || '관리자'}님! 👋</h2>
                                 <p className="text-gray-500">행사어때 관리자 대시보드에 오신 것을 환영합니다.</p>
                             </div>
@@ -105,10 +105,10 @@ export const AdminDashboard = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <Link
                                     to="/admin/cms"
-                                    className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
+                                    className="group bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-xl group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
+                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-lg group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
                                             <Settings className="text-[#39B54A] group-hover:text-white transition-colors" size={28} />
                                         </div>
                                         <div>
@@ -120,10 +120,10 @@ export const AdminDashboard = () => {
 
                                 <Link
                                     to="/admin/sections"
-                                    className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
+                                    className="group bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-xl group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
+                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-lg group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
                                             <Layers className="text-[#39B54A] group-hover:text-white transition-colors" size={28} />
                                         </div>
                                         <div>
@@ -135,10 +135,10 @@ export const AdminDashboard = () => {
 
                                 <Link
                                     to="/admin/products"
-                                    className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
+                                    className="group bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-xl group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
+                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-lg group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
                                             <Package className="text-[#39B54A] group-hover:text-white transition-colors" size={28} />
                                         </div>
                                         <div>
@@ -150,10 +150,10 @@ export const AdminDashboard = () => {
 
                                 <Link
                                     to="/admin/bookings"
-                                    className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
+                                    className="group bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-xl group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
+                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-lg group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
                                             <CalendarCheck className="text-[#39B54A] group-hover:text-white transition-colors" size={28} />
                                         </div>
                                         <div>
@@ -165,10 +165,10 @@ export const AdminDashboard = () => {
 
                                 <Link
                                     to="/admin/users"
-                                    className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
+                                    className="group bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-xl group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
+                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-lg group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
                                             <Users className="text-[#39B54A] group-hover:text-white transition-colors" size={28} />
                                         </div>
                                         <div>
@@ -180,10 +180,10 @@ export const AdminDashboard = () => {
 
                                 <Link
                                     to="/admin/menus"
-                                    className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
+                                    className="group bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-xl group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
+                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-lg group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
                                             <Menu className="text-[#39B54A] group-hover:text-white transition-colors" size={28} />
                                         </div>
                                         <div>
@@ -195,10 +195,10 @@ export const AdminDashboard = () => {
 
                                 <Link
                                     to="/admin/faqs"
-                                    className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
+                                    className="group bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-xl group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
+                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-lg group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
                                             <HelpCircle className="text-[#39B54A] group-hover:text-white transition-colors" size={28} />
                                         </div>
                                         <div>
@@ -210,10 +210,10 @@ export const AdminDashboard = () => {
                                 
                                 <Link
                                     to="/admin/inquiries"
-                                    className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
+                                    className="group bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#39B54A]/30"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-xl group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
+                                        <div className="p-4 bg-gradient-to-br from-[#39B54A]/10 to-[#39B54A]/5 rounded-lg group-hover:from-[#39B54A] group-hover:to-[#74D07E] transition-all duration-300">
                                             <MessageSquare className="text-[#39B54A] group-hover:text-white transition-colors" size={28} />
                                         </div>
                                         <div>

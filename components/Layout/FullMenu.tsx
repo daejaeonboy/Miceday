@@ -108,6 +108,12 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
     const getCategoryLink = (categoryName: string) => `/products?category=${encodeURIComponent(categoryName)}`;
     const getGroupLink = (groupName: string) => {
         const parentObj = menuItems.find(i => i.name === groupName && !i.category);
+        const hasChildren = menuItems.some(i => i.is_active && i.category === groupName);
+
+        if (hasChildren) {
+            return getCategoryLink(groupName);
+        }
+
         return parentObj?.link || getCategoryLink(groupName);
     };
 
@@ -138,15 +144,15 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                 {variant === 'mobile' && (
                     <>
                         <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-white sticky top-0 z-10">
-                            <img src="/logo.png" alt="행사어때" className="h-[22px] object-contain" />
-                            <button onClick={onClose} className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
+                            <img src="/logo3.png" alt="행사어때" className="h-6 object-contain" />
+                            <button onClick={onClose} className="p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                 <X size={24} className="text-slate-800" />
                             </button>
                         </div>
 
                         {/* Login/Signup OR Profile Card */}
                         <div className="px-5 py-6 bg-slate-50">
-                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
                                 {user ? (
                                     <>
                                         <div className="mb-4">
@@ -159,8 +165,8 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                                             <p className="text-xs text-slate-500">행사어때와 함께<br />멋진 행사를 기획해보세요.</p>
                                         </div>
                                         <div className="flex gap-3">
-                                            <Link to="/mypage" onClick={onClose} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-[#39B54A]/10 hover:text-[#39B54A] transition-all text-center">마이페이지</Link>
-                                            <Link to="/cs" onClick={onClose} className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-500 font-bold text-sm hover:bg-[#39B54A]/5 hover:border-[#39B54A]/30 hover:text-[#39B54A] transition-all text-center">고객센터</Link>
+                                            <Link to="/mypage" onClick={onClose} className="flex-1 py-3 rounded-lg bg-slate-100 text-slate-700 font-bold text-sm hover:bg-[#39B54A]/10 hover:text-[#39B54A] transition-all text-center">마이페이지</Link>
+                                            <Link to="/cs" onClick={onClose} className="flex-1 py-3 rounded-lg border border-slate-200 text-slate-500 font-bold text-sm hover:bg-[#39B54A]/5 hover:border-[#39B54A]/30 hover:text-[#39B54A] transition-all text-center">고객센터</Link>
                                         </div>
                                     </>
                                 ) : (
@@ -168,8 +174,8 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                                         <h3 className="font-bold text-lg text-slate-800 mb-1">환영합니다!</h3>
                                         <p className="text-sm text-slate-500 mb-4">로그인하고 더 많은 혜택을 받아보세요.</p>
                                         <div className="flex gap-3">
-                                            <Link to="/login" onClick={onClose} className="flex-1 py-3 rounded-xl bg-[#39B54A] text-white font-bold text-sm hover:bg-[#2F9A3F] transition-colors text-center">로그인</Link>
-                                            <Link to="/signup" onClick={onClose} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200 transition-colors text-center">회원가입</Link>
+                                            <Link to="/login" onClick={onClose} className="flex-1 py-3 rounded-lg bg-[#39B54A] text-white font-bold text-sm hover:bg-[#2F9A3F] transition-colors text-center">로그인</Link>
+                                            <Link to="/signup" onClick={onClose} className="flex-1 py-3 rounded-lg bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200 transition-colors text-center">회원가입</Link>
                                         </div>
                                     </>
                                 )}
@@ -226,7 +232,7 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                                                 : 'block pb-4'
                                             : 'block'}
                                 `}>
-                                        <ul className={`${variant === 'mobile' ? 'bg-slate-50/50 rounded-xl p-3 space-y-1' : 'space-y-3'}`}>
+                                        <ul className={`${variant === 'mobile' ? 'bg-slate-50/50 rounded-lg p-3 space-y-1' : 'space-y-3'}`}>
                                             {group.items.length > 0 ? (
                                                 group.items.map(item => (
                                                     <li key={item.id}>
@@ -267,7 +273,7 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                                 <div className="mt-10 pt-4 border-t border-gray-100 flex justify-center">
                                     <button
                                         onClick={() => { logout(); onClose(); }}
-                                        className="py-3 px-8 rounded-xl bg-slate-50 text-slate-400 font-medium text-sm hover:bg-[#39B54A]/5 hover:text-[#39B54A] transition-colors"
+                                        className="py-3 px-8 rounded-lg bg-slate-50 text-slate-400 font-medium text-sm hover:bg-[#39B54A]/5 hover:text-[#39B54A] transition-colors"
                                     >
                                         로그아웃
                                     </button>

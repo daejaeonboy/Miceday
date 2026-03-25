@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Seo } from '../components/seo/Seo';
 import { getProductByCode, getProductById } from '../src/api/productApi';
+import { NOINDEX_ROBOTS } from '../src/seo';
 
 export const RedirectToProduct = () => {
     const { code } = useParams();
@@ -47,6 +49,12 @@ export const RedirectToProduct = () => {
 
     return (
         <div className="flex justify-center items-center h-screen">
+            <Seo
+                title="상품 페이지로 이동 중 | 행사어때"
+                description="행사어때 상품 상세 페이지로 이동 중입니다."
+                canonical="/products"
+                robots={NOINDEX_ROBOTS}
+            />
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39B54A]"></div>
         </div>
     );

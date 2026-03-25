@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { generateVerificationCode, sendVerificationEmail } from '../src/utils/email';
 import { Container } from '../components/ui/Container';
 import { Link, useNavigate } from 'react-router-dom';
+import { Seo } from '../components/seo/Seo';
 import { ChevronDown, ChevronUp, Check, Loader2, Upload, X } from 'lucide-react';
 
 import { auth } from '../src/firebase';
@@ -9,6 +10,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { createUserProfile } from '../src/api/userApi';
 import { uploadImage } from '../src/api/storageApi';
 import { getAuthErrorMessage } from '../src/utils/authErrors';
+import { NOINDEX_ROBOTS } from '../src/seo';
 
 // 약관 내용
 const TERMS_CONTENT = `제1조 (목적)
@@ -405,8 +407,14 @@ export const SignUp: React.FC = () => {
 
     return (
         <div className="py-12 bg-gray-50 min-h-screen">
+            <Seo
+                title="회원가입 | 행사어때"
+                description="행사어때 회원가입 페이지입니다. 기업과 공공기관을 위한 행사 통합운영 서비스를 신청할 수 있습니다."
+                canonical="/signup"
+                robots={NOINDEX_ROBOTS}
+            />
             <Container>
-                <div className="max-w-lg mx-auto bg-white p-4 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+                <div className="max-w-lg mx-auto bg-white p-4 md:p-8 rounded-lg shadow-sm border border-gray-100">
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold text-gray-900">회원가입</h1>
                         <p className="text-gray-500 text-sm mt-2">행사어때의 회원이 되어 다양한 혜택을 누리세요.</p>
@@ -418,7 +426,7 @@ export const SignUp: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => setMemberType('business')}
-                                className={`py-4 px-4 rounded-xl border-2 transition-all font-medium text-center ${
+                                className={`py-4 px-4 rounded-lg border-2 transition-all font-medium text-center ${
                                     memberType === 'business'
                                         ? 'border-[#39B54A] bg-[#39B54A]/5 text-[#39B54A]'
                                         : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
@@ -431,7 +439,7 @@ export const SignUp: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => setMemberType('public')}
-                                className={`py-4 px-4 rounded-xl border-2 transition-all font-medium text-center ${
+                                className={`py-4 px-4 rounded-lg border-2 transition-all font-medium text-center ${
                                     memberType === 'public'
                                         ? 'border-[#39B54A] bg-[#39B54A]/5 text-[#39B54A]'
                                         : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'

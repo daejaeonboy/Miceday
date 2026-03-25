@@ -68,7 +68,7 @@ export const PopupManager: React.FC = () => {
             {popups.map((popup, index) => (
                 <div
                     key={popup.id}
-                    className="pointer-events-auto fixed bg-white shadow-2xl rounded-xl overflow-hidden flex flex-col border border-slate-200"
+                    className="pointer-events-auto fixed bg-white shadow-2xl rounded-lg overflow-hidden flex flex-col border border-slate-200"
                     style={{
                         top: window.innerWidth > 640 ? '100px' : '50%',
                         left: window.innerWidth > 640 ? `${100 + (index * 20)}px` : '50%',

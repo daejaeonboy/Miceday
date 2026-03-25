@@ -238,7 +238,7 @@ export const CategoryManager: React.FC = () => {
             </div>
 
             {/* Category Tree */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
                 {categoryTree.length === 0 ? (
                     <div className="p-12 text-center text-slate-400">
                         <FolderTree size={48} className="mx-auto mb-4 opacity-50" />
@@ -255,7 +255,7 @@ export const CategoryManager: React.FC = () => {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl w-full max-w-md mx-4 shadow-2xl">
+                    <div className="bg-white rounded-lg w-full max-w-md mx-4 shadow-2xl">
                         <div className="flex items-center justify-between p-4 border-b border-slate-200">
                             <h2 className="text-lg font-bold text-slate-800">
                                 {editingCategory ? '카테고리 수정' : `${LEVEL_LABELS[formData.level]} 추가`}

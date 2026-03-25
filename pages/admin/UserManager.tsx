@@ -200,7 +200,7 @@ export const UserManager = () => {
             </div>
 
             {/* Search Bar */}
-            <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+            <div className="bg-white rounded-lg shadow-md p-4 mb-6">
                 <div className="flex gap-3">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
@@ -225,7 +225,7 @@ export const UserManager = () => {
             </div>
 
             {/* Users Table */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <table className="w-full">
                     <thead className="bg-slate-50 border-b">
                         <tr>
@@ -326,7 +326,7 @@ export const UserManager = () => {
             {/* User Detail/Edit Modal */}
             {selectedUser && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10">
                             <h3 className="text-lg font-bold">{editMode ? '회원 정보 수정' : '회원 상세정보'}</h3>
                             <div className="flex items-center gap-2">

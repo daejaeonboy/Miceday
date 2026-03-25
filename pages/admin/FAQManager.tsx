@@ -198,14 +198,14 @@ export const FAQManager: React.FC = () => {
                 <div className="flex gap-2">
                     <button
                         onClick={() => setShowCategoryModal(true)}
-                        className="flex items-center gap-2 bg-white text-slate-700 px-5 py-2.5 rounded-xl hover:bg-slate-50 transition-all border border-slate-200 font-bold"
+                        className="flex items-center gap-2 bg-white text-slate-700 px-5 py-2.5 rounded-lg hover:bg-slate-50 transition-all border border-slate-200 font-bold"
                     >
                         <Tag size={18} />
                         카테고리 관리
                     </button>
                     <button
                         onClick={openAddModal}
-                        className="flex items-center gap-2 bg-[#39B54A] text-white px-5 py-2.5 rounded-xl hover:bg-[#2F9A3F] transition-all shadow-lg shadow-[#39B54A]/20 font-bold"
+                        className="flex items-center gap-2 bg-[#39B54A] text-white px-5 py-2.5 rounded-lg hover:bg-[#2F9A3F] transition-all shadow-lg shadow-[#39B54A]/20 font-bold"
                     >
                         <Plus size={20} />
                         FAQ 추가
@@ -216,7 +216,7 @@ export const FAQManager: React.FC = () => {
             {/* List */}
             <div className="space-y-4">
                 {faqs.length === 0 ? (
-                    <div className="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-20 text-center">
+                    <div className="bg-white rounded-lg border-2 border-dashed border-slate-200 p-20 text-center">
                         <HelpCircle size={48} className="mx-auto mb-4 text-slate-300" />
                         <p className="text-slate-500 font-medium text-lg">등록된 FAQ가 없습니다.</p>
                         <p className="text-slate-400 text-sm mt-1 flex flex-col items-center">
@@ -228,7 +228,7 @@ export const FAQManager: React.FC = () => {
                         {faqs.map((faq) => (
                             <div
                                 key={faq.id}
-                                className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group"
+                                className="bg-white p-5 rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-shadow group"
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1">
@@ -291,7 +291,7 @@ export const FAQManager: React.FC = () => {
                                     <select
                                         value={formData.category}
                                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium"
+                                        className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium"
                                     >
                                         {categories.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
@@ -302,7 +302,7 @@ export const FAQManager: React.FC = () => {
                                         type="number"
                                         value={formData.display_order}
                                         onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                                        className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium"
+                                        className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium"
                                         min="1"
                                         required
                                     />
@@ -316,7 +316,7 @@ export const FAQManager: React.FC = () => {
                                     value={formData.question}
                                     onChange={(e) => setFormData({ ...formData, question: e.target.value })}
                                     placeholder="질문을 입력해주세요"
-                                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium"
+                                    className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium"
                                     required
                                 />
                             </div>
@@ -328,7 +328,7 @@ export const FAQManager: React.FC = () => {
                                     onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
                                     placeholder="상세 답변 내용을 입력해주세요"
                                     rows={5}
-                                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium resize-none"
+                                    className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium resize-none"
                                     required
                                 />
                             </div>
@@ -337,14 +337,14 @@ export const FAQManager: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="flex-1 px-6 py-4 border border-slate-200 text-slate-600 rounded-2xl font-bold hover:bg-slate-50 transition-all active:scale-[0.98]"
+                                    className="flex-1 px-6 py-4 border border-slate-200 text-slate-600 rounded-lg font-bold hover:bg-slate-50 transition-all active:scale-[0.98]"
                                 >
                                     취소
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className="flex-[2] flex items-center justify-center gap-2 px-6 py-4 bg-[#39B54A] text-white rounded-2xl font-bold hover:bg-[#2F9A3F] shadow-lg shadow-[#39B54A]/20 transition-all disabled:bg-slate-300 disabled:shadow-none active:scale-[0.98]"
+                                    className="flex-[2] flex items-center justify-center gap-2 px-6 py-4 bg-[#39B54A] text-white rounded-lg font-bold hover:bg-[#2F9A3F] shadow-lg shadow-[#39B54A]/20 transition-all disabled:bg-slate-300 disabled:shadow-none active:scale-[0.98]"
                                 >
                                     {saving ? (
                                         <Loader2 className="animate-spin" size={20} />
@@ -386,13 +386,13 @@ export const FAQManager: React.FC = () => {
                                     value={newCategoryName}
                                     onChange={(e) => setNewCategoryName(e.target.value)}
                                     placeholder="새 카테고리명 입력"
-                                    className="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium text-sm"
+                                    className="flex-1 px-4 py-3 rounded-lg border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium text-sm"
                                     onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
                                 />
                                 <button
                                     onClick={handleAddCategory}
                                     disabled={categoryLoading || !newCategoryName.trim()}
-                                    className="px-4 py-3 bg-[#39B54A] text-white rounded-xl font-bold hover:bg-[#2F9A3F] transition-all disabled:bg-slate-300 flex items-center gap-1 text-sm"
+                                    className="px-4 py-3 bg-[#39B54A] text-white rounded-lg font-bold hover:bg-[#2F9A3F] transition-all disabled:bg-slate-300 flex items-center gap-1 text-sm"
                                 >
                                     {categoryLoading ? <Loader2 className="animate-spin" size={16} /> : <Plus size={16} />}
                                     추가
@@ -414,7 +414,7 @@ export const FAQManager: React.FC = () => {
                                         return (
                                             <div
                                                 key={cat.id}
-                                                className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:border-slate-200 bg-white transition-all group"
+                                                className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 hover:border-slate-200 bg-white transition-all group"
                                             >
                                                 <span className="w-6 h-6 bg-slate-100 rounded-lg flex items-center justify-center text-xs font-bold text-slate-400">
                                                     {idx + 1}

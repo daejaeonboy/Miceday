@@ -3,7 +3,9 @@ import { Container } from '../components/ui/Container';
 import { User, Settings, Loader2, Save, Eye, EyeOff, Mail, Lock, Building2, Phone, MapPin, UserCircle } from 'lucide-react';
 import { useAuth } from '../src/context/AuthContext';
 import { Link } from 'react-router-dom';
+import { Seo } from '../components/seo/Seo';
 import { updateUserProfile, updateFirebaseEmail, updateFirebasePassword } from '../src/api/userApi';
+import { NOINDEX_ROBOTS } from '../src/seo';
 
 export const MyInfoPage: React.FC = () => {
     const { user, userProfile, refreshProfile } = useAuth();
@@ -103,22 +105,36 @@ export const MyInfoPage: React.FC = () => {
 
     if (!user) {
         return (
-            <div className="py-20 text-center">
-                <p className="text-gray-500 mb-4">로그인이 필요합니다.</p>
-                <Link to="/login" className="text-[#39B54A] underline">로그인하기</Link>
-            </div>
+            <>
+                <Seo
+                    title="내 정보 관리 | 행사어때"
+                    description="행사어때 회원 전용 내 정보 관리 페이지입니다."
+                    canonical="/mypage/info"
+                    robots={NOINDEX_ROBOTS}
+                />
+                <div className="py-20 text-center">
+                    <p className="text-gray-500 mb-4">로그인이 필요합니다.</p>
+                    <Link to="/login" className="text-[#39B54A] underline">로그인하기</Link>
+                </div>
+            </>
         );
     }
 
-    const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium text-sm";
+    const inputClass = "w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium text-sm";
 
     return (
         <div className="py-12 bg-gray-50 min-h-screen">
+            <Seo
+                title="내 정보 관리 | 행사어때"
+                description="행사어때 회원 전용 내 정보 관리 페이지입니다."
+                canonical="/mypage/info"
+                robots={NOINDEX_ROBOTS}
+            />
             <Container>
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Sidebar */}
                     <div className="md:w-1/4">
-                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center">
+                        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm text-center">
                             <div className="w-20 h-20 bg-[#B3C1D4] rounded-full mx-auto mb-4 flex items-center justify-center">
                                 <User size={32} className="text-[#39B54A]" />
                             </div>
@@ -145,7 +161,7 @@ export const MyInfoPage: React.FC = () => {
                         </h1>
 
                         {/* Profile Form */}
-                        <form onSubmit={handleSaveProfile} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-5">
+                        <form onSubmit={handleSaveProfile} className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-5">
                             <h3 className="font-bold text-gray-900 flex items-center gap-2 pb-3 border-b border-gray-100">
                                 <UserCircle size={20} className="text-[#39B54A]" />
                                 기본 정보
@@ -193,7 +209,7 @@ export const MyInfoPage: React.FC = () => {
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all text-sm
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all text-sm
                                         ${saved ? 'bg-green-500 text-white' : 'bg-[#39B54A] text-white hover:bg-[#2F9A3F] shadow-lg shadow-[#39B54A]/20'}
                                         disabled:bg-gray-300 disabled:shadow-none`}
                                 >
@@ -203,7 +219,7 @@ export const MyInfoPage: React.FC = () => {
                         </form>
 
                         {/* Email Change */}
-                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
+                        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-4">
                             <h3 className="font-bold text-gray-900 flex items-center gap-2 pb-3 border-b border-gray-100">
                                 <Mail size={20} className="text-[#39B54A]" />
                                 이메일 변경
@@ -218,7 +234,7 @@ export const MyInfoPage: React.FC = () => {
                                 <button
                                     onClick={handleChangeEmail}
                                     disabled={emailSaving}
-                                    className="px-5 py-3 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-gray-800 transition-all disabled:bg-gray-300 flex-shrink-0"
+                                    className="px-5 py-3 bg-gray-900 text-white rounded-lg font-bold text-sm hover:bg-gray-800 transition-all disabled:bg-gray-300 flex-shrink-0"
                                 >
                                     {emailSaving ? <Loader2 className="animate-spin" size={18} /> : '변경'}
                                 </button>
@@ -226,7 +242,7 @@ export const MyInfoPage: React.FC = () => {
                         </div>
 
                         {/* Password Change */}
-                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
+                        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-4">
                             <h3 className="font-bold text-gray-900 flex items-center gap-2 pb-3 border-b border-gray-100">
                                 <Lock size={20} className="text-[#39B54A]" />
                                 비밀번호 변경
@@ -255,7 +271,7 @@ export const MyInfoPage: React.FC = () => {
                             <button
                                 onClick={handleChangePassword}
                                 disabled={passwordSaving || !passwordForm.password}
-                                className="px-5 py-3 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-gray-800 transition-all disabled:bg-gray-300"
+                                className="px-5 py-3 bg-gray-900 text-white rounded-lg font-bold text-sm hover:bg-gray-800 transition-all disabled:bg-gray-300"
                             >
                                 {passwordSaving ? <Loader2 className="animate-spin" size={18} /> : '비밀번호 변경'}
                             </button>

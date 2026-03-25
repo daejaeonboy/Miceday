@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from '../components/ui/Container';
 import { Phone, MessageCircle, ChevronDown, Loader2 } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/seo/Seo';
 import { getFAQs, FAQ, getFAQCategories } from '../src/api/faqApi';
 
 
@@ -45,10 +45,11 @@ export const CSCenter: React.FC = () => {
 
     return (
         <div className="pb-20 pt-10 bg-white min-h-screen">
-            <Helmet>
-                <title>고객센터 | 행사어때</title>
-                <meta name="description" content="행사어때 고객센터입니다. 자주 묻는 질문부터 실시간 상담까지 도와드립니다." />
-            </Helmet>
+            <Seo
+                title="고객센터 | 행사어때"
+                description="행사어때 고객센터입니다. 자주 묻는 질문, 전화 상담, 채팅 상담 안내를 확인할 수 있습니다."
+                canonical="/cs"
+            />
 
             <Container>
                 {/* Header Section */}
@@ -58,7 +59,7 @@ export const CSCenter: React.FC = () => {
                 </div>
 
                 {/* CS Info Card */}
-                <div className="bg-slate-50 rounded-3xl p-6 md:p-10 mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="bg-slate-50 rounded-lg p-6 md:p-10 mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex items-center gap-5 w-full md:w-auto">
                         <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center shadow-sm text-slate-400">
                             <Phone size={24} className="md:w-8 md:h-8" />
@@ -76,7 +77,7 @@ export const CSCenter: React.FC = () => {
                         href="https://pf.kakao.com/_iRxghX/chat"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full md:w-auto px-8 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2 font-bold text-slate-700 hover:scale-[1.02] active:scale-[0.98]"
+                        className="w-full md:w-auto px-8 py-4 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2 font-bold text-slate-700 hover:scale-[1.02] active:scale-[0.98]"
                     >
                         <MessageCircle size={20} className="text-slate-400" />
                         채팅 상담
@@ -130,7 +131,7 @@ export const CSCenter: React.FC = () => {
 
                                     {expandedId === item.id && (
                                         <div className="px-10 pb-6 pt-1 animate-fadeIn">
-                                            <div className="bg-slate-50 p-5 rounded-2xl text-slate-600 text-sm md:text-[15px] leading-relaxed font-medium whitespace-pre-wrap">
+                                            <div className="bg-slate-50 p-5 rounded-lg text-slate-600 text-sm md:text-[15px] leading-relaxed font-medium whitespace-pre-wrap">
                                                 {item.answer}
                                             </div>
                                         </div>

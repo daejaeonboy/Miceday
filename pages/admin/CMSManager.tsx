@@ -328,7 +328,7 @@ export const CMSManager: React.FC = () => {
             </div>
 
             {/* Items List */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+            <div className="bg-white rounded-lg shadow-sm border border-slate-200">
                 {currentItems.length === 0 ? (
                     <div className="p-12 text-center text-slate-400">
                         등록된 항목이 없습니다. 항목을 추가해주세요.
@@ -336,7 +336,7 @@ export const CMSManager: React.FC = () => {
                 ) : (
                     <div className="divide-y divide-slate-100">
                         {currentItems.map((item: any) => (
-                            <div key={item.id} className="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 rounded-xl">
+                            <div key={item.id} className="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 rounded-lg">
                                 <GripVertical size={20} className="text-slate-300 cursor-grab" />
 
                                 {((activeTab === 'banners' || activeTab === 'popups') && item.image_url) && (
@@ -440,7 +440,7 @@ export const CMSManager: React.FC = () => {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white rounded-lg w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between p-4 border-b border-slate-200">
                             <h2 className="text-lg font-bold text-slate-800">
                                 {editingItem ? '수정' : '추가'}
@@ -699,7 +699,7 @@ export const CMSManager: React.FC = () => {
                                             선택 시 해당 상품의 상세 페이지로 자동 연결됩니다.
                                         </p>
                                         {formData.banner_type === 'promo' && selectedPromoProduct && (
-                                            <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
                                                 <div className="flex items-center gap-3">
                                                     <div className="h-16 w-16 overflow-hidden rounded-lg bg-slate-200 flex-shrink-0">
                                                         {selectedPromoProduct.image_url ? (

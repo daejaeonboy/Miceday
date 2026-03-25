@@ -1,5 +1,15 @@
 {
   "projects": {
-    "default": "human-partner"
+    "default": "human-partner",
+    "miceday": "human-partner"
+  },
+  "targets": {
+    "human-partner": {
+      "hosting": {
+        "miceday": [
+          "human-partner"
+        ]
+      }
+    }
   }
 }

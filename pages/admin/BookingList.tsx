@@ -132,7 +132,7 @@ export const BookingList = () => {
                 </button>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-[900px]">
                         <thead className="bg-slate-50 border-b">
@@ -254,7 +254,7 @@ export const BookingList = () => {
                                                 <td colSpan={8} className="px-8 py-6">
                                                     <div className="flex flex-col lg:flex-row gap-8 animate-in fade-in slide-in-from-top-2 duration-300">
                                                         {/* Detail Block: Basic */}
-                                                        <div className="flex-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                                                        <div className="flex-1 bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
                                                             <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100">
                                                                 <div className="w-1.5 h-4 bg-slate-300 rounded-full"></div>
                                                                 <h4 className="font-bold text-slate-800 text-sm">기본 구성 품목</h4>
@@ -277,7 +277,7 @@ export const BookingList = () => {
                                                         </div>
 
                                                         {/* Detail Block: Options */}
-                                                        <div className="flex-1 bg-white p-5 rounded-xl border border-[#39B54A]/10 shadow-sm">
+                                                        <div className="flex-1 bg-white p-5 rounded-lg border border-[#39B54A]/10 shadow-sm">
                                                             <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100">
                                                                 <div className="w-1.5 h-4 bg-[#39B54A] rounded-full"></div>
                                                                 <h4 className="font-bold text-slate-800 text-sm">추가 선택 옵션</h4>

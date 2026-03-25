@@ -319,7 +319,7 @@ export const QuickMenu: React.FC = () => {
                   to={linkUrl}
                   className="group flex flex-col items-center gap-3 flex-shrink-0 w-full md:w-auto md:flex-1 min-w-0"
                 >
-                  <div className="w-12 h-12 md:h-16 lg:w-20 lg:h-20 rounded-2xl bg-slate-50 flex items-center justify-center bg-opacity-10 group-hover:bg-opacity-25 transition-all duration-300 group-hover:-translate-y-1">
+                  <div className="w-12 h-12 md:h-16 lg:w-20 lg:h-20 rounded-lg bg-slate-50 flex items-center justify-center bg-opacity-10 group-hover:bg-opacity-25 transition-all duration-300 group-hover:-translate-y-1">
                     <div className="scale-90 md:scale-110 lg:scale-125">
                       {item.image_url ? (
                         <img

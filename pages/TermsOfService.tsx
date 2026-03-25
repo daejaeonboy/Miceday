@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/seo/Seo';
 import { Container } from '../components/ui/Container';
 
 const termsSections: Array<{ title: string; items: string[] }> = [
@@ -116,13 +116,11 @@ const termsSections: Array<{ title: string; items: string[] }> = [
 export const TermsOfService: React.FC = () => {
   return (
     <div className="min-h-screen bg-white pb-20">
-      <Helmet>
-        <title>서비스 이용약관 - humanpartner | 행사파트너</title>
-        <meta
-          name="description"
-          content="행사파트너(humanpartner) 서비스 이용약관입니다. 회원가입, 예약, 결제, 취소/환불, 권리·의무 및 책임사항을 안내합니다."
-        />
-      </Helmet>
+      <Seo
+        title="서비스 이용약관 | 행사어때"
+        description="행사어때 서비스 이용약관입니다. 회원가입, 예약, 결제, 취소 및 환불, 권리와 의무 사항을 안내합니다."
+        canonical="/terms"
+      />
 
       <Container className="max-w-4xl py-20">
         <h1 className="mb-10 border-b pb-4 text-3xl font-bold text-gray-900">서비스 이용약관</h1>

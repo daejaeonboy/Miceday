@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Hero } from '../components/Hero';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/seo/Seo';
 import { QuickMenu } from '../components/QuickMenu';
 import { PromoSection } from '../components/PromoSection';
 import { ProductSection } from '../components/ProductSection';
 import { getProducts, Product } from '../src/api/productApi';
 import { getActiveSections, getProductsBySection, Section } from '../src/api/sectionApi';
-import { getAllNavMenuItems, NavMenuItem } from '../src/api/cmsApi';
 import { Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PopupManager } from '../components/Layout/PopupManager';
+import { DEFAULT_OG_IMAGE, ORGANIZATION, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from '../src/seo';
 
 interface SectionWithProducts {
     section: Section;
@@ -20,29 +20,16 @@ export const MainPage: React.FC = () => {
     const [sectionsWithProducts, setSectionsWithProducts] = useState<SectionWithProducts[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [categoryMap, setCategoryMap] = useState<Record<string, string>>({});
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch sections, all products, and nav menu items in parallel
-                const [sections, products, navItems] = await Promise.all([
+                const [sections, products] = await Promise.all([
                     getActiveSections(),
                     getProducts(),
-                    getAllNavMenuItems()
                 ]);
 
                 setAllProducts(products);
-
-                // Build Category Map (Child Name -> Parent Name)
-                const map: Record<string, string> = {};
-                navItems.forEach(item => {
-                    // Check if item is a child (has a category field pointing to parent)
-                    if (item.category && item.name) {
-                        map[item.name] = item.category;
-                    }
-                });
-                setCategoryMap(map);
 
                 // Fetch products for each section
                 const sectionsData: SectionWithProducts[] = await Promise.all(
@@ -64,11 +51,6 @@ export const MainPage: React.FC = () => {
         };
         fetchData();
     }, []);
-
-    // Helper to resolve category name (Child -> Parent if linked)
-    const resolveCategory = (childCategory: string) => {
-        return categoryMap[childCategory] || childCategory;
-    };
 
     // Helper to format products for ProductSection
     const formatProducts = (products: any[]) => {
@@ -101,13 +83,56 @@ export const MainPage: React.FC = () => {
         return getCategories(products);
     };
 
+    const websiteSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: SITE_NAME,
+        alternateName: ORGANIZATION.legalName,
+        url: SITE_URL,
+        description: SITE_DESCRIPTION,
+        potentialAction: {
+            '@type': 'SearchAction',
+            target: `${SITE_URL}/search?q={search_term_string}`,
+            'query-input': 'required name=search_term_string',
+        },
+    };
+
+    const organizationSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: SITE_NAME,
+        legalName: ORGANIZATION.legalName,
+        alternateName: [SITE_NAME],
+        url: SITE_URL,
+        logo: DEFAULT_OG_IMAGE,
+        email: ORGANIZATION.email,
+        telephone: ORGANIZATION.officePhone,
+        founder: ORGANIZATION.representative,
+        address: {
+            '@type': 'PostalAddress',
+            streetAddress: ORGANIZATION.address.streetAddress,
+            postalCode: ORGANIZATION.address.postalCode,
+            addressLocality: ORGANIZATION.address.addressLocality,
+            addressCountry: ORGANIZATION.address.addressCountry,
+        },
+        contactPoint: {
+            '@type': 'ContactPoint',
+            telephone: ORGANIZATION.phone,
+            contactType: 'customer service',
+            areaServed: 'KR',
+            availableLanguage: ['ko'],
+        },
+    };
+
     return (
         <main>
-            <Helmet>
-                <title>행사어때 | 마이스파트너 - 종합 행사 통합 플랫폼</title>
-                <meta name="description" content="행사어때는 음향, 조명, 영상 등 최신 행사 장비 렌탈부터 전문가의 공간 연출까지 제안하는 종합 MICE 플랫폼입니다." />
-                <link rel="canonical" href="https://micepartner.co.kr/" />
-            </Helmet>
+            <Seo
+                title={SITE_TITLE}
+                description={SITE_DESCRIPTION}
+                canonical="/"
+                image={DEFAULT_OG_IMAGE}
+                jsonLd={[websiteSchema, organizationSchema]}
+            />
             <PopupManager />
             <Hero />
             <QuickMenu />

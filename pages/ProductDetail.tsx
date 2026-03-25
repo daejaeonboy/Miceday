@@ -42,7 +42,8 @@ import html2canvas from "html2canvas";
 registerLocale("ko", ko);
 
 import "../src/styles/calendar.css";
-import { Helmet } from "react-helmet-async";
+import { Seo } from "../components/seo/Seo";
+import { DEFAULT_OG_IMAGE, NOINDEX_ROBOTS, absoluteUrl } from "../src/seo";
 
 // Helper to get image for basic components
 const getComponentComponentImage = (name: string) => {
@@ -93,7 +94,7 @@ const OptionItem = ({
   const isChanged = localQty !== initialQty;
 
   return (
-    <div className="flex items-center gap-3 sm:gap-4 p-4 hover:bg-gray-50 rounded-xl transition-colors border-b border-gray-50 last:border-0 relative">
+    <div className="flex items-center gap-3 sm:gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative">
       {/* Image */}
       <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-100">
         {imageUrl ? (
@@ -773,11 +774,82 @@ export const ProductDetailPage: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="p-20 text-center text-gray-500">
-        상품을 찾을 수 없습니다.
-      </div>
+      <>
+        <Seo
+          title="상품을 찾을 수 없습니다 | 행사어때"
+          description="요청하신 상품 정보를 찾을 수 없습니다."
+          canonical="/products"
+          robots={NOINDEX_ROBOTS}
+        />
+        <div className="p-20 text-center text-gray-500">
+          상품을 찾을 수 없습니다.
+        </div>
+      </>
     );
   }
+
+  const productPath = `/products/${product.id ?? id ?? ""}`;
+  const productTitle = `${product.name} | 행사어때`;
+  const productDescription =
+    product.short_description ||
+    product.description ||
+    `${product.name} 렌탈 서비스입니다. 행사어때에서 대전 MICE 행사에 필요한 상품을 확인해보세요.`;
+  const productImage = absoluteUrl(product.image_url || DEFAULT_OG_IMAGE);
+  const currentCategoryItem = menuItems.find((m) => m.name === product.category);
+  const parentCategoryName = currentCategoryItem?.category || null;
+  const breadcrumbItems = [
+    { name: "홈", item: absoluteUrl("/") },
+    ...(parentCategoryName
+      ? [
+          {
+            name: parentCategoryName,
+            item: absoluteUrl(`/products?category=${encodeURIComponent(parentCategoryName)}`),
+          },
+        ]
+      : []),
+    ...(product.category
+      ? [
+          {
+            name: product.category,
+            item: absoluteUrl(`/products?category=${encodeURIComponent(product.category)}`),
+          },
+        ]
+      : []),
+    { name: product.name, item: absoluteUrl(productPath) },
+  ];
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.item,
+    })),
+  };
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: [productImage],
+    description: productDescription,
+    sku: product.product_code || product.id,
+    brand: {
+      "@type": "Brand",
+      name: "행사어때",
+    },
+    category: product.category,
+    offers: {
+      "@type": "Offer",
+      url: absoluteUrl(productPath),
+      priceCurrency: "KRW",
+      price: String(product.price || 0),
+      availability:
+        product.stock === 0
+          ? "https://schema.org/OutOfStock"
+          : "https://schema.org/InStock",
+    },
+  };
 
   const hasAdditionalOptions =
     product.additional_components &&
@@ -831,91 +903,66 @@ export const ProductDetailPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{product.name} - 행사어때 렌탈</title>
-        <meta
-          name="description"
-          content={
-            product.description ||
-            `${product.name} 렌탈 서비스. 행사어때에서 합리적인 가격으로 만나보세요.`
-          }
-        />
-        <meta property="og:title" content={`${product.name} - 행사어때`} />
-        <meta
-          property="og:description"
-          content={product.description || "최고의 파트너 행사어때"}
-        />
-        <meta
-          property="og:image"
-          content={
-            product.image_url || "https://human-partner.web.app/logo.png"
-          }
-        />
-      </Helmet>
+      <Seo
+        title={productTitle}
+        description={productDescription}
+        canonical={productPath}
+        image={productImage}
+        type="product"
+        jsonLd={[breadcrumbSchema, productSchema]}
+      />
       <div className="pt-8 pb-8 bg-gray-50 min-h-screen lg:pb-8">
         <Container>
           {/* Breadcrumbs */}
-          {(() => {
-            // 현재 카테고리의 상위 카테고리 찾기
-            const currentCategoryItem = menuItems.find(
-              (m) => m.name === product.category,
-            );
-            const parentCategoryName = currentCategoryItem?.category || null;
-
-            return (
-              <nav className="mb-6">
-                <ol className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
+          <nav className="mb-6">
+            <ol className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
+              <li>
+                <a
+                  href="/"
+                  className="hover:text-[#39B54A] transition-colors"
+                >
+                  홈
+                </a>
+              </li>
+              {parentCategoryName && (
+                <>
+                  <li>
+                    <ChevronRight size={14} className="text-gray-300" />
+                  </li>
                   <li>
                     <a
-                      href="/"
+                      href={`/products?category=${encodeURIComponent(parentCategoryName)}`}
                       className="hover:text-[#39B54A] transition-colors"
                     >
-                      홈
+                      {parentCategoryName}
                     </a>
                   </li>
-                  {parentCategoryName && (
-                    <>
-                      <li>
-                        <ChevronRight size={14} className="text-gray-300" />
-                      </li>
-                      <li>
-                        <a
-                          href={`/products?category=${encodeURIComponent(parentCategoryName)}`}
-                          className="hover:text-[#39B54A] transition-colors"
-                        >
-                          {parentCategoryName}
-                        </a>
-                      </li>
-                    </>
-                  )}
-                  {product.category && (
-                    <>
-                      <li>
-                        <ChevronRight size={14} className="text-gray-300" />
-                      </li>
-                      <li>
-                        <a
-                          href={`/products?category=${encodeURIComponent(product.category)}`}
-                          className="hover:text-[#39B54A] transition-colors"
-                        >
-                          {product.category}
-                        </a>
-                      </li>
-                    </>
-                  )}
-                </ol>
-
-
-              </nav>
-            );
-          })()}
+                </>
+              )}
+              {product.category && (
+                <>
+                  <li>
+                    <ChevronRight size={14} className="text-gray-300" />
+                  </li>
+                  <li>
+                    <a
+                      href={`/products?category=${encodeURIComponent(product.category)}`}
+                      className="hover:text-[#39B54A] transition-colors"
+                    >
+                      {product.category}
+                    </a>
+                  </li>
+                </>
+              )}
+            </ol>
+          </nav>
 
           {/* 2-Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* LEFT COLUMN */}
             <div className="lg:col-span-2 space-y-6">
               {/* Product Image */}
-              <div className="aspect-[16/9] bg-gray-200 rounded-2xl overflow-hidden shadow-lg">
+              <div className="aspect-[16/9] bg-gray-200 rounded-lg overflow-hidden shadow-lg">
                 <img
                   src={
                     product.image_url ||
@@ -927,7 +974,7 @@ export const ProductDetailPage: React.FC = () => {
               </div>
 
               {/* Product Info */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
                 <span className="text-[#39B54A] font-bold text-sm mb-2 block">
                   {product.category}
                 </span>
@@ -953,7 +1000,7 @@ export const ProductDetailPage: React.FC = () => {
               </div>
 
               {/* Calendar & Date Selection */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-bold text-gray-900 text-lg">
                     날짜 선택
@@ -1054,7 +1101,7 @@ export const ProductDetailPage: React.FC = () => {
               {/* Basic Configuration (Restored Box/Frame Style) */}
               {product.basic_components &&
                 product.basic_components.length > 0 && (
-                  <div className="bg-white rounded-2xl p-5 mb-6 shadow-sm">
+                  <div className="bg-white rounded-lg p-5 mb-6 shadow-sm">
                     <button
                       onClick={() =>
                         setBasicComponentsExpanded(!basicComponentsExpanded)
@@ -1187,7 +1234,7 @@ export const ProductDetailPage: React.FC = () => {
               )}
 
               {/* Tabbed Product Details (Restored Box Style) */}
-              <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-10 border border-gray-100">
+              <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-10 border border-gray-100">
                 <div className="flex border-b border-gray-200">
                   {[
                     { id: "detail", label: "상세정보" },
@@ -1245,7 +1292,7 @@ export const ProductDetailPage: React.FC = () => {
             {/* RIGHT COLUMN - Sticky Sidebar (Desktop Only) */}
             <div className="hidden lg:block">
               <div className="sticky top-24 space-y-4">
-                <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div className="bg-white rounded-lg p-6 shadow-lg border border-gray-100">
                   <h3 className="font-bold text-lg text-gray-900 mb-2 flex items-center gap-2">
                     <ShoppingBag size={20} className="text-[#39B54A]" />
                     예약 요약
@@ -1302,7 +1349,7 @@ export const ProductDetailPage: React.FC = () => {
                   )}
 
                   {/* Total Price */}
-                  <div className="mt-6 pt-4 border-t-2 border-gray-900">
+                  <div className="mt-6 pt-4 border-t border-gray-200">
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-gray-900">
                         예상 견적 비용
@@ -1317,7 +1364,7 @@ export const ProductDetailPage: React.FC = () => {
                   <button
                     onClick={handleBooking}
                     disabled={isBooking || product.stock === 0}
-                    className="w-full mt-6 bg-[#39B54A] text-white py-4 rounded-xl font-bold hover:bg-[#39B54A]/90 transition-all flex items-center justify-center gap-2 disabled:bg-gray-400 shadow-lg"
+                    className="w-full mt-6 bg-[#39B54A] text-white py-4 rounded-lg font-bold hover:bg-[#39B54A]/90 transition-all flex items-center justify-center gap-2 disabled:bg-gray-400 shadow-lg"
                   >
                     {isBooking ? (
                       <>
@@ -1334,7 +1381,7 @@ export const ProductDetailPage: React.FC = () => {
                   </p>
 
                   {/* Payment Notice */}
-                  <div className="mt-4 p-3 bg-white rounded-xl border border-gray-200">
+                  <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">💳</span>
                       <p className="text-sm font-bold text-gray-800">
@@ -1350,7 +1397,7 @@ export const ProductDetailPage: React.FC = () => {
                   <div className="mt-4 pt-4 border-t border-gray-100">
                     <button
                       onClick={() => setShowQuoteModal(true)}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-[#39B54A] text-[#39B54A] font-semibold hover:bg-green-50 transition-all"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-[#39B54A] text-[#39B54A] font-semibold hover:bg-green-50 transition-all"
                     >
                       <FileText size={18} />
                       견적서 다운로드 (PDF)
@@ -1364,7 +1411,7 @@ export const ProductDetailPage: React.FC = () => {
                     </p>
                     <div className="space-y-4">
                       {/* Certified Company 1 */}
-                      <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
+                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
                         <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-gray-100 border border-gray-100">
                           <img
                             src="/cert-disabled.jpg"
@@ -1383,7 +1430,7 @@ export const ProductDetailPage: React.FC = () => {
                       </div>
 
                       {/* Certified Company 2 */}
-                      <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
+                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
                         <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-gray-100 border border-gray-100">
                           <img
                             src="/cert-mice.jpg"
@@ -1485,7 +1532,7 @@ export const ProductDetailPage: React.FC = () => {
 
             {/* Payment Notice */}
             {/* Payment Notice */}
-            <div className="mt-4 p-3 bg-white rounded-xl border border-gray-200">
+            <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
               <div className="flex items-center gap-2">
                 <span className="text-lg">💳</span>
                 <p className="text-sm font-bold text-gray-800">
@@ -1500,7 +1547,7 @@ export const ProductDetailPage: React.FC = () => {
             {/* Quote Button */}
             <button
               onClick={() => setShowQuoteModal(true)}
-              className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-blue-500 text-blue-600 font-semibold hover:bg-blue-50 transition-all"
+              className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold hover:bg-blue-50 transition-all"
             >
               <FileText size={18} />
               견적서 다운로드 (PDF)
@@ -1520,7 +1567,7 @@ export const ProductDetailPage: React.FC = () => {
             <button
               onClick={handleBooking}
               disabled={isBooking || product.stock === 0}
-              className="flex-1 max-w-[200px] bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:bg-gray-400"
+              className="flex-1 max-w-[200px] bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:bg-gray-400"
             >
               {isBooking ? (
                 <Loader2 className="animate-spin" size={18} />
@@ -1542,7 +1589,7 @@ export const ProductDetailPage: React.FC = () => {
           onClick={() => setShowQuoteModal(false)}
         >
           <div
-            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -1667,7 +1714,7 @@ export const ProductDetailPage: React.FC = () => {
                               상호명
                             </td>
                             <td className="border border-gray-400 px-2 py-1 relative">
-                              행사어때 (휴먼파트너)
+                              행사어때
                               <span className="absolute right-2 top-0 text-[#39B54A] text-[10px] font-bold">
                                 [인]
                               </span>
@@ -1911,7 +1958,7 @@ export const ProductDetailPage: React.FC = () => {
                       변경될 수 있습니다.
                     </p>
                     <p className="text-gray-600 mt-2 font-medium">
-                      행사어때 (휴먼파트너) | 사업자등록번호: 314-07-32520 | 대전
+                      행사어때 | 사업자등록번호: 314-07-32520 | 대전
                       유성구 지족로 282번길 17
                     </p>
                     <p className="text-gray-500 mt-1">
@@ -1941,14 +1988,14 @@ export const ProductDetailPage: React.FC = () => {
                     );
                   }
                 }}
-                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
               >
                 <Download size={18} />
                 PDF 다운로드
               </button>
               <button
                 onClick={() => setShowQuoteModal(false)}
-                className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition-all"
+                className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition-all"
               >
                 닫기
               </button>
@@ -1965,7 +2012,7 @@ export const ProductDetailPage: React.FC = () => {
         }}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
           <div
-            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[360px] p-8 text-center animate-in fade-in zoom-in-95 duration-200"
+            className="relative bg-white rounded-lg shadow-2xl w-full max-w-[360px] p-8 text-center animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-5">
@@ -1993,7 +2040,7 @@ export const ProductDetailPage: React.FC = () => {
                 setBookingModal(prev => ({ ...prev, show: false }));
                 bookingModal.onClose?.();
               }}
-              className="w-full py-3 bg-[#39B54A] text-white font-bold rounded-xl hover:bg-[#2F9A3F] transition-colors shadow-sm"
+              className="w-full py-3 bg-[#39B54A] text-white font-bold rounded-lg hover:bg-[#2F9A3F] transition-colors shadow-sm"
             >
               확인
             </button>

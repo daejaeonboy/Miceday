@@ -169,7 +169,7 @@ export const SectionManager: React.FC = () => {
             </div>
 
             {/* Section List */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+            <div className="bg-white rounded-lg shadow-sm border border-slate-200">
                 {sections.length === 0 ? (
                     <div className="p-12 text-center text-slate-400">
                         등록된 섹션이 없습니다. 섹션을 추가해주세요.
@@ -236,7 +236,7 @@ export const SectionManager: React.FC = () => {
             {/* Edit/Add Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl w-full max-w-md mx-4 shadow-2xl">
+                    <div className="bg-white rounded-lg w-full max-w-md mx-4 shadow-2xl">
                         <div className="flex items-center justify-between p-4 border-b border-slate-200">
                             <h2 className="text-lg font-bold text-slate-800">
                                 {editingSection ? '섹션 수정' : '섹션 추가'}
@@ -342,7 +342,7 @@ export const SectionManager: React.FC = () => {
             {/* Product Ordering Modal */}
             {orderingSection && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl w-full max-w-lg mx-4 shadow-2xl flex flex-col max-h-[80vh]">
+                    <div className="bg-white rounded-lg w-full max-w-lg mx-4 shadow-2xl flex flex-col max-h-[80vh]">
                         <div className="flex items-center justify-between p-4 border-b border-slate-200">
                             <div>
                                 <h2 className="text-lg font-bold text-slate-800">

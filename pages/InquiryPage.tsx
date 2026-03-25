@@ -3,7 +3,9 @@ import { Container } from '../components/ui/Container';
 import { User, MessageSquare, Clock, Loader2, Plus, X, Send, ChevronDown, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../src/context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { Seo } from '../components/seo/Seo';
 import { getMyInquiries, addInquiry, Inquiry } from '../src/api/inquiryApi';
+import { NOINDEX_ROBOTS } from '../src/seo';
 
 export const InquiryPage: React.FC = () => {
     const { user, userProfile } = useAuth();
@@ -65,20 +67,34 @@ export const InquiryPage: React.FC = () => {
 
     if (!user) {
         return (
-            <div className="py-20 text-center">
-                <p className="text-gray-500 mb-4">로그인이 필요합니다.</p>
-                <Link to="/login" className="text-[#39B54A] underline">로그인하기</Link>
-            </div>
+            <>
+                <Seo
+                    title="1:1 문의 내역 | 행사어때"
+                    description="행사어때 회원 전용 1:1 문의 페이지입니다."
+                    canonical="/mypage/inquiry"
+                    robots={NOINDEX_ROBOTS}
+                />
+                <div className="py-20 text-center">
+                    <p className="text-gray-500 mb-4">로그인이 필요합니다.</p>
+                    <Link to="/login" className="text-[#39B54A] underline">로그인하기</Link>
+                </div>
+            </>
         );
     }
 
     return (
         <div className="py-12 bg-gray-50 min-h-screen">
+            <Seo
+                title="1:1 문의 내역 | 행사어때"
+                description="행사어때 회원 전용 1:1 문의 페이지입니다."
+                canonical="/mypage/inquiry"
+                robots={NOINDEX_ROBOTS}
+            />
             <Container>
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Sidebar */}
                     <div className="md:w-1/4">
-                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center">
+                        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm text-center">
                             <div className="w-20 h-20 bg-[#B3C1D4] rounded-full mx-auto mb-4 flex items-center justify-center">
                                 <User size={32} className="text-[#39B54A]" />
                             </div>
@@ -115,7 +131,7 @@ export const InquiryPage: React.FC = () => {
 
                         {/* Inquiry Form */}
                         {showForm && (
-                            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-6 animate-fadeIn">
+                            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6 animate-fadeIn">
                                 <h3 className="font-bold text-lg text-gray-900 mb-4">새 문의 작성</h3>
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -124,7 +140,7 @@ export const InquiryPage: React.FC = () => {
                                             <select
                                                 value={formData.category}
                                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium appearance-none"
+                                                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium appearance-none"
                                             >
                                                 <option value="서비스 이용">서비스 이용</option>
                                                 <option value="예약/결제">예약/결제</option>
@@ -139,7 +155,7 @@ export const InquiryPage: React.FC = () => {
                                                 value={formData.title}
                                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                                 placeholder="문의 제목을 입력해주세요"
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium"
+                                                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium"
                                                 required
                                             />
                                         </div>
@@ -151,7 +167,7 @@ export const InquiryPage: React.FC = () => {
                                             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                                             placeholder="문의하실 내용을 자세히 적어주세요"
                                             rows={6}
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium resize-none"
+                                            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 focus:ring-4 focus:ring-[#39B54A]/10 focus:border-[#39B54A] outline-none transition-all font-medium resize-none"
                                             required
                                         />
                                     </div>
@@ -159,7 +175,7 @@ export const InquiryPage: React.FC = () => {
                                         <button
                                             type="submit"
                                             disabled={saving}
-                                            className="flex items-center gap-2 bg-[#39B54A] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2F9A3F] shadow-lg shadow-[#39B54A]/20 transition-all disabled:bg-gray-300 disabled:shadow-none"
+                                            className="flex items-center gap-2 bg-[#39B54A] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#2F9A3F] shadow-lg shadow-[#39B54A]/20 transition-all disabled:bg-gray-300 disabled:shadow-none"
                                         >
                                             {saving ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
                                             문의 등록
@@ -175,7 +191,7 @@ export const InquiryPage: React.FC = () => {
                                 <Loader2 className="animate-spin text-[#39B54A]" size={40} />
                             </div>
                         ) : inquiries.length === 0 ? (
-                            <div className="bg-white p-12 rounded-xl border border-gray-200 text-center">
+                            <div className="bg-white p-12 rounded-lg border border-gray-200 text-center">
                                 <MessageSquare size={48} className="mx-auto mb-4 text-gray-300" />
                                 <p className="text-gray-500 mb-2 font-medium">등록된 문의가 없습니다.</p>
                                 <p className="text-gray-400 text-sm">궁금한 점이 있으시면 문의하기 버튼을 눌러주세요.</p>
@@ -185,7 +201,7 @@ export const InquiryPage: React.FC = () => {
                                 {inquiries.map((item) => (
                                     <div 
                                         key={item.id} 
-                                        className={`bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 ${expandedId === item.id ? 'ring-2 ring-gray-900 ring-opacity-5' : 'hover:shadow-md hover:-translate-y-0.5'}`}
+                                        className={`bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 ${expandedId === item.id ? 'ring-2 ring-gray-900 ring-opacity-5' : 'hover:shadow-md hover:-translate-y-0.5'}`}
                                     >
                                         <button
                                             onClick={() => setExpandedId(expandedId === item.id ? null : (item.id || null))}
@@ -229,7 +245,7 @@ export const InquiryPage: React.FC = () => {
                                                 <div className="space-y-8">
                                                     {/* Question Section */}
                                                     <div className="flex gap-4 sm:gap-6">
-                                                        <div className="w-10 h-10 rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center font-black text-lg flex-shrink-0 border border-gray-200/50">
+                                                        <div className="w-10 h-10 rounded-lg bg-gray-100 text-gray-400 flex items-center justify-center font-black text-lg flex-shrink-0 border border-gray-200/50">
                                                             Q
                                                         </div>
                                                         <div className="flex-1 space-y-2">
@@ -237,7 +253,7 @@ export const InquiryPage: React.FC = () => {
                                                                 <span className="text-xs font-bold text-gray-500 uppercase tracking-tight">나의 문의 내용</span>
                                                                 <span className="text-[10px] font-medium text-gray-300">{formatDate(item.created_at!)}</span>
                                                             </div>
-                                                            <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                                                            <div className="bg-gray-50 rounded-lg p-5 border border-gray-100">
                                                                 <p className="text-[15px] font-medium text-gray-700 leading-relaxed whitespace-pre-wrap">
                                                                     {item.content}
                                                                 </p>
@@ -248,7 +264,7 @@ export const InquiryPage: React.FC = () => {
                                                     {/* Answer Section */}
                                                     {item.status === 'answered' && item.answer ? (
                                                         <div className="flex gap-4 sm:gap-6">
-                                                            <div className="w-10 h-10 rounded-2xl bg-[#39B54A] text-white flex items-center justify-center font-black text-lg flex-shrink-0 shadow-lg shadow-[#39B54A]/20">
+                                                            <div className="w-10 h-10 rounded-lg bg-[#39B54A] text-white flex items-center justify-center font-black text-lg flex-shrink-0 shadow-lg shadow-[#39B54A]/20">
                                                                 A
                                                             </div>
                                                             <div className="flex-1 space-y-2">
@@ -259,7 +275,7 @@ export const InquiryPage: React.FC = () => {
                                                                     </div>
                                                                     <span className="text-[10px] font-medium text-gray-300">{formatDate(item.answered_at!)}</span>
                                                                 </div>
-                                                                <div className="bg-white rounded-2xl p-5 border-2 border-[#39B54A]/10 shadow-sm">
+                                                                <div className="bg-white rounded-lg p-5 border-2 border-[#39B54A]/10 shadow-sm">
                                                                     <p className="text-[15px] font-bold text-gray-800 leading-relaxed whitespace-pre-wrap italic">
                                                                         "{item.answer}"
                                                                     </p>
@@ -268,12 +284,12 @@ export const InquiryPage: React.FC = () => {
                                                         </div>
                                                     ) : (
                                                         <div className="flex gap-4 sm:gap-6">
-                                                            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center flex-shrink-0 border border-amber-100">
+                                                            <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center flex-shrink-0 border border-amber-100">
                                                                 <Clock size={20} className="animate-pulse" />
                                                             </div>
                                                             <div className="flex-1 space-y-2">
                                                                 <span className="text-xs font-bold text-amber-600 uppercase tracking-tight">진행 상태</span>
-                                                                <div className="bg-amber-50/50 rounded-2xl p-5 border border-amber-100/50">
+                                                                <div className="bg-amber-50/50 rounded-lg p-5 border border-amber-100/50">
                                                                     <p className="text-[14px] font-bold text-amber-700">
                                                                         문의가 접수되었습니다. 담당자가 상세 내용을 검토 중입니다.
                                                                     </p>

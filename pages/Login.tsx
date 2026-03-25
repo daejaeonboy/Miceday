@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from '../components/ui/Container';
 import { Link, useNavigate } from 'react-router-dom';
+import { Seo } from '../components/seo/Seo';
 import { auth } from '../src/firebase';
 import { signInWithEmailAndPassword, setPersistence, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getAuthErrorMessage } from '../src/utils/authErrors';
+import { NOINDEX_ROBOTS } from '../src/seo';
 
 export const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -68,11 +70,17 @@ export const Login: React.FC = () => {
 
     return (
         <div className="py-20 bg-gray-50 min-h-screen flex items-center justify-center px-4">
+            <Seo
+                title="로그인 | 행사어때"
+                description="행사어때 회원 로그인 페이지입니다."
+                canonical="/login"
+                robots={NOINDEX_ROBOTS}
+            />
             <Container>
-                <div className="w-full max-w-xl md:max-w-3xl mx-auto bg-white p-6 md:p-16 rounded-3xl shadow-lg border border-gray-100 mb-20">
+                <div className="w-full max-w-xl md:max-w-3xl mx-auto bg-white p-6 md:p-16 rounded-lg shadow-lg border border-gray-100 mb-20">
                     <div className="text-center mb-6 md:mb-10">
                         <h1 className="text-2xl md:text-3xl font-bold text-gray-900">로그인</h1>
-                        <p className="text-gray-500 text-sm md:text-base mt-2 md:mt-3">휴먼파트너 서비스 이용을 위해 로그인해주세요.</p>
+                        <p className="text-gray-500 text-sm md:text-base mt-2 md:mt-3">행사어때 서비스 이용을 위해 로그인해주세요.</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
@@ -82,7 +90,7 @@ export const Login: React.FC = () => {
                                 type="email"
                                 name="email"
                                 required
-                                className="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#39B54A] focus:border-transparent outline-none transition-all text-base md:text-lg"
+                                className="w-full px-4 py-3 md:px-5 md:py-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#39B54A] focus:border-transparent outline-none transition-all text-base md:text-lg"
                                 placeholder="example@email.com"
                                 value={formData.email}
                                 onChange={handleChange}
@@ -95,7 +103,7 @@ export const Login: React.FC = () => {
                                 type="password"
                                 name="password"
                                 required
-                                className="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#39B54A] focus:border-transparent outline-none transition-all text-base md:text-lg"
+                                className="w-full px-4 py-3 md:px-5 md:py-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#39B54A] focus:border-transparent outline-none transition-all text-base md:text-lg"
                                 placeholder="비밀번호를 입력하세요"
                                 value={formData.password}
                                 onChange={handleChange}

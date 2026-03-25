@@ -3,7 +3,8 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { searchProducts, Product } from '../src/api/productApi';
 import { Container } from '../components/ui/Container';
 import { Loader2, Search } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/seo/Seo';
+import { NOINDEX_ROBOTS } from '../src/seo';
 
 export const ProductSearchResult: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -32,11 +33,20 @@ export const ProductSearchResult: React.FC = () => {
         fetchResults();
     }, [query]);
 
+    const searchTitle = query ? `'${query}' 사이트 검색 결과 | 행사어때` : '상품 검색 | 행사어때';
+    const searchDescription = query
+        ? `행사어때 사이트 내 '${query}' 검색 결과 페이지입니다.`
+        : '행사어때 사이트 내 상품 검색 페이지입니다.';
+    const canonical = query ? `/search?q=${encodeURIComponent(query)}` : '/search';
+
     return (
         <div className="min-h-screen bg-slate-50 py-8 md:py-12">
-            <Helmet>
-                <title>'{query}' 검색 결과 - 행사어때</title>
-            </Helmet>
+            <Seo
+                title={searchTitle}
+                description={searchDescription}
+                canonical={canonical}
+                robots={NOINDEX_ROBOTS}
+            />
 
             <Container>
                 {/* Search Header */}
@@ -59,7 +69,7 @@ export const ProductSearchResult: React.FC = () => {
 
                 {/* Empty State */}
                 {!loading && products.length === 0 && (
-                    <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
+                    <div className="bg-white rounded-lg p-12 text-center border border-slate-200">
                         <div className="bg-slate-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Search className="text-slate-400" size={32} />
                         </div>
@@ -80,7 +90,7 @@ export const ProductSearchResult: React.FC = () => {
                             <Link
                                 key={product.id}
                                 to={`/products/${product.id}`}
-                                className="group block bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                                className="group block bg-white border border-slate-100 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div className="aspect-[16/10] relative overflow-hidden bg-slate-100">
                                     {product.image_url ? (

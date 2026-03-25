@@ -107,7 +107,7 @@ export const PromoSection: React.FC = () => {
   return (
     <div className="pb-16 bg-white">
       <Container>
-        <div className="flex w-full mb-10 bg-gray-100/80 p-1.5 rounded-2xl overflow-hidden relative border border-gray-200">
+        <div className="flex w-full mb-10 bg-gray-100/80 p-1.5 rounded-lg overflow-hidden relative border border-gray-200">
           <div className="absolute inset-1.5 z-0 pointer-events-none">
             {tabs.length > 0 && (
               <div
@@ -117,7 +117,7 @@ export const PromoSection: React.FC = () => {
                   transform: `translateX(${tabs.findIndex((tab) => tab.id === activeTabId) * 100}%)`,
                 }}
               >
-                <div className="h-full bg-[#39B54A] rounded-xl shadow-lg shadow-[#39B54A]/20 mx-0.5" />
+                <div className="h-full bg-[#39B54A] rounded-lg shadow-lg shadow-[#39B54A]/20 mx-0.5" />
               </div>
             )}
           </div>
@@ -212,7 +212,7 @@ export const PromoSection: React.FC = () => {
                   </>
                 );
 
-                const linkWrapperClass = 'relative aspect-[16/20] md:aspect-[16/10] w-[290px] md:w-[calc(50%-0.6rem)] group overflow-hidden block rounded-2xl cursor-pointer snap-start flex-shrink-0 bg-slate-100 shadow-sm border border-slate-100';
+                const linkWrapperClass = 'relative aspect-[16/20] md:aspect-[16/10] w-[290px] md:w-[calc(50%-0.6rem)] group overflow-hidden block rounded-lg cursor-pointer snap-start flex-shrink-0 bg-slate-100 shadow-sm border border-slate-100';
 
                 if (isExternal) {
                   return (

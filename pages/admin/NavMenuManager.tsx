@@ -175,7 +175,7 @@ export const NavMenuManager = () => {
 
             <div className="flex gap-6 flex-1 h-full overflow-hidden">
                 {/* Left: Parent Groups (Depth 1) */}
-                <div className="w-1/3 bg-white rounded-xl shadow-md flex flex-col border border-slate-200">
+                <div className="w-1/3 bg-white rounded-lg shadow-md flex flex-col border border-slate-200">
                     <div className="p-4 border-b bg-slate-50 flex justify-between items-center rounded-t-xl">
                         <h3 className="font-bold flex items-center gap-2"><Folder size={18} className="text-[#39B54A]" /> 1차 메뉴 (그룹)</h3>
                         <button onClick={() => openModal('parent')} className="text-xs bg-[#39B54A] text-white px-2 py-1.5 rounded hover:bg-slate-800 transition flex items-center gap-1"><Plus size={14} /> 그룹 추가</button>
@@ -217,7 +217,7 @@ export const NavMenuManager = () => {
                 </div>
 
                 {/* Right: Child Items (Depth 2) */}
-                <div className="flex-1 bg-white rounded-xl shadow-md flex flex-col border border-slate-200">
+                <div className="flex-1 bg-white rounded-lg shadow-md flex flex-col border border-slate-200">
                     <div className="p-4 border-b bg-slate-50 flex justify-between items-center rounded-t-xl">
                         <h3 className="font-bold flex items-center gap-2">
                             <FileText size={18} className="text-[#39B54A]" />
@@ -246,7 +246,7 @@ export const NavMenuManager = () => {
                                     </div>
                                 )}
                                 {childItems.length === 0 ? (
-                                    <div className="text-center py-12 text-slate-400 bg-slate-50 rounded-xl border border-dashed">
+                                    <div className="text-center py-12 text-slate-400 bg-slate-50 rounded-lg border border-dashed">
                                         이 그룹에 등록된 하위 메뉴가 없습니다.
                                     </div>
                                 ) : (
@@ -292,7 +292,7 @@ export const NavMenuManager = () => {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
                         <div className="flex justify-between items-center p-4 border-b">
                             <h3 className="font-bold text-lg">{modalType === 'parent' ? '1차 메뉴 그룹' : '2차 하위 메뉴'} {editingItem ? '수정' : '추가'}</h3>
                             <button onClick={closeModal}><X size={24} className="text-slate-400 hover:text-black" /></button>

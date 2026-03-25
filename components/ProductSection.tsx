@@ -99,7 +99,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
           {/* Left Arrow */}
           <button
             onClick={() => scroll('left')}
-            className="absolute -left-3 md:-left-6 top-[calc(50%-48px)] -translate-y-1/2 z-10 w-14 h-14 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-full shadow-xl flex items-center justify-center text-slate-500 hover:bg-white hover:border-slate-400 hover:text-[#39B54A] hover:scale-105 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+            className="absolute -left-3 md:-left-6 top-[calc(50%-48px)] -translate-y-1/2 z-10 w-14 h-14 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg shadow-xl flex items-center justify-center text-slate-500 hover:bg-white hover:border-slate-400 hover:text-[#39B54A] hover:scale-105 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
           >
             <ChevronLeft size={28} />
           </button>
@@ -107,7 +107,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
           {/* Right Arrow */}
           <button
             onClick={() => scroll('right')}
-            className="absolute -right-3 md:-right-6 top-[calc(50%-48px)] -translate-y-1/2 z-10 w-14 h-14 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-full shadow-xl flex items-center justify-center text-slate-500 hover:bg-white hover:border-slate-400 hover:text-[#39B54A] hover:scale-105 transition-all opacity-0 group-hover:opacity-100"
+            className="absolute -right-3 md:-right-6 top-[calc(50%-48px)] -translate-y-1/2 z-10 w-14 h-14 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg shadow-xl flex items-center justify-center text-slate-500 hover:bg-white hover:border-slate-400 hover:text-[#39B54A] hover:scale-105 transition-all opacity-0 group-hover:opacity-100"
           >
             <ChevronRight size={28} />
           </button>
@@ -125,7 +125,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
                 className={`flex-none ${cardWidthClass} group/card cursor-pointer block`}
                 style={{ scrollSnapAlign: 'start' }}
               >
-                <div className={`relative ${aspectRatioClass} overflow-hidden rounded-2xl bg-slate-100 mb-4 shadow-sm border border-slate-100`}>
+                <div className={`relative ${aspectRatioClass} overflow-hidden rounded-lg bg-slate-100 mb-4 shadow-sm border border-slate-100`}>
                   <img
                     src={product.imageUrl}
                     alt={product.title}
