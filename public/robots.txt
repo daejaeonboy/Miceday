@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /mypage/
 
-Sitemap: https://micepartner.co.kr/sitemap.xml
+Sitemap: https://humanpartner-enterprise.web.app/sitemap.xml

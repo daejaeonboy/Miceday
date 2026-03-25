@@ -132,7 +132,7 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                 {variant === 'mobile' && (
                     <>
                         <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-white sticky top-0 z-10">
-                            <img src="/logo.png" alt="행사어때" className="h-[22px] object-contain" />
+                            <img src="/logo.png" alt="휴먼파트너" className="h-[22px] object-contain" />
                             <button onClick={onClose} className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
                                 <X size={24} className="text-slate-800" />
                             </button>
@@ -144,26 +144,26 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                                 {user ? (
                                     <>
                                         <div className="mb-4">
-                                            <div className="w-16 h-16 bg-[#39B54A]/10 text-[#39B54A] rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">
+                                            <div className="w-16 h-16 bg-[#001e45]/10 text-[#001e45] rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">
                                                 {userProfile?.name?.[0] || user.email?.[0]?.toUpperCase() || 'U'}
                                             </div>
                                             <h3 className="font-bold text-lg text-slate-800 mb-1">
                                                 {userProfile?.name || '사용자'}님, 안녕하세요!
                                             </h3>
-                                            <p className="text-xs text-slate-500">행사어때와 함께<br />멋진 행사를 기획해보세요.</p>
+                                            <p className="text-xs text-slate-500">휴먼파트너와 함께<br />멋진 행사를 기획해보세요.</p>
                                         </div>
                                         <div className="flex gap-3">
-                                            <Link to="/mypage" onClick={onClose} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-[#39B54A]/10 hover:text-[#39B54A] transition-all text-center">마이페이지</Link>
-                                            <Link to="/cs" onClick={onClose} className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-500 font-bold text-sm hover:bg-[#39B54A]/5 hover:border-[#39B54A]/30 hover:text-[#39B54A] transition-all text-center">고객센터</Link>
+                                            <Link to="/quote-request" onClick={onClose} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-[#001e45]/10 hover:text-[#001e45] transition-all text-center">견적문의</Link>
+                                            <Link to="/cs" onClick={onClose} className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-500 font-bold text-sm hover:bg-[#001e45]/5 hover:border-[#001e45]/30 hover:text-[#001e45] transition-all text-center">고객센터</Link>
                                         </div>
                                     </>
                                 ) : (
                                     <>
                                         <h3 className="font-bold text-lg text-slate-800 mb-1">환영합니다!</h3>
-                                        <p className="text-sm text-slate-500 mb-4">로그인하고 더 많은 혜택을 받아보세요.</p>
+                                        <p className="text-sm text-slate-500 mb-4">서비스 소개와 상담 문의를 바로 확인해보세요.</p>
                                         <div className="flex gap-3">
-                                            <Link to="/login" onClick={onClose} className="flex-1 py-3 rounded-xl bg-[#39B54A] text-white font-bold text-sm hover:bg-[#39B54A] transition-colors text-center">로그인</Link>
-                                            <Link to="/signup" onClick={onClose} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200 transition-colors text-center">회원가입</Link>
+                                            <Link to="/quote-request" onClick={onClose} className="flex-1 py-3 rounded-xl bg-[#001e45] text-white font-bold text-sm hover:bg-[#152b66] transition-colors text-center">견적문의</Link>
+                                            <Link to="/company" onClick={onClose} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200 transition-colors text-center">회사소개</Link>
                                         </div>
                                     </>
                                 )}
@@ -184,12 +184,12 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                                             onClick={() => toggleSection(group.name)}
                                             className="w-full flex items-center justify-between py-4 text-left"
                                         >
-                                            <span className={`text-base font-bold ${openSections.has(group.name) ? 'text-[#39B54A]' : 'text-slate-800'}`}>
+                                            <span className={`text-base font-bold ${openSections.has(group.name) ? 'text-[#001e45]' : 'text-slate-800'}`}>
                                                 {group.name}
                                             </span>
                                             <ChevronRight
                                                 size={20}
-                                                className={`text-slate-400 transition-transform duration-300 ${openSections.has(group.name) ? 'rotate-90 text-[#39B54A]' : ''}`}
+                                                className={`text-slate-400 transition-transform duration-300 ${openSections.has(group.name) ? 'rotate-90 text-[#001e45]' : ''}`}
                                             />
                                         </button>
                                     ) : (
@@ -211,9 +211,9 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                                                         <Link
                                                             to={`/products?category=${encodeURIComponent(item.name)}` /*&title removed to keep URL simple*/}
                                                             onClick={onClose}
-                                                            className={`block transition-all hover:text-[#39B54A]
+                                                            className={`block transition-all hover:text-[#001e45]
                                                             ${variant === 'mobile'
-                                                                    ? 'p-3 text-sm text-slate-600 font-medium hover:bg-[#39B54A]/5 rounded-lg flex items-center justify-between'
+                                                                    ? 'p-3 text-sm text-slate-600 font-medium hover:bg-[#001e45]/5 rounded-lg flex items-center justify-between'
                                                                     : 'text-slate-600 flex items-center gap-1 group text-sm'}
                                                         `}
                                                         >
@@ -230,7 +230,7 @@ export const FullMenu: React.FC<FullMenuProps> = ({ onClose, variant = 'mobile',
                                                             <Link
                                                                 to={parentObj.link}
                                                                 onClick={onClose}
-                                                                className="block p-3 text-sm text-slate-600 font-medium hover:text-[#39B54A]"
+                                                                className="block p-3 text-sm text-slate-600 font-medium hover:text-[#001e45]"
                                                             >
                                                                 바로가기
                                                             </Link>

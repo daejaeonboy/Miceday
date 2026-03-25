@@ -23,11 +23,11 @@ export const CSCenter: React.FC = () => {
                 if (catData.length > 0) {
                     setCategories(catData.map(c => c.name));
                 } else {
-                    setCategories(['자주 묻는 질문', '공통', '이용문의', '예약/결제', '취소/환불', '상품문의', '기타']);
+                    setCategories(['자주 묻는 질문', '공통', '이용문의', '견적/결제', '취소/환불', '상품문의', '기타']);
                 }
             } catch (error) {
                 console.error('Failed to load data:', error);
-                setCategories(['자주 묻는 질문', '공통', '이용문의', '예약/결제', '취소/환불', '상품문의', '기타']);
+                setCategories(['자주 묻는 질문', '공통', '이용문의', '견적/결제', '취소/환불', '상품문의', '기타']);
             } finally {
                 setLoading(false);
             }
@@ -46,8 +46,8 @@ export const CSCenter: React.FC = () => {
     return (
         <div className="pb-20 pt-10 bg-white min-h-screen">
             <Helmet>
-                <title>고객센터 | 행사어때</title>
-                <meta name="description" content="행사어때 고객센터입니다. 자주 묻는 질문부터 실시간 상담까지 도와드립니다." />
+                <title>고객센터 | 휴먼파트너</title>
+                <meta name="description" content="휴먼파트너 고객센터입니다. 자주 묻는 질문부터 실시간 상담까지 도와드립니다." />
             </Helmet>
 
             <Container>
@@ -96,7 +96,7 @@ export const CSCenter: React.FC = () => {
                                 className={`
                                     whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-bold transition-all
                                     ${activeCategory === cat
-                                        ? 'bg-[#39B54A] text-white shadow-md shadow-[#39B54A]/20'
+                                        ? 'bg-[#001e45] text-white shadow-md shadow-[#001e45]/20'
                                         : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                                     }
                                 `}
@@ -110,7 +110,7 @@ export const CSCenter: React.FC = () => {
                     <div className="border-t border-slate-100">
                         {loading ? (
                             <div className="py-20 flex justify-center">
-                                <Loader2 className="animate-spin text-[#39B54A]" size={40} />
+                                <Loader2 className="animate-spin text-[#001e45]" size={40} />
                             </div>
                         ) : filteredFAQ.length > 0 ? (
                             filteredFAQ.map(item => (
@@ -119,7 +119,7 @@ export const CSCenter: React.FC = () => {
                                         onClick={() => toggleAccordion(item.id!)}
                                         className="w-full py-5 flex items-center gap-3 text-left hover:bg-slate-50/50 transition-colors px-2"
                                     >
-                                        <span className="text-[#39B54A] font-bold text-lg">Q</span>
+                                        <span className="text-[#001e45] font-bold text-lg">Q</span>
                                         <span className="flex-1 font-bold text-slate-800 text-[15px] md:text-base leading-snug">
                                             {item.question}
                                         </span>

@@ -1,59 +1,93 @@
 import { supabase } from '../lib/supabase';
 
-const BUCKET_NAME = 'Humanpartner';
+const BUCKET_CANDIDATES = [
+    import.meta.env.VITE_SUPABASE_BUCKET,
+    'Humanpartner',
+    'HumanPartner',
+    'humanpartner',
+    'human-partner',
+    'products',
+    'public',
+    'uploads',
+]
+    .filter((value): value is string => Boolean(value && value.trim()))
+    .map((value) => value.trim());
 
-/**
- * 이미지 파일을 Supabase Storage에 업로드
- * @param file 업로드할 파일
- * @returns 업로드된 이미지의 public URL
- */
-export const uploadImage = async (file: File, folder: string = 'products'): Promise<string> => {
-    // 파일명 중복 방지를 위해 timestamp 추가
+const uniqueBuckets = Array.from(new Set(BUCKET_CANDIDATES));
+
+const buildFilePath = (file: File, folder: string) => {
     const timestamp = Date.now();
-    const extension = file.name.split('.').pop();
-    const fileName = `${timestamp}_${Math.random().toString(36).substring(7)}.${extension}`;
-    const filePath = `${folder}/${fileName}`;
-
-    const { data, error } = await supabase.storage
-        .from(BUCKET_NAME)
-        .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false
-        });
-
-    if (error) {
-        console.error('Upload error:', error);
-        throw error;
-    }
-
-    // public URL 반환
-    const { data: urlData } = supabase.storage
-        .from(BUCKET_NAME)
-        .getPublicUrl(filePath);
-
-    return urlData.publicUrl;
+    const extension = file.name.split('.').pop() || 'png';
+    const fileName = `${timestamp}_${Math.random().toString(36).slice(2, 8)}.${extension}`;
+    return `${folder}/${fileName}`;
 };
 
-/**
- * Storage에서 이미지 삭제
- * @param imageUrl 삭제할 이미지 URL
- */
+const isBucketNotFoundError = (error: any) => {
+    const message = `${error?.message || ''} ${error?.error || ''} ${error?.details || ''}`.toLowerCase();
+    return message.includes('bucket') && message.includes('not found');
+};
+
+const getErrorText = (error: any) =>
+    error?.message || error?.error_description || error?.details || 'Unknown error';
+
+export const uploadImage = async (file: File, folder: string = 'products'): Promise<string> => {
+    const filePath = buildFilePath(file, folder);
+    const errors: string[] = [];
+
+    for (const bucket of uniqueBuckets) {
+        const { error } = await supabase.storage.from(bucket).upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false,
+        });
+
+        if (error) {
+            errors.push(`${bucket}: ${getErrorText(error)}`);
+            continue;
+        }
+
+        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+        return urlData.publicUrl;
+    }
+
+    throw new Error(
+        `Image upload failed. Tried buckets [${uniqueBuckets.join(', ')}]. Errors: ${errors.join(' | ')}`,
+    );
+};
+
+const parseBucketAndPathFromUrl = (imageUrl: string): { bucket: string; path: string } | null => {
+    try {
+        const url = new URL(imageUrl);
+        const parts = url.pathname.split('/').filter(Boolean);
+        // Expected pattern: /storage/v1/object/public/<bucket>/<path...>
+        const publicIndex = parts.indexOf('public');
+        if (publicIndex === -1 || parts.length <= publicIndex + 2) return null;
+        const bucket = parts[publicIndex + 1];
+        const path = parts.slice(publicIndex + 2).join('/');
+        if (!bucket || !path) return null;
+        return { bucket, path };
+    } catch {
+        return null;
+    }
+};
+
 export const deleteImage = async (imageUrl: string): Promise<void> => {
-    // URL에서 파일 경로 추출
-    const url = new URL(imageUrl);
-    const pathParts = url.pathname.split('/');
-    const bucketIndex = pathParts.indexOf(BUCKET_NAME);
+    const parsed = parseBucketAndPathFromUrl(imageUrl);
+    const bucketsToTry = parsed
+        ? [parsed.bucket, ...uniqueBuckets.filter((bucket) => bucket !== parsed.bucket)]
+        : uniqueBuckets;
 
-    if (bucketIndex === -1) return;
+    let lastError: any = null;
+    const filePath = parsed?.path;
 
-    const filePath = pathParts.slice(bucketIndex + 1).join('/');
+    if (!filePath) return;
 
-    const { error } = await supabase.storage
-        .from(BUCKET_NAME)
-        .remove([filePath]);
+    for (const bucket of bucketsToTry) {
+        const { error } = await supabase.storage.from(bucket).remove([filePath]);
+        if (!error) return;
+        lastError = error;
+    }
 
-    if (error) {
-        console.error('Delete error:', error);
-        throw error;
+    if (lastError) {
+        throw lastError;
     }
 };

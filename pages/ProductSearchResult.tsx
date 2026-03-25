@@ -35,14 +35,14 @@ export const ProductSearchResult: React.FC = () => {
     return (
         <div className="min-h-screen bg-slate-50 py-8 md:py-12">
             <Helmet>
-                <title>'{query}' 검색 결과 - 행사어때</title>
+                <title>'{query}' 검색 결과 - 휴먼파트너</title>
             </Helmet>
 
             <Container>
                 {/* Search Header */}
                 <div className="mb-8">
                     <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <Search className="text-[#39B54A]" />
+                        <Search className="text-[#001e45]" />
                         <span>'{query}' 검색 결과</span>
                         <span className="text-sm font-medium text-slate-500 bg-white px-3 py-1 rounded-full border ml-2">
                             총 {products.length}개
@@ -53,7 +53,7 @@ export const ProductSearchResult: React.FC = () => {
                 {/* Loading State */}
                 {loading && (
                     <div className="flex justify-center items-center py-20">
-                        <Loader2 className="animate-spin text-[#39B54A]" size={40} />
+                        <Loader2 className="animate-spin text-[#001e45]" size={40} />
                     </div>
                 )}
 
@@ -98,14 +98,14 @@ export const ProductSearchResult: React.FC = () => {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
                                 <div className="p-4">
-                                    <h3 className="font-bold text-slate-800 mb-1 truncate group-hover:text-[#39B54A] transition-colors">
+                                    <h3 className="font-bold text-slate-800 mb-1 truncate group-hover:text-[#001e45] transition-colors">
                                         {product.name}
                                     </h3>
                                     <p className="text-xs text-slate-500 mb-2 line-clamp-1 h-4">
                                         {product.short_description || ''}
                                     </p>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-lg font-extrabold text-[#39B54A]">
+                                        <span className="text-lg font-extrabold text-[#001e45]">
                                             {product.price?.toLocaleString()}<span className="text-xs font-medium ml-0.5">원</span>
                                         </span>
                                     </div>

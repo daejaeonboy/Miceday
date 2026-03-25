@@ -1,36 +1,49 @@
 {
-    "functions": [
-        {
-            "source": "functions",
-            "codebase": "default",
-            "ignore": [
-                "node_modules",
-                ".git",
-                "firebase-debug.log",
-                "firebase-debug.*.log"
-            ],
-            "predeploy": [
-                "npm --prefix \"$RESOURCE_DIR\" run build"
-            ]
-        }
-    ],
-    "hosting": {
-        "site": "human-partner",
-        "public": "dist",
-        "ignore": [
-            "firebase.json",
-            "**/.*",
-            "**/node_modules/**"
-        ],
-        "rewrites": [
-            {
-                "source": "/api/email/verify",
-                "function": "sendEmailVerification"
-            },
-            {
-                "source": "**",
-                "destination": "/index.html"
-            }
-        ]
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ],
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
     }
+  ],
+  "hosting": [
+    {
+      "target": "enterprise",
+      "public": "dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "/api/email/send",
+          "function": "sendSiteEmail"
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "legacyRedirect",
+      "public": "redirect-public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "https://humanpartner.kr",
+          "type": 301
+        },
+        {
+          "source": "/:path*",
+          "destination": "https://humanpartner.kr/:path",
+          "type": 301
+        }
+      ]
+    }
+  ]
 }

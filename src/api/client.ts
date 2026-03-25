@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-// Create an Axios instance with default configuration
+const configuredBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
 const client = axios.create({
-    baseURL: 'http://localhost:4000/api', // Pointing to our Express backend
+    baseURL: configuredBaseUrl ? `${configuredBaseUrl}/api` : '/api',
     headers: {
         'Content-Type': 'application/json',
     },

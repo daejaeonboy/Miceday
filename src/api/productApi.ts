@@ -3,20 +3,19 @@ import { supabase } from '../lib/supabase';
 export interface Product {
     id?: string;
     name: string;
-    category?: string; // 카테고리 (중분류)
-    _parent_category?: string; // VIEW 등에서 조인으로 가져올 대분류
+    category?: string;
+    _parent_category?: string;
+    display_order?: number;
     price: number;
     description?: string;
     short_description?: string;
     image_url?: string;
     stock: number;
     discount_rate?: number;
+    rating?: number;
+    review_count?: number;
     created_at?: string;
-    
-    // 패키지 및 상품옵션 타입
-    product_type?: 'basic' | 'essential' | 'additional' | 'cooperative' | 'place' | 'food'; // New: basic(package), essential(basic component), additional, cooperative, place, food
-    
-    // 관계형 데이터 (JSON 형태로 저장)
+    product_type?: 'basic' | 'essential' | 'additional' | 'cooperative' | 'place' | 'food';
     basic_components?: { name: string; model_name?: string; quantity: number }[];
     additional_components?: { name: string; model_name?: string; price: number; _category?: string }[];
     cooperative_components?: { name: string; model_name?: string; price: number; _category?: string }[];
@@ -24,18 +23,64 @@ export interface Product {
     food_components?: { name: string; price: number }[];
 }
 
-// 모든 상품 조회
-export const getProducts = async (): Promise<Product[]> => {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+let productDisplayOrderSupportedCache: boolean | null = null;
 
-    if (error) throw error;
-    return data || [];
+const isDisplayOrderMissingError = (error: any): boolean => {
+    const code = String(error?.code || '');
+    const message = String(error?.message || '');
+    return code === '42703' || message.includes('products.display_order');
 };
 
-// 카테고리별 상품 조회
+const sortProductsByDisplayOrder = (items: Product[]): Product[] => {
+    return [...items].sort((a, b) => {
+        const aOrder = typeof a.display_order === 'number' ? a.display_order : Number.MAX_SAFE_INTEGER;
+        const bOrder = typeof b.display_order === 'number' ? b.display_order : Number.MAX_SAFE_INTEGER;
+        if (aOrder !== bOrder) return aOrder - bOrder;
+
+        const aCreated = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const bCreated = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return bCreated - aCreated;
+    });
+};
+
+export const isProductDisplayOrderSupported = async (): Promise<boolean> => {
+    if (productDisplayOrderSupportedCache !== null) {
+        return productDisplayOrderSupportedCache;
+    }
+
+    const { error } = await supabase
+        .from('products')
+        .select('id,display_order')
+        .limit(1);
+
+    if (error) {
+        if (isDisplayOrderMissingError(error)) {
+            productDisplayOrderSupportedCache = false;
+            return false;
+        }
+        throw error;
+    }
+
+    productDisplayOrderSupportedCache = true;
+    return true;
+};
+
+// All products
+export const getProducts = async (): Promise<Product[]> => {
+    const supportsDisplayOrder = await isProductDisplayOrderSupported();
+    const query = supabase.from('products').select('*');
+
+    const { data, error } = supportsDisplayOrder
+        ? await query
+            .order('display_order', { ascending: true })
+            .order('created_at', { ascending: false })
+        : await query.order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return sortProductsByDisplayOrder(data || []);
+};
+
+// Products by category
 export const getProductsByCategory = async (category: string): Promise<Product[]> => {
     const query = supabase.from('products').select('*');
 
@@ -43,43 +88,66 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
         query.eq('category', category);
     }
 
-    const { data, error } = await query.order('created_at', { ascending: false });
+    const supportsDisplayOrder = await isProductDisplayOrderSupported();
+    const { data, error } = supportsDisplayOrder
+        ? await query
+            .order('display_order', { ascending: true })
+            .order('created_at', { ascending: false })
+        : await query.order('created_at', { ascending: false });
+
     if (error) throw error;
-    return data || [];
+    return sortProductsByDisplayOrder(data || []);
 };
 
-// 타입별 상품 조회 (basic, essential, additional, cooperative, place, food)
+// Products by type (basic, essential, additional, cooperative, place, food)
 export const getProductsByType = async (type: string): Promise<Product[]> => {
     let query = supabase.from('products').select('*');
-    
+
     if (type === 'additional' || type === 'essential') {
-        // 'essential'와 'additional'은 '물품'으로 통합 관리
         query = query.in('product_type', ['essential', 'additional']);
     } else {
         query = query.eq('product_type', type);
     }
 
-    const { data, error } = await query.order('name', { ascending: true }); // Alphabetical order for options
+    if (type === 'basic') {
+        const supportsDisplayOrder = await isProductDisplayOrderSupported();
+        const { data, error } = supportsDisplayOrder
+            ? await query
+                .order('display_order', { ascending: true })
+                .order('created_at', { ascending: false })
+            : await query.order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return sortProductsByDisplayOrder(data || []);
+    }
+
+    const { data, error } = await query.order('name', { ascending: true });
     if (error) throw error;
     return data || [];
 };
 
-// 상품 검색 API
+// Search products
 export const searchProducts = async (keyword: string): Promise<Product[]> => {
     if (!keyword) return [];
 
-    const { data, error } = await supabase
+    const supportsDisplayOrder = await isProductDisplayOrderSupported();
+    const query = supabase
         .from('products')
         .select('*')
         .or(`name.ilike.%${keyword}%,description.ilike.%${keyword}%,short_description.ilike.%${keyword}%`)
-        .eq('product_type', 'basic')
-        .order('created_at', { ascending: false });
+        .eq('product_type', 'basic');
+
+    const { data, error } = supportsDisplayOrder
+        ? await query
+            .order('display_order', { ascending: true })
+            .order('created_at', { ascending: false })
+        : await query.order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return sortProductsByDisplayOrder(data || []);
 };
 
-// 단일 상품 조회
+// Single product
 export const getProductById = async (id: string): Promise<Product | null> => {
     const { data, error } = await supabase
         .from('products')
@@ -91,14 +159,21 @@ export const getProductById = async (id: string): Promise<Product | null> => {
     return data;
 };
 
-// 상품 추가
-// 상품 추가
+// Add product
 export const addProduct = async (product: Omit<Product, 'id' | 'created_at'>): Promise<Product> => {
     const userData = { ...product };
+    const supportsDisplayOrder = await isProductDisplayOrderSupported();
 
-    // 상품 번호 자동 생성 로직 제거
-    // if (!userData.product_code) ...
+    if (supportsDisplayOrder && typeof userData.display_order !== 'number') {
+        const { data: firstByOrder, error: firstByOrderError } = await supabase
+            .from('products')
+            .select('display_order')
+            .order('display_order', { ascending: true })
+            .limit(1);
 
+        if (firstByOrderError) throw firstByOrderError;
+        userData.display_order = (firstByOrder?.[0]?.display_order || 0) - 1;
+    }
 
     const { data, error } = await supabase
         .from('products')
@@ -110,11 +185,24 @@ export const addProduct = async (product: Omit<Product, 'id' | 'created_at'>): P
     return data;
 };
 
-// 상품 수정
+// Update product
 export const updateProduct = async (id: string, updates: Partial<Product>): Promise<Product> => {
+    const supportsDisplayOrder = await isProductDisplayOrderSupported();
+    const safeUpdates = { ...updates };
+
+    if (!supportsDisplayOrder) {
+        delete safeUpdates.display_order;
+    }
+
+    if (Object.keys(safeUpdates).length === 0) {
+        const existing = await getProductById(id);
+        if (!existing) throw new Error('Product not found');
+        return existing;
+    }
+
     const { data, error } = await supabase
         .from('products')
-        .update(updates)
+        .update(safeUpdates)
         .eq('id', id)
         .select()
         .single();
@@ -123,14 +211,42 @@ export const updateProduct = async (id: string, updates: Partial<Product>): Prom
     return data;
 };
 
-// 상품 삭제
+// Save drag order
+export const updateProductsDisplayOrder = async (orderedProductIds: string[]): Promise<void> => {
+    if (orderedProductIds.length === 0) return;
+
+    const supportsDisplayOrder = await isProductDisplayOrderSupported();
+    if (!supportsDisplayOrder) {
+        throw new Error('DISPLAY_ORDER_NOT_SUPPORTED');
+    }
+
+    const updates = orderedProductIds.map((id, index) =>
+        supabase
+            .from('products')
+            .update({ display_order: index + 1 })
+            .eq('id', id)
+    );
+
+    const results = await Promise.all(updates);
+    const failed = results.find((result) => result.error);
+    if (failed?.error) throw failed.error;
+};
+
+// Update products category in batch
+export const updateProductsCategoryBatch = async (oldCategory: string, newCategory: string): Promise<void> => {
+    const { error } = await supabase
+        .from('products')
+        .update({ category: newCategory })
+        .eq('category', oldCategory);
+
+    if (error) throw error;
+};
+
+// Delete product
 export const deleteProduct = async (id: string): Promise<void> => {
-    // 상품-섹션 연결 관계 먼저 삭제
     await supabase.from('product_sections').delete().eq('product_id', id);
-    // 예약 내역 삭제 (FK 제약조건 해결)
     await supabase.from('bookings').delete().eq('product_id', id);
 
-    // 이후 상품 삭제
     const { error } = await supabase
         .from('products')
         .delete()
@@ -139,7 +255,7 @@ export const deleteProduct = async (id: string): Promise<void> => {
     if (error) throw error;
 };
 
-// 상품 번호로 조회
+// Product by code
 export const getProductByCode = async (code: string): Promise<Product | null> => {
     const { data, error } = await supabase
         .from('products')
@@ -148,7 +264,7 @@ export const getProductByCode = async (code: string): Promise<Product | null> =>
         .single();
 
     if (error) {
-        if (error.code === 'PGRST116') return null; // Not found
+        if (error.code === 'PGRST116') return null;
         throw error;
     }
     return data;

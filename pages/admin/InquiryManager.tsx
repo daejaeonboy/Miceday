@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, MessageSquare, Send, Trash2, ChevronDown, ChevronUp, CheckCircle, Clock } from 'lucide-react';
-import { getAllInquiries, answerInquiry, deleteInquiry, Inquiry } from '../../src/api/inquiryApi';
+import { getAllInquiries, answerInquiry, deleteInquiry, Inquiry, QUOTE_INQUIRY_CATEGORY } from '../../src/api/inquiryApi';
 
 export const InquiryManager: React.FC = () => {
     const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -13,7 +13,7 @@ export const InquiryManager: React.FC = () => {
     const loadInquiries = async () => {
         try {
             const data = await getAllInquiries();
-            setInquiries(data);
+            setInquiries(data.filter((item) => item.category !== QUOTE_INQUIRY_CATEGORY));
         } catch (error) {
             console.error('Failed to load inquiries:', error);
         } finally {
@@ -68,7 +68,7 @@ export const InquiryManager: React.FC = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <Loader2 className="animate-spin text-[#39B54A]" size={40} />
+                <Loader2 className="animate-spin text-[#001e45]" size={40} />
             </div>
         );
     }
@@ -78,7 +78,7 @@ export const InquiryManager: React.FC = () => {
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                    <MessageSquare size={24} className="text-[#39B54A]" />
+                    <MessageSquare size={24} className="text-[#001e45]" />
                     1:1 문의 관리
                 </h1>
                 <p className="text-sm text-slate-500 mt-1">고객 문의를 확인하고 답변을 작성합니다.</p>
@@ -86,7 +86,7 @@ export const InquiryManager: React.FC = () => {
 
             {/* Status Cards */}
             <div className="grid grid-cols-3 gap-4 mb-6">
-                <button onClick={() => setFilter('all')} className={`p-4 rounded-2xl border transition-all ${filter === 'all' ? 'bg-[#39B54A] text-white border-[#39B54A] shadow-lg shadow-[#39B54A]/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+                <button onClick={() => setFilter('all')} className={`p-4 rounded-2xl border transition-all ${filter === 'all' ? 'bg-[#001e45] text-white border-[#001e45] shadow-lg shadow-[#001e45]/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
                     <div className={`text-2xl font-extrabold ${filter === 'all' ? 'text-white' : 'text-slate-900'}`}>{inquiries.length}</div>
                     <div className={`text-xs font-bold ${filter === 'all' ? 'text-white/80' : 'text-slate-500'}`}>전체 문의</div>
                 </button>

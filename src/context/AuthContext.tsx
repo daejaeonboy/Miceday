@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { getUserProfileByFirebaseUid, UserProfile } from '../api/userApi';
+import { UserProfile } from '../api/userApi';
+import { ensureBootstrapAdminProfile } from '../utils/adminBootstrap';
 
 interface AuthContextType {
     user: User | null;
@@ -30,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const fetchProfile = async (firebaseUser: User) => {
         try {
-            const profile = await getUserProfileByFirebaseUid(firebaseUser.uid);
+            const profile = await ensureBootstrapAdminProfile(firebaseUser);
             
             // 승인되지 않은 사용자 로그아웃 처리
             if (profile && !profile.is_approved) {

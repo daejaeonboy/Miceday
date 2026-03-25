@@ -74,7 +74,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
           <div>
             <h2 className="text-xl md:text-[28px] font-semibold text-slate-900 tracking-tight">{title}</h2>
           </div>
-          <button className="text-sm font-semibold text-slate-400 hover:text-[#39B54A] transition-colors hidden md:block">전체보기</button>
+          <button className="text-sm font-semibold text-slate-400 hover:text-[#001e45] transition-colors hidden md:block">전체보기</button>
         </div>
 
         {/* Filter Pills */}
@@ -85,8 +85,8 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
               onClick={() => setActiveCategory(cat)}
               className={`h-[40px] min-w-[100px] px-4 rounded-lg text-[14px] md:text-[15px] font-semibold transition-all border flex-shrink-0 text-center shadow-sm hover:shadow
                 ${activeCategory === cat
-                  ? 'bg-[#39B54A] text-white border-[#39B54A]'
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-[#39B54A] hover:text-[#39B54A]'
+                  ? 'bg-[#001e45] text-white border-[#001e45]'
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-[#001e45] hover:text-[#001e45]'
                 }`}
             >
               {cat}
@@ -99,7 +99,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
           {/* Left Arrow */}
           <button
             onClick={() => scroll('left')}
-            className="absolute -left-3 md:-left-6 top-[calc(50%-48px)] -translate-y-1/2 z-10 w-14 h-14 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-full shadow-xl flex items-center justify-center text-slate-500 hover:bg-white hover:border-slate-400 hover:text-[#39B54A] hover:scale-105 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+            className="absolute -left-3 md:-left-6 top-[calc(50%-48px)] -translate-y-1/2 z-10 w-14 h-14 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-full shadow-xl flex items-center justify-center text-slate-500 hover:bg-white hover:border-slate-400 hover:text-[#001e45] hover:scale-105 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
           >
             <ChevronLeft size={28} />
           </button>
@@ -107,7 +107,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
           {/* Right Arrow */}
           <button
             onClick={() => scroll('right')}
-            className="absolute -right-3 md:-right-6 top-[calc(50%-48px)] -translate-y-1/2 z-10 w-14 h-14 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-full shadow-xl flex items-center justify-center text-slate-500 hover:bg-white hover:border-slate-400 hover:text-[#39B54A] hover:scale-105 transition-all opacity-0 group-hover:opacity-100"
+            className="absolute -right-3 md:-right-6 top-[calc(50%-48px)] -translate-y-1/2 z-10 w-14 h-14 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-full shadow-xl flex items-center justify-center text-slate-500 hover:bg-white hover:border-slate-400 hover:text-[#001e45] hover:scale-105 transition-all opacity-0 group-hover:opacity-100"
           >
             <ChevronRight size={28} />
           </button>
@@ -131,26 +131,31 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
                     alt={product.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
                   />
+                  {/* Badges */}
+                  <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                    <span className="bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm tracking-wide">단기/장기 가능</span>
+                  </div>
                   {/* Premium Hover Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-5">
-                    <button className="w-full px-5 py-2 bg-white text-slate-900 text-xs font-bold rounded-lg shadow-xl translate-y-4 group-hover/card:translate-y-0 transition-transform duration-500 text-center">
-                      상품보기
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#001e45]/90 via-[#001e45]/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-5">
+                    <button className="w-full px-5 py-2.5 bg-[#001e45] border border-white/20 hover:bg-white hover:text-[#001e45] hover:border-transparent text-white text-sm font-bold rounded-xl shadow-xl translate-y-4 group-hover/card:translate-y-0 transition-all duration-300 text-center">
+                      상담/견적 문의
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <h3 className="font-bold text-[16px] text-slate-800 truncate group-hover/card:text-[#39B54A] transition-colors">{product.title}</h3>
+                <div className="space-y-1.5 px-1">
+                  <h3 className="font-bold text-[16px] text-slate-800 truncate group-hover/card:text-[#001e45] transition-colors">{product.title}</h3>
 
-                  <div className="flex items-center gap-2 mt-1">
-                    {product.discountRate && (
-                      <span className="text-[#39B54A] font-bold text-[24px]">{product.discountRate}%</span>
-                    )}
-                    <span className="font-medium text-[20px] text-slate-900">
-                      {product.price?.toLocaleString()}<span className="text-sm font-medium ml-0.5">원</span>
-                    </span>
+                  <div className="flex flex-col mt-2 pt-2 border-t border-slate-50">
+                    <div className="flex items-center gap-1.5">
+                      {product.discountRate && (
+                        <span className="text-rose-500 font-bold text-[18px]">{product.discountRate}%</span>
+                      )}
+                      <span className="font-extrabold text-[20px] text-slate-900 tracking-tight">
+                        {product.price?.toLocaleString()}<span className="text-sm font-bold ml-0.5">원</span>
+                      </span>
+                    </div>
                   </div>
-
                 </div>
               </Link>
             ))}

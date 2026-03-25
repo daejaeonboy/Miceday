@@ -1,874 +1,660 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    Plus, Edit2, Trash2, X, Save, Loader2, Eye, EyeOff,
-    Grid3X3, Menu, Image as ImageIcon, Upload, GripVertical, MessageSquare
+  Edit2,
+  Eye,
+  EyeOff,
+  Loader2,
+  Plus,
+  Save,
+  Trash2,
+  Upload,
+  X,
 } from 'lucide-react';
 import {
-    getAllQuickMenuItems, addQuickMenuItem, updateQuickMenuItem, deleteQuickMenuItem, QuickMenuItem,
-    getAllTabMenuItems, addTabMenuItem, updateTabMenuItem, deleteTabMenuItem, TabMenuItem,
-    getAllNavMenuItems, addNavMenuItem, updateNavMenuItem, deleteNavMenuItem, NavMenuItem,
-    getAllBanners, addBanner, updateBanner, deleteBanner, Banner,
-    getAllPopups, addPopup, updatePopup, deletePopup, Popup,
-    getAllianceMembers, getAllAllianceMembers, addAllianceMember, updateAllianceMember, deleteAllianceMember, AllianceMember
+  addAllianceMember,
+  addBanner,
+  addPopup,
+  addQuickMenuItem,
+  AllianceMember,
+  Banner,
+  deleteAllianceMember,
+  deleteBanner,
+  deletePopup,
+  deleteQuickMenuItem,
+  getAllAllianceMembers,
+  getAllBanners,
+  getAllPopups,
+  getAllQuickMenuItems,
+  Popup,
+  QuickMenuItem,
+  updateAllianceMember,
+  updateBanner,
+  updatePopup,
+  updateQuickMenuItem,
 } from '../../src/api/cmsApi';
-import { getProducts, Product } from '../../src/api/productApi';
 import { uploadImage } from '../../src/api/storageApi';
 
-type TabType = 'quickmenu' | 'tabmenu' | 'banners' | 'popups' | 'alliance';
+type TabType = 'alliance' | 'banners' | 'quickmenu' | 'popups';
 
-export const CMSManager: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<TabType>('quickmenu');
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [uploading, setUploading] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // Data states
-    const [quickMenuItems, setQuickMenuItems] = useState<QuickMenuItem[]>([]);
-    const [tabMenuItems, setTabMenuItems] = useState<TabMenuItem[]>([]);
-    const [banners, setBanners] = useState<Banner[]>([]);
-    const [popups, setPopups] = useState<Popup[]>([]);
-    const [allianceMembers, setAllianceMembers] = useState<AllianceMember[]>([]);
-    const [products, setProducts] = useState<Product[]>([]);
-
-    // Form states
-    const [editingItem, setEditingItem] = useState<any>(null);
-    const [formData, setFormData] = useState<any>({});
-
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const loadData = async () => {
-        setLoading(true);
-        try {
-            // Fetch individually to handle errors gracefully (e.g. if popups table doesn't exist yet)
-            const quickMenuPromise = getAllQuickMenuItems().catch(e => { console.error("CMS Load Error (QuickMenu):", e); return []; });
-            const tabMenuPromise = getAllTabMenuItems().catch(e => { console.error("CMS Load Error (TabMenu):", e); return []; });
-            const bannerPromise = getAllBanners().catch(e => { console.error("CMS Load Error (Banners):", e); return []; });
-            const popupPromise = getAllPopups().catch(e => { console.error("CMS Load Error (Popups):", e); return []; });
-            const alliancePromise = getAllAllianceMembers().catch(e => { console.error("CMS Load Error (Alliance):", e); return []; });
-            const productsPromise = getProducts().catch(e => { console.error("CMS Load Error (Products):", e); return []; });
-
-            const [quickMenu, tabMenu, bannerData, popupData, allianceData, productsData] = await Promise.all([
-                quickMenuPromise,
-                tabMenuPromise,
-                bannerPromise,
-                popupPromise,
-                alliancePromise,
-                productsPromise
-            ]);
-
-            setQuickMenuItems(quickMenu);
-            setTabMenuItems(tabMenu);
-            setBanners(bannerData);
-            setPopups(popupData);
-            setAllianceMembers(allianceData);
-            setProducts(productsData);
-        } catch (error) {
-            console.error('Failed to load CMS data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const openAddModal = () => {
-        setEditingItem(null);
-        if (activeTab === 'quickmenu') {
-            setFormData({ name: '', link: '/', display_order: quickMenuItems.length + 1, is_active: true });
-        } else if (activeTab === 'tabmenu') {
-            setFormData({ name: '', link: '/', display_order: tabMenuItems.length + 1, is_active: true });
-        } else if (activeTab === 'banners') {
-            setFormData({ title: '', subtitle: '', image_url: '', link: '/', button_text: '바로가기', banner_type: 'hero', display_order: banners.length + 1, is_active: true, target_product_code: '' });
-        } else if (activeTab === 'popups') {
-            setFormData({ title: '', image_url: '', link: '/', start_date: '', end_date: '', display_order: popups.length + 1, is_active: true });
-        } else if (activeTab === 'alliance') {
-            setFormData({ name: '', category1: 'MICE 시설분과', category2: '호텔', address: '', phone: '', logo_url: '', display_order: allianceMembers.length + 1, is_active: true });
-        }
-        setShowModal(true);
-    };
-
-    const openEditModal = (item: any) => {
-        setEditingItem(item);
-        setFormData({ ...item });
-        setShowModal(true);
-    };
-
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        if (!file.type.startsWith('image/')) {
-            alert('이미지 파일만 업로드할 수 있습니다.');
-            return;
-        }
-        setUploading(true);
-        try {
-            const imageUrl = await uploadImage(file);
-            if (activeTab === 'alliance') {
-                setFormData({ ...formData, logo_url: imageUrl });
-            } else {
-                setFormData({ ...formData, image_url: imageUrl });
-            }
-        } catch (error) {
-            console.error('Upload failed:', error);
-            alert('이미지 업로드에 실패했습니다.');
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSaving(true);
-        try {
-            if (activeTab === 'quickmenu') {
-                if (editingItem) {
-                    await updateQuickMenuItem(editingItem.id, formData);
-                } else {
-                    await addQuickMenuItem(formData);
-                }
-            } else if (activeTab === 'tabmenu') {
-                if (editingItem) {
-                    await updateTabMenuItem(editingItem.id, formData);
-                } else {
-                    await addTabMenuItem(formData);
-                }
-            } else if (activeTab === 'banners') {
-                if (editingItem) {
-                    await updateBanner(editingItem.id, formData);
-                } else {
-                    await addBanner(formData);
-                }
-            } else if (activeTab === 'popups') {
-                // Handle empty dates as null
-                const popupData = {
-                    ...formData,
-                    start_date: formData.start_date || null,
-                    end_date: formData.end_date || null
-                };
-
-                if (editingItem) {
-                    await updatePopup(editingItem.id, popupData);
-                } else {
-                    await addPopup(popupData);
-                }
-            } else if (activeTab === 'alliance') {
-                if (editingItem) {
-                    await updateAllianceMember(editingItem.id, formData);
-                } else {
-                    await addAllianceMember(formData);
-                }
-            }
-            await loadData();
-            setShowModal(false);
-        } catch (error: any) {
-            console.error('Save failed:', error);
-            // Show detailed error message
-            alert(`저장에 실패했습니다.\n\n오류 내용: ${error.message || JSON.stringify(error)}\n\n(Tip: 만약 'relation "popups" does not exist' 오류라면 데이터베이스에 테이블이 없는 것입니다. SQL 실행이 필요합니다.)`);
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const handleDelete = async (id: string) => {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
-        try {
-            if (activeTab === 'quickmenu') {
-                await deleteQuickMenuItem(id);
-            } else if (activeTab === 'tabmenu') {
-                await deleteTabMenuItem(id);
-            } else if (activeTab === 'banners') {
-                await deleteBanner(id);
-            } else if (activeTab === 'popups') {
-                await deletePopup(id);
-            } else if (activeTab === 'alliance') {
-                await deleteAllianceMember(id);
-            }
-            await loadData();
-        } catch (error) {
-            console.error('Delete failed:', error);
-            alert('삭제에 실패했습니다.');
-        }
-    };
-
-    const toggleActive = async (item: any) => {
-        try {
-            if (activeTab === 'quickmenu') {
-                await updateQuickMenuItem(item.id, { is_active: !item.is_active });
-            } else if (activeTab === 'tabmenu') {
-                await updateTabMenuItem(item.id, { is_active: !item.is_active });
-            } else if (activeTab === 'banners') {
-                await updateBanner(item.id, { is_active: !item.is_active });
-            } else if (activeTab === 'popups') {
-                await updatePopup(item.id, { is_active: !item.is_active });
-            } else if (activeTab === 'alliance') {
-                await updateAllianceMember(item.id, { is_active: !item.is_active });
-            }
-            await loadData();
-        } catch (error) {
-            console.error('Toggle failed:', error);
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center py-20">
-                <Loader2 className="animate-spin text-[#39B54A]" size={40} />
-            </div>
-        );
-    }
-
-    const tabs = [
-        { id: 'quickmenu' as TabType, label: '아이콘 메뉴', icon: Grid3X3, count: quickMenuItems.length },
-        { id: 'tabmenu' as TabType, label: '탭 메뉴', icon: Menu, count: tabMenuItems.length },
-        { id: 'banners' as TabType, label: '배너', icon: ImageIcon, count: banners.length },
-        { id: 'popups' as TabType, label: '팝업', icon: MessageSquare, count: popups.length },
-        { id: 'alliance' as TabType, label: 'MICE 회원사', icon: Grid3X3, count: allianceMembers.length },
-    ];
-
-    const currentItems = activeTab === 'quickmenu' ? quickMenuItems
-        : activeTab === 'tabmenu' ? tabMenuItems
-            : activeTab === 'banners' ? banners
-                : activeTab === 'popups' ? popups
-                    : allianceMembers;
-
-    return (
-        <div>
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800">CMS 관리</h1>
-                    <p className="text-sm text-slate-500 mt-1">메인 페이지 UI 요소들을 관리합니다</p>
-                </div>
-                <button
-                    onClick={openAddModal}
-                    className="flex items-center gap-2 bg-[#39B54A] text-white px-4 py-2 rounded-lg hover:bg-[#39B54A] transition-colors"
-                >
-                    <Plus size={20} />
-                    추가
-                </button>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-2 mb-6 border-b border-slate-200">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 -mb-px ${activeTab === tab.id
-                            ? 'text-[#39B54A] border-[#39B54A]'
-                            : 'text-slate-500 border-transparent hover:text-slate-700'
-                            }`}
-                    >
-                        <tab.icon size={18} />
-                        {tab.label}
-                        <span className="text-xs bg-slate-100 px-2 py-0.5 rounded-full">{tab.count}</span>
-                    </button>
-                ))}
-            </div>
-
-            {/* Items List */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-                {currentItems.length === 0 ? (
-                    <div className="p-12 text-center text-slate-400">
-                        등록된 항목이 없습니다. 항목을 추가해주세요.
-                    </div>
-                ) : (
-                    <div className="divide-y divide-slate-100">
-                        {currentItems.map((item: any) => (
-                            <div key={item.id} className="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 rounded-xl">
-                                <GripVertical size={20} className="text-slate-300 cursor-grab" />
-
-                                {((activeTab === 'banners' || activeTab === 'popups') && item.image_url) && (
-                                    <img src={item.image_url} alt={item.title} className="w-20 h-12 object-cover rounded" />
-                                )}
-                                {(activeTab === 'alliance' && item.logo_url) && (
-                                    <div className="w-20 h-12 bg-gray-100 flex items-center justify-center rounded-lg">
-                                        <img src={item.logo_url} alt={item.name} className="max-w-full max-h-full object-contain mix-blend-multiply" />
-                                    </div>
-                                )}
-
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-medium text-slate-800 truncate">
-                                            {item.name || item.title}
-                                        </span>
-                                        {activeTab === 'banners' && (
-                                            <span className={`text-xs px-2 py-0.5 rounded border ${item.banner_type === 'hero'
-                                                ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                                : 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                                                }`}>
-                                                {item.banner_type === 'hero' ? '메인 슬라이드' : '프로모션'}
-                                            </span>
-                                        )}
-                                        {!item.is_active && (
-                                            <span className="text-xs bg-slate-200 text-slate-500 px-2 py-0.5 rounded">비활성</span>
-                                        )}
-
-                                        {activeTab === 'popups' && (
-                                            <span className="text-xs text-blue-500 bg-blue-50 px-2 py-0.5 rounded">
-                                                {item.start_date && item.end_date ? `${item.start_date} ~ ${item.end_date}` : '상시 노출'}
-                                            </span>
-                                        )}
-                                        {activeTab === 'alliance' && (
-                                            <>
-                                                <span className={`text-[11px] font-bold px-2 py-0.5 rounded border
-                                                    ${item.category1 === 'MICE 시설분과' ? 'text-[#e69b00] bg-[#fff9ea] border-[#ffe099]' :
-                                                        item.category1 === 'MICE 기획 · 운영분과' || item.category1 === 'MICE 기획분과' ? 'text-[#3b5bdb] bg-[#edf2ff] border-[#bac8ff]' :
-                                                            item.category1 === 'MICE 지원분과' ? 'text-[#0ca678] bg-[#e6fcf5] border-[#63e6be]' :
-                                                                'text-gray-600 bg-gray-100 border-gray-300'}`}
-                                                >
-                                                    {item.category1 === 'MICE 기획분과' ? 'MICE 기획 · 운영분과' : item.category1}
-                                                </span>
-                                                <span className="text-[11px] text-gray-500 bg-white px-2 py-0.5 rounded border border-gray-200">
-                                                    {item.category2}
-                                                </span>
-                                            </>
-                                        )}
-                                    </div>
-                                    <span className="text-sm text-slate-400">
-                                        {activeTab === 'alliance' ? item.phone : item.link}
-                                    </span>
-                                </div>
-
-                                <span className="text-xs text-slate-400">순서: {item.display_order}</span>
-
-                                <div className="flex items-center gap-1">
-                                    <button
-                                        onClick={() => toggleActive(item)}
-                                        className={`p-2 rounded-lg transition-colors ${item.is_active ? 'text-green-500 hover:bg-green-50' : 'text-slate-400 hover:bg-slate-100'
-                                            }`}
-                                        title={item.is_active ? '비활성화' : '활성화'}
-                                    >
-                                        {item.is_active ? <Eye size={18} /> : <EyeOff size={18} />}
-                                    </button>
-                                    <button
-                                        onClick={() => openEditModal(item)}
-                                        className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
-                                        title="수정"
-                                    >
-                                        <Edit2 size={18} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(item.id)}
-                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                        title="삭제"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Modal */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-                        <div className="flex items-center justify-between p-4 border-b border-slate-200">
-                            <h2 className="text-lg font-bold text-slate-800">
-                                {editingItem ? '수정' : '추가'}
-                            </h2>
-                            <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-                            {/* QuickMenu Form */}
-                            {activeTab === 'quickmenu' && (
-                                <>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">이름</label>
-                                        <input
-                                            type="text"
-                                            value={formData.name || ''}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">아이콘 이미지 (선택)</label>
-                                        <div className="space-y-2">
-                                            <input
-                                                type="text"
-                                                value={formData.image_url || ''}
-                                                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                                                placeholder="이미지 URL 입력 또는 업로드"
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A] text-sm"
-                                            />
-                                            <input
-                                                type="file"
-                                                id="quickmenu-file"
-                                                accept="image/*"
-                                                onChange={handleImageUpload}
-                                                className="hidden"
-                                            />
-                                            <div className="flex gap-2">
-                                                <label
-                                                    htmlFor="quickmenu-file"
-                                                    className="flex-1 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg cursor-pointer transition-colors text-sm font-medium"
-                                                >
-                                                    {uploading ? <Loader2 className="animate-spin" size={16} /> : <ImageIcon size={16} />}
-                                                    이미지 업로드
-                                                </label>
-                                                {formData.image_url && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setFormData({ ...formData, image_url: '' })}
-                                                        className="px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                                                    >
-                                                        삭제
-                                                    </button>
-                                                )}
-                                            </div>
-                                            {formData.image_url && (
-                                                <div className="relative w-16 h-16 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center overflow-hidden">
-                                                    <img src={formData.image_url} alt="Icon Preview" className="w-full h-full object-contain" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">링크</label>
-                                        <input
-                                            type="text"
-                                            value={formData.link || ''}
-                                            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            placeholder="/products?category=hotel"
-                                        />
-                                        <p className="text-xs text-slate-500 mt-1">클릭 시 이동할 경로를 입력하세요.</p>
-                                    </div>
-                                </>
-                            )}
-
-                            {/* TabMenu Form */}
-                            {activeTab === 'tabmenu' && (
-                                <>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">이름</label>
-                                        <input
-                                            type="text"
-                                            value={formData.name || ''}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">링크</label>
-                                        <input
-                                            type="text"
-                                            value={formData.link || ''}
-                                            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            placeholder="/products?category=notebook"
-                                        />
-                                    </div>
-                                </>
-                            )}
-
-                            {/* Banner Form */}
-                            {activeTab === 'banners' && (
-                                <>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">배너 위치</label>
-                                        <select
-                                            value={formData.banner_type || 'hero'}
-                                            onChange={(e) => setFormData({ ...formData, banner_type: e.target.value, tab_id: e.target.value === 'hero' ? null : formData.tab_id })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                        >
-                                            <option value="hero">메인 슬라이드 (상단 전체 배너)</option>
-                                            <option value="promo">프로모션 (탭 메뉴 하단)</option>
-                                        </select>
-                                    </div>
-
-                                    {/* Tab selector - only show when banner_type is promo */}
-                                    {formData.banner_type === 'promo' && (
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">연결할 탭 메뉴</label>
-                                            <select
-                                                value={formData.tab_id || ''}
-                                                onChange={(e) => setFormData({ ...formData, tab_id: e.target.value || null })}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                                required
-                                            >
-                                                <option value="">탭을 선택하세요</option>
-                                                {tabMenuItems.map((tab) => (
-                                                    <option key={tab.id} value={tab.id}>{tab.name}</option>
-                                                ))}
-                                            </select>
-                                            <p className="text-xs text-slate-500 mt-1">선택한 탭을 클릭하면 이 배너가 표시됩니다.</p>
-                                        </div>
-                                    )}
-
-                                    {/* Brand text - only show when banner_type is hero */}
-                                    {formData.banner_type === 'hero' && (
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">브랜드 텍스트</label>
-                                            <input
-                                                type="text"
-                                                value={formData.brand_text || ''}
-                                                onChange={(e) => setFormData({ ...formData, brand_text: e.target.value })}
-                                                placeholder="행사어때"
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            />
-                                            <p className="text-xs text-slate-500 mt-1">제목 위에 표시되는 작은 텍스트 (비우면 기본값 사용)</p>
-                                        </div>
-                                    )}
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">제목</label>
-                                        <input
-                                            type="text"
-                                            value={formData.title || ''}
-                                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">부제목</label>
-                                        <input
-                                            type="text"
-                                            value={formData.subtitle || ''}
-                                            onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">배너 이미지</label>
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            accept="image/*"
-                                            onChange={handleImageUpload}
-                                            className="hidden"
-                                        />
-                                        {formData.image_url ? (
-                                            <div className="relative">
-                                                <img src={formData.image_url} alt="Banner" className="w-full h-32 object-cover rounded-lg" />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, image_url: '' })}
-                                                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                disabled={uploading}
-                                                className="w-full h-24 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center gap-1 hover:border-[#39B54A] transition-colors"
-                                            >
-                                                {uploading ? (
-                                                    <Loader2 className="animate-spin text-[#39B54A]" size={20} />
-                                                ) : (
-                                                    <>
-                                                        <Upload className="text-slate-400" size={20} />
-                                                        <span className="text-sm text-slate-500">이미지 업로드</span>
-                                                    </>
-                                                )}
-                                            </button>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">버튼 텍스트</label>
-                                        <input
-                                            type="text"
-                                            value={formData.button_text || ''}
-                                            onChange={(e) => setFormData({ ...formData, button_text: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">링크</label>
-                                        <input
-                                            type="text"
-                                            value={formData.link || ''}
-                                            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">연결할 상품 (선택)</label>
-                                        <div className="space-y-2">
-                                            <select
-                                                value={formData.target_product_code || ''}
-                                                onChange={(e) => {
-                                                    setFormData({ ...formData, target_product_code: e.target.value });
-                                                }}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            >
-                                                <option value="">상품 선택 없음</option>
-                                                {products.map((product) => (
-                                                    <option key={product.id} value={product.product_code || product.id}>
-                                                        {product.name} ({product.product_code || 'No Code'})
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <p className="text-xs text-slate-500 mt-1">
-                                            선택 시 해당 상품의 상세 페이지로 자동 연결됩니다.
-                                        </p>
-                                    </div>
-                                </>
-                            )}
-
-                            {/* Popup Form */}
-                            {activeTab === 'popups' && (
-                                <>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">제목 (관리용)</label>
-                                        <input
-                                            type="text"
-                                            value={formData.title || ''}
-                                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">팝업 이미지</label>
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            accept="image/*"
-                                            onChange={handleImageUpload}
-                                            className="hidden"
-                                        />
-                                        {formData.image_url ? (
-                                            <div className="relative">
-                                                <img src={formData.image_url} alt="Popup" className="w-full h-auto object-contain rounded-lg max-h-[200px]" />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, image_url: '' })}
-                                                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                disabled={uploading}
-                                                className="w-full h-24 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center gap-1 hover:border-[#39B54A] transition-colors"
-                                            >
-                                                {uploading ? (
-                                                    <Loader2 className="animate-spin text-[#39B54A]" size={20} />
-                                                ) : (
-                                                    <>
-                                                        <Upload className="text-slate-400" size={20} />
-                                                        <span className="text-sm text-slate-500">이미지 업로드</span>
-                                                    </>
-                                                )}
-                                            </button>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">링크 (선택)</label>
-                                        <input
-                                            type="text"
-                                            value={formData.link || ''}
-                                            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            placeholder="https:// or /products"
-                                        />
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">게시 시작일</label>
-                                            <input
-                                                type="date"
-                                                value={formData.start_date || ''}
-                                                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">게시 종료일</label>
-                                            <input
-                                                type="date"
-                                                value={formData.end_date || ''}
-                                                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">연결할 상품 (선택)</label>
-                                        <div className="space-y-2">
-                                            <select
-                                                value={formData.target_product_code || ''}
-                                                onChange={(e) => {
-                                                    // If a product is selected, automatically set the link
-                                                    const selectedProduct = products.find(p => (p.product_code === e.target.value || p.id === e.target.value));
-                                                    setFormData({
-                                                        ...formData,
-                                                        target_product_code: e.target.value,
-                                                        link: selectedProduct ? `/p/${selectedProduct.product_code || selectedProduct.id}` : formData.link
-                                                    });
-                                                }}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            >
-                                                <option value="">상품 선택 없음</option>
-                                                {products.map((product) => (
-                                                    <option key={product.id} value={product.product_code || product.id}>
-                                                        {product.name} ({product.product_code || 'No Code'})
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <p className="text-xs text-slate-500 mt-1">
-                                            선택 시 해당 상품의 상세 페이지로 링크가 자동 설정됩니다.
-                                        </p>
-                                    </div>
-                                </>
-                            )}
-
-                            {/* Alliance Form */}
-                            {activeTab === 'alliance' && (
-                                <>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">상호명(이름)</label>
-                                        <input
-                                            type="text"
-                                            value={formData.name || ''}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">1차 카테고리 (분과)</label>
-                                            <select
-                                                value={formData.category1 || 'MICE 시설분과'}
-                                                onChange={(e) => setFormData({ ...formData, category1: e.target.value })}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            >
-                                                <option value="MICE 시설분과">MICE 시설분과</option>
-                                                <option value="MICE 기획 · 운영분과">MICE 기획 · 운영분과</option>
-                                                <option value="MICE 지원분과">MICE 지원분과</option>
-                                                <option value="기타">기타</option>
-                                            </select>
-                                        </div>
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">2차 카테고리 (분류)</label>
-                                            <input
-                                                type="text"
-                                                value={formData.category2 || ''}
-                                                onChange={(e) => setFormData({ ...formData, category2: e.target.value })}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                                placeholder="예: 호텔, 컨벤션센터 등"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">주소</label>
-                                        <input
-                                            type="text"
-                                            value={formData.address || ''}
-                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            placeholder="주소 입력"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">전화번호</label>
-                                        <input
-                                            type="text"
-                                            value={formData.phone || ''}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                            placeholder="042-000-0000"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">로고 이미지</label>
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            accept="image/*"
-                                            onChange={handleImageUpload}
-                                            className="hidden"
-                                        />
-                                        {formData.logo_url ? (
-                                            <div className="relative border border-gray-200 rounded-lg p-4 bg-gray-50 flex justify-center">
-                                                <img src={formData.logo_url} alt="Logo" className="h-20 object-contain mix-blend-multiply" />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, logo_url: '' })}
-                                                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                disabled={uploading}
-                                                className="w-full h-24 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center gap-1 hover:border-[#39B54A] transition-colors"
-                                            >
-                                                {uploading ? (
-                                                    <Loader2 className="animate-spin text-[#39B54A]" size={20} />
-                                                ) : (
-                                                    <>
-                                                        <Upload className="text-slate-400" size={20} />
-                                                        <span className="text-sm text-slate-500">이미지 업로드</span>
-                                                    </>
-                                                )}
-                                            </button>
-                                        )}
-                                        <p className="text-xs text-slate-500 mt-1">배경이 투명하거나 흰색인 로고 이미지를 권장합니다.</p>
-                                    </div>
-                                </>
-                            )}
-
-                            {/* Common fields */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">표시 순서</label>
-                                <input
-                                    type="number"
-                                    value={formData.display_order || 1}
-                                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 1 })}
-                                    min="1"
-                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
-                                />
-                            </div>
-
-                            <div className="flex gap-2 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowModal(false)}
-                                    className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
-                                >
-                                    취소
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={saving}
-                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#39B54A] text-white rounded-lg hover:bg-[#39B54A] disabled:bg-slate-400"
-                                >
-                                    {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-                                    저장
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+type FormState = {
+  name?: string;
+  title?: string;
+  subtitle?: string;
+  image_url?: string;
+  link?: string;
+  button_text?: string;
+  brand_text?: string;
+  target_product_code?: string;
+  start_date?: string;
+  end_date?: string;
+  category?: string;
+  icon?: string;
+  category1?: string;
+  category2?: string;
+  address?: string;
+  phone?: string;
+  logo_url?: string;
+  display_order: number;
+  is_active: boolean;
 };
 
-export default CMSManager;
+const tabLabels: Record<TabType, string> = {
+  alliance: '파트너 로고',
+  banners: '메인 배너',
+  quickmenu: '퀵메뉴',
+  popups: '팝업',
+};
+
+const tabDescriptions: Record<TabType, string> = {
+  alliance: '메인페이지 CLIENTS 로고 마키에 노출되는 파트너 로고를 관리합니다.',
+  banners: '메인페이지 최상단 슬라이드 배너를 관리합니다.',
+  quickmenu: '메인 화면 퀵메뉴 아이콘과 링크를 관리합니다.',
+  popups: '메인 및 하위 페이지 팝업을 관리합니다.',
+};
+
+const getUploadErrorMessage = (error: unknown): string => {
+  if (!error || typeof error !== 'object') return '알 수 없는 오류';
+  const anyError = error as any;
+  return anyError.message || anyError.error_description || anyError.details || '알 수 없는 오류';
+};
+
+const getDefaultFormData = (
+  tab: TabType,
+  counts: Record<TabType, number>,
+): FormState => {
+  if (tab === 'alliance') {
+    return {
+      name: '',
+      category1: '',
+      category2: '',
+      address: '',
+      phone: '',
+      logo_url: '',
+      display_order: counts.alliance + 1,
+      is_active: true,
+    };
+  }
+
+  if (tab === 'banners') {
+    return {
+      title: '',
+      subtitle: '',
+      image_url: '',
+      link: '/',
+      button_text: '자세히 보기',
+      brand_text: 'HUMAN PARTNER',
+      target_product_code: '',
+      display_order: counts.banners + 1,
+      is_active: true,
+    };
+  }
+
+  if (tab === 'quickmenu') {
+    return {
+      name: '',
+      link: '/',
+      category: '',
+      icon: 'Grid3X3',
+      image_url: '',
+      display_order: counts.quickmenu + 1,
+      is_active: true,
+    };
+  }
+
+  return {
+    title: '',
+    subtitle: '',
+    image_url: '',
+    link: '/',
+    start_date: '',
+    end_date: '',
+    display_order: counts.popups + 1,
+    is_active: true,
+  };
+};
+
+export const CMSManager: React.FC = () => {
+  const [tab, setTab] = useState<TabType>('alliance');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [formData, setFormData] = useState<FormState>({ display_order: 1, is_active: true });
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const [quick, setQuick] = useState<QuickMenuItem[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [popups, setPopups] = useState<Popup[]>([]);
+  const [alliance, setAlliance] = useState<AllianceMember[]>([]);
+
+  const counts = {
+    alliance: alliance.length,
+    banners: banners.length,
+    quickmenu: quick.length,
+    popups: popups.length,
+  } satisfies Record<TabType, number>;
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [quickData, bannerData, popupData, allianceData] = await Promise.all([
+        getAllQuickMenuItems().catch(() => []),
+        getAllBanners().catch(() => []),
+        getAllPopups().catch(() => []),
+        getAllAllianceMembers().catch(() => []),
+      ]);
+
+      setQuick(quickData as QuickMenuItem[]);
+      setBanners((bannerData as Banner[]).filter((item) => item.banner_type === 'hero'));
+      setPopups(popupData as Popup[]);
+      setAlliance(allianceData as AllianceMember[]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const currentItems =
+    tab === 'alliance' ? alliance : tab === 'banners' ? banners : tab === 'quickmenu' ? quick : popups;
+
+  const openAdd = () => {
+    setEditingItem(null);
+    setFormData(getDefaultFormData(tab, counts));
+    setShowModal(true);
+  };
+
+  const openEdit = (item: any) => {
+    setEditingItem(item);
+    setFormData({ ...item });
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingItem(null);
+    setUploading(false);
+    setFormData(getDefaultFormData(tab, counts));
+  };
+
+  const upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드할 수 있습니다.');
+      e.target.value = '';
+      return;
+    }
+
+    setUploading(true);
+    try {
+      let url = '';
+      try {
+        url = await uploadImage(file, tab);
+      } catch {
+        url = await uploadImage(file);
+      }
+
+      if (tab === 'alliance') {
+        setFormData((prev) => ({ ...prev, logo_url: url }));
+      } else {
+        setFormData((prev) => ({ ...prev, image_url: url }));
+      }
+    } catch (error) {
+      alert(`이미지 업로드에 실패했습니다.\n사유: ${getUploadErrorMessage(error)}`);
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    try {
+      if (tab === 'alliance') {
+        if (!formData.name?.trim()) {
+          alert('브랜드명을 입력해 주세요.');
+          return;
+        }
+        if (!formData.logo_url?.trim()) {
+          alert('로고 이미지를 업로드해 주세요.');
+          return;
+        }
+
+        const payload: Omit<AllianceMember, 'id' | 'created_at'> = {
+          name: formData.name.trim(),
+          category1: formData.category1?.trim() || '',
+          category2: formData.category2?.trim() || '',
+          address: formData.address?.trim() || '',
+          phone: formData.phone?.trim() || '',
+          logo_url: formData.logo_url,
+          display_order: Number(formData.display_order) || 1,
+          is_active: Boolean(formData.is_active),
+        };
+
+        if (editingItem?.id) await updateAllianceMember(editingItem.id, payload);
+        else await addAllianceMember(payload);
+      } else if (tab === 'banners') {
+        if (!formData.title?.trim() || !formData.image_url?.trim()) {
+          alert('배너 제목과 이미지를 입력해 주세요.');
+          return;
+        }
+
+        const payload: Omit<Banner, 'id' | 'created_at'> = {
+          title: formData.title.trim(),
+          subtitle: formData.subtitle?.trim() || '',
+          image_url: formData.image_url,
+          link: formData.link?.trim() || '/',
+          button_text: formData.button_text?.trim() || '자세히 보기',
+          brand_text: formData.brand_text?.trim() || 'HUMAN PARTNER',
+          banner_type: 'hero',
+          tab_id: null,
+          display_order: Number(formData.display_order) || 1,
+          is_active: Boolean(formData.is_active),
+          target_product_code: formData.target_product_code?.trim() || '',
+        };
+
+        if (editingItem?.id) await updateBanner(editingItem.id, payload);
+        else await addBanner(payload);
+      } else if (tab === 'quickmenu') {
+        if (!formData.name?.trim()) {
+          alert('퀵메뉴 이름을 입력해 주세요.');
+          return;
+        }
+
+        const payload: Omit<QuickMenuItem, 'id' | 'created_at'> = {
+          name: formData.name.trim(),
+          icon: formData.icon?.trim() || 'Grid3X3',
+          image_url: formData.image_url?.trim() || '',
+          link: formData.link?.trim() || '/',
+          category: formData.category?.trim() || '',
+          display_order: Number(formData.display_order) || 1,
+          is_active: Boolean(formData.is_active),
+        };
+
+        if (editingItem?.id) await updateQuickMenuItem(editingItem.id, payload);
+        else await addQuickMenuItem(payload);
+      } else {
+        if (!formData.title?.trim() || !formData.image_url?.trim()) {
+          alert('팝업 제목과 이미지를 입력해 주세요.');
+          return;
+        }
+
+        const payload: Omit<Popup, 'id' | 'created_at'> = {
+          title: formData.title.trim(),
+          image_url: formData.image_url,
+          link: formData.link?.trim() || '/',
+          start_date: formData.start_date || '',
+          end_date: formData.end_date || '',
+          display_order: Number(formData.display_order) || 1,
+          is_active: Boolean(formData.is_active),
+          target_product_code: '',
+        };
+
+        if (editingItem?.id) await updatePopup(editingItem.id, payload);
+        else await addPopup(payload);
+      }
+
+      await loadData();
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      alert('저장에 실패했습니다. 입력값을 다시 확인해 주세요.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (!window.confirm('해당 항목을 삭제하시겠습니까?')) return;
+
+    try {
+      if (tab === 'alliance') await deleteAllianceMember(id);
+      else if (tab === 'banners') await deleteBanner(id);
+      else if (tab === 'quickmenu') await deleteQuickMenuItem(id);
+      else await deletePopup(id);
+      await loadData();
+    } catch {
+      alert('삭제에 실패했습니다.');
+    }
+  };
+
+  const toggle = async (item: any) => {
+    try {
+      if (tab === 'alliance') await updateAllianceMember(item.id, { is_active: !item.is_active });
+      else if (tab === 'banners') await updateBanner(item.id, { is_active: !item.is_active });
+      else if (tab === 'quickmenu') await updateQuickMenuItem(item.id, { is_active: !item.is_active });
+      else await updatePopup(item.id, { is_active: !item.is_active });
+      await loadData();
+    } catch {
+      alert('노출 상태 변경에 실패했습니다.');
+    }
+  };
+
+  const getItemTitle = (item: any) => (tab === 'alliance' ? item.name : item.title || item.name);
+  const getItemSubtitle = (item: any) => {
+    if (tab === 'alliance') {
+      return `${item.category1 || ''} ${item.category2 || ''}`.trim() || item.phone || '파트너 로고';
+    }
+    if (tab === 'banners') {
+      return item.link || '/';
+    }
+    return item.link || '-';
+  };
+
+  const imagePreviewUrl = formData.image_url || formData.logo_url || '';
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Loader2 className="animate-spin text-[#001e45]" />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">콘텐츠 관리</h1>
+          <p className="text-sm text-slate-500">메인 운영 요소를 한곳에서 관리합니다.</p>
+        </div>
+        <button
+          onClick={openAdd}
+          className="inline-flex items-center gap-2 rounded-lg bg-[#001e45] px-4 py-2 text-white"
+        >
+          <Plus size={16} />
+          추가
+        </button>
+      </div>
+
+      <div className="mb-3 flex gap-2 border-b border-slate-200">
+        {(Object.keys(tabLabels) as TabType[]).map((id) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            className={`-mb-px border-b-2 px-4 py-2 text-sm font-semibold ${
+              tab === id ? 'border-[#001e45] text-[#001e45]' : 'border-transparent text-slate-500'
+            }`}
+          >
+            {tabLabels[id]}
+          </button>
+        ))}
+      </div>
+
+      <div className="mb-5 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        {tabDescriptions[tab]}
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white">
+        {currentItems.length === 0 ? (
+          <div className="p-10 text-center text-slate-400">등록된 항목이 없습니다.</div>
+        ) : (
+          <div className="divide-y divide-slate-100">
+            {currentItems.map((item: any) => {
+              const imageUrl = item.image_url || item.logo_url;
+              const isLogoTab = tab === 'alliance';
+
+              return (
+                <div key={item.id} className="flex items-center gap-4 p-4">
+                  {imageUrl && (
+                    <div className={`flex shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 ${isLogoTab ? 'h-16 w-[180px] p-3 md:w-[260px]' : 'h-14 w-20 overflow-hidden'}`}>
+                      <img
+                        src={imageUrl}
+                        alt={getItemTitle(item)}
+                        className={isLogoTab ? 'h-full w-full object-contain' : 'h-full w-full object-cover'}
+                      />
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate font-semibold text-slate-800">{getItemTitle(item)}</p>
+                      {!item.is_active && (
+                        <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500">비활성</span>
+                      )}
+                    </div>
+                    <p className="truncate text-sm text-slate-500">{getItemSubtitle(item)}</p>
+                  </div>
+
+                  <span className="text-xs text-slate-400">순서 {item.display_order}</span>
+
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => toggle(item)} className="rounded p-2 text-slate-500 hover:bg-slate-100">
+                      {item.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
+                    <button onClick={() => openEdit(item)} className="rounded p-2 text-slate-500 hover:bg-slate-100">
+                      <Edit2 size={16} />
+                    </button>
+                    <button onClick={() => remove(item.id)} className="rounded p-2 text-red-500 hover:bg-red-50">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-2xl rounded-xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 p-4">
+              <h2 className="font-bold">{editingItem ? `${tabLabels[tab]} 수정` : `${tabLabels[tab]} 추가`}</h2>
+              <button type="button" onClick={closeModal}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={submit} className="space-y-3 p-4">
+              <input
+                value={formData.name || formData.title || ''}
+                onChange={(e) =>
+                  tab === 'alliance' || tab === 'quickmenu'
+                    ? setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    : setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
+                placeholder={tab === 'alliance' ? '브랜드명' : tab === 'quickmenu' ? '메뉴명' : '제목'}
+                className="w-full rounded border px-3 py-2"
+                required
+              />
+
+              {(tab === 'banners' || tab === 'popups') && (
+                <input
+                  value={formData.subtitle || ''}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, subtitle: e.target.value }))}
+                  placeholder="부제목(선택)"
+                  className="w-full rounded border px-3 py-2"
+                />
+              )}
+
+              {tab === 'alliance' ? (
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      value={formData.category1 || ''}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, category1: e.target.value }))}
+                      placeholder="카테고리1(선택)"
+                      className="w-full rounded border px-3 py-2"
+                    />
+                    <input
+                      value={formData.category2 || ''}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, category2: e.target.value }))}
+                      placeholder="카테고리2(선택)"
+                      className="w-full rounded border px-3 py-2"
+                    />
+                  </div>
+                  <input
+                    value={formData.address || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, address: e.target.value }))}
+                    placeholder="주소(선택)"
+                    className="w-full rounded border px-3 py-2"
+                  />
+                  <input
+                    value={formData.phone || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                    placeholder="전화번호(선택)"
+                    className="w-full rounded border px-3 py-2"
+                  />
+                  <p className="text-xs leading-5 text-slate-500">
+                    로고 이미지는 가로형 동일 비율을 권장합니다. 가능하면 3:1~4:1 비율의 PNG/SVG를 사용해 주세요. 메인 노출 시 모든 로고가 동일한 프레임 안에서
+                    <span className="font-semibold text-slate-700"> object-contain </span>
+                    으로 맞춰집니다.
+                  </p>
+                </>
+              ) : (
+                <input
+                  value={formData.link || ''}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, link: e.target.value }))}
+                  placeholder="/ 경로 또는 https://..."
+                  className="w-full rounded border px-3 py-2"
+                />
+              )}
+
+              {tab === 'quickmenu' && (
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    value={formData.category || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+                    placeholder="카테고리(선택)"
+                    className="rounded border px-3 py-2"
+                  />
+                  <input
+                    value={formData.icon || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, icon: e.target.value }))}
+                    placeholder="아이콘명(선택)"
+                    className="rounded border px-3 py-2"
+                  />
+                </div>
+              )}
+
+              {tab === 'banners' && (
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                  <input
+                    value={formData.brand_text || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, brand_text: e.target.value }))}
+                    placeholder="브랜드 텍스트"
+                    className="rounded border px-3 py-2"
+                  />
+                  <input
+                    value={formData.button_text || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, button_text: e.target.value }))}
+                    placeholder="버튼 텍스트"
+                    className="rounded border px-3 py-2"
+                  />
+                  <input
+                    value={formData.target_product_code || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, target_product_code: e.target.value }))}
+                    placeholder="상품코드 연결(선택)"
+                    className="rounded border px-3 py-2 md:col-span-2"
+                  />
+                </div>
+              )}
+
+              {tab === 'popups' && (
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="date"
+                    value={formData.start_date || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, start_date: e.target.value }))}
+                    className="rounded border px-3 py-2"
+                  />
+                  <input
+                    type="date"
+                    value={formData.end_date || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, end_date: e.target.value }))}
+                    className="rounded border px-3 py-2"
+                  />
+                </div>
+              )}
+
+              <div>
+                <input ref={fileRef} type="file" accept="image/*" onChange={upload} className="hidden" />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="flex w-full items-center justify-center gap-2 rounded border border-dashed px-3 py-3 text-slate-600"
+                >
+                  {uploading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
+                  {tab === 'alliance' ? '로고 이미지 업로드' : '이미지 업로드'}
+                </button>
+
+                {imagePreviewUrl && (
+                  <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <div className={`flex items-center justify-center rounded-lg bg-white ${tab === 'alliance' ? 'mx-auto h-20 w-[260px] px-4' : 'overflow-hidden'}`}>
+                      <img
+                        src={imagePreviewUrl}
+                        alt="preview"
+                        className={tab === 'alliance' ? 'h-full w-full object-contain py-3' : 'h-44 w-full object-cover'}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  value={formData.display_order ?? 1}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, display_order: Number(e.target.value) || 1 }))}
+                  className="rounded border px-3 py-2"
+                  placeholder="순서"
+                />
+                <label className="inline-flex items-center gap-2 rounded border px-3 py-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(formData.is_active)}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, is_active: e.target.checked }))}
+                  />
+                  활성화
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
+                <button type="button" onClick={closeModal} className="rounded border px-4 py-2 text-slate-700">
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 rounded bg-[#001e45] px-4 py-2 text-white"
+                >
+                  {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                  저장
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

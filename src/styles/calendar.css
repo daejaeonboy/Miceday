@@ -57,9 +57,11 @@
 
 /* When showing 2 months, display them side by side (PC only) */
 @media (min-width: 1024px) {
-
   .react-datepicker--showing-month-2 .react-datepicker__month-container,
-  .react-datepicker:has(.react-datepicker__month-container + .react-datepicker__month-container) .react-datepicker__month-container {
+  .react-datepicker:has(
+      .react-datepicker__month-container + .react-datepicker__month-container
+    )
+    .react-datepicker__month-container {
     width: 50% !important;
     display: inline-block !important;
     vertical-align: top !important;
@@ -180,7 +182,16 @@
 }
 
 .react-datepicker__day--disabled {
-  color: #e5e7eb !important;
+  color: #cbd5e1 !important;
+  background-color: #f1f5f9 !important;
+  cursor: not-allowed !important;
+  text-decoration: line-through !important;
+  opacity: 0.6 !important;
+}
+
+.react-datepicker__day--disabled:hover {
+  background-color: #f1f5f9 !important;
+  cursor: not-allowed !important;
 }
 
 .react-datepicker__navigation {

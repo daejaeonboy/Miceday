@@ -1,24 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmailVerification = void 0;
+exports.sendSiteEmail = void 0;
 const functions = require("firebase-functions");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const corsHandler = cors({ origin: true });
 dotenv.config();
-// 이메일 발송을 위한 Transporter 생성
-// Firebase Functions (.env 사용)
 const normalizeEnvValue = (value) => {
     if (!value) {
         return "";
     }
     return value.trim().replace(/^['"]|['"]$/g, "");
 };
-exports.sendEmailVerification = functions.https.onRequest((req, res) => {
-    // CORS 처리
+exports.sendSiteEmail = functions.https.onRequest((req, res) => {
     corsHandler(req, res, async () => {
-        // POST 요청만 허용
         if (req.method !== "POST") {
             res.status(405).send("Method Not Allowed");
             return;
@@ -28,11 +24,9 @@ exports.sendEmailVerification = functions.https.onRequest((req, res) => {
             res.status(400).json({ error: "Missing required fields (to, subject, html)" });
             return;
         }
-        // 설정 확인
         const emailUser = normalizeEnvValue(process.env.EMAIL_USER);
         const emailPass = normalizeEnvValue(process.env.EMAIL_PASS);
-        const emailFromName = normalizeEnvValue(process.env.EMAIL_FROM_NAME) || "휴먼파트너";
-        // 커스텀 SMTP 설정 (옵션)
+        const emailFromName = normalizeEnvValue(process.env.EMAIL_FROM_NAME) || "\uD734\uBA3C\uD30C\uD2B8\uB108";
         const smtpHost = normalizeEnvValue(process.env.SMTP_HOST);
         const smtpPort = parseInt(normalizeEnvValue(process.env.SMTP_PORT) || "587", 10);
         const smtpSecure = normalizeEnvValue(process.env.SMTP_SECURE) === "true";
@@ -41,29 +35,23 @@ exports.sendEmailVerification = functions.https.onRequest((req, res) => {
             res.status(500).json({ error: "Missing SMTP credentials" });
             return;
         }
-        let transporterConfig;
-        // SMTP 호스트가 설정되어 있으면 해당 설정 사용, 아니면 Gmail 서비스 사용
-        if (smtpHost) {
-            transporterConfig = {
+        const transporter = nodemailer.createTransport(smtpHost
+            ? {
                 host: smtpHost,
                 port: smtpPort,
-                secure: smtpSecure, // true for 465, false for other ports
+                secure: smtpSecure,
                 auth: {
                     user: emailUser,
                     pass: emailPass,
                 },
-            };
-        }
-        else {
-            transporterConfig = {
+            }
+            : {
                 service: "gmail",
                 auth: {
                     user: emailUser,
                     pass: emailPass,
                 },
-            };
-        }
-        const transporter = nodemailer.createTransport(transporterConfig);
+            });
         const mailOptions = {
             from: `"${emailFromName}" <${emailUser}>`,
             to,

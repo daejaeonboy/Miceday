@@ -8,7 +8,7 @@ export interface Notification {
   type: 'info' | 'success' | 'warning' | 'error';
   is_read: boolean;
   created_at: string;
-  link_url?: string; // Optional link to navigate to (e.g., /mypage)
+  link_url?: string; // Optional link to navigate to (e.g., /quote-request)
 }
 
 // Fetch unread notifications (or all, with limit)

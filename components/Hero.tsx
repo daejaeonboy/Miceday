@@ -75,23 +75,25 @@ export const Hero: React.FC = () => {
 
   if (loading) {
     return (
-      <section className="relative w-full h-[500px] md:h-[800px] bg-slate-900 flex items-center justify-center">
+      <section className="relative w-full h-[500px] md:h-[800px] bg-brand-900 flex items-center justify-center">
         <Loader2 className="animate-spin text-white" size={40} />
       </section>
     );
   }
 
   if (slides.length === 0) {
+    // If no banners from DB, display a placeholder to keep layout and prompt admin to add banners.
     return (
-      <section className="relative w-full h-[500px] md:h-[800px] bg-slate-900 flex items-center justify-center">
-        <p className="text-white/50">배너가 없습니다. Admin에서 배너를 추가해주세요.</p>
+      <section className="relative w-full h-[500px] md:h-[800px] bg-brand-900 flex flex-col items-center justify-center">
+        <h2 className="text-xl md:text-2xl text-white/50 mb-2">등록된 메인 배너가 없습니다</h2>
+        <p className="text-white/30 text-sm">관리자 페이지(CMS)에서 [배너]를 추가해주세요.</p>
       </section>
     );
   }
 
   return (
     <section
-      className="relative w-full h-[500px] md:h-[800px] bg-slate-900 overflow-hidden group"
+      className="relative w-full h-[500px] md:h-[800px] bg-brand-900 overflow-hidden group"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -118,10 +120,10 @@ export const Hero: React.FC = () => {
             <Container className="relative h-full flex flex-col justify-center text-white z-20">
               <div className="max-w-4xl">
                 {/* Brand Pill */}
-                <div className={`inline-flex items-center gap-2 px-2 py-1 md:px-3 md:py-1.5 rounded-full bg-black/20 backdrop-blur-lg border border-white/10 text-[8px] md:text-[9px] font-medium text-[#39B54A] transition-all duration-1000 delay-300 transform uppercase tracking-[0.2em] mb-6 md:mb-8
+                <div className={`inline-flex items-center gap-2 px-2 py-1 md:px-3 md:py-1.5 rounded-full bg-black/20 backdrop-blur-lg border border-white/10 text-[8px] md:text-[9px] font-medium text-brand-400 transition-all duration-1000 delay-300 transform uppercase tracking-[0.2em] mb-6 md:mb-8
                   ${index === currentSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
                 `}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#39B54A] shadow-[0_0_8px_#39B54A] animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-400 shadow-[0_0_8px_var(--tw-shadow-color)] shadow-brand-400 animate-pulse"></span>
                   {slide.brand_text || 'Premium Solution'}
                 </div>
 
@@ -139,14 +141,12 @@ export const Hero: React.FC = () => {
                   {slide.subtitle}
                 </p>
 
-                {/* Action - Minimal Hint (Option B) */}
-                <div className={`mt-10 md:mt-14 transition-all duration-1000 delay-1000 transform
+                {/* Action - Button from rntech style but Blue instead of Orange */}
+                <div className={`mt-10 md:mt-14 transition-all duration-1000 delay-1000 transform flex gap-4
                   ${index === currentSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
                 `}>
-                  <div className="flex flex-col gap-2">
-                    <div className="text-white/60 text-xs font-bold transition-all group-hover/slide:text-[#39B54A] group-hover/slide:translate-x-2 flex items-center gap-2">
-                      자세히 보기 <ArrowRight size={14} />
-                    </div>
+                  <div className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-md font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
+                    자세히 보기 <ArrowRight size={18} />
                   </div>
                 </div>
               </div>
@@ -208,7 +208,7 @@ export const Hero: React.FC = () => {
             aria-label={`Go to slide ${index + 1}`}
           >
             <div className={`h-1 transition-all duration-500 rounded-full
-              ${index === currentSlide ? 'w-10 bg-[#39B54A]' : 'w-6 bg-white/30 group-hover:bg-white/50'}
+              ${index === currentSlide ? 'w-10 bg-brand-400' : 'w-6 bg-white/30 group-hover:bg-white/50'}
             `} />
           </button>
         ))}

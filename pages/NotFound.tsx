@@ -8,18 +8,18 @@ export const NotFound: React.FC = () => {
     return (
         <div className="min-h-[70vh] flex items-center justify-center py-20 px-4">
             <Helmet>
-                <title>페이지를 찾을 수 없습니다 - 행사어때</title>
+                <title>페이지를 찾을 수 없습니다 - 휴먼파트너</title>
             </Helmet>
             
             <Container>
                 <div className="max-w-md mx-auto text-center">
                     {/* Error Symbol */}
                     <div className="mb-8 relative inline-block">
-                        <div className="w-24 h-24 bg-[#39B54A]/10 rounded-3xl flex items-center justify-center animate-pulse">
-                            <span className="text-4xl font-black text-[#39B54A]">404</span>
+                        <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center animate-pulse">
+                            <span className="text-4xl font-black text-[#001e45]">404</span>
                         </div>
-                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center border border-[#39B54A]/20">
-                            <div className="w-6 h-6 bg-[#39B54A] rounded-full animate-bounce"></div>
+                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center border border-red-100">
+                            <div className="w-6 h-6 bg-[#001e45] rounded-full animate-bounce"></div>
                         </div>
                     </div>
 
@@ -35,7 +35,7 @@ export const NotFound: React.FC = () => {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Link 
                             to="/" 
-                            className="flex items-center justify-center gap-2 px-8 py-4 bg-[#39B54A] text-white font-bold rounded-2xl shadow-lg shadow-[#39B54A]/20 hover:bg-[#39B54A] transition-all transform hover:-translate-y-1"
+                            className="flex items-center justify-center gap-2 px-8 py-4 bg-[#001e45] text-white font-bold rounded-2xl shadow-lg shadow-[#001e45]/20 hover:bg-[#e04a4f] transition-all transform hover:-translate-y-1"
                         >
                             <Home size={18} />
                             홈으로 돌아가기
@@ -51,7 +51,7 @@ export const NotFound: React.FC = () => {
 
                     <div className="mt-16 pt-8 border-t border-slate-100">
                         <p className="text-xs text-slate-400">
-                            도움이 필요하신가요? <Link to="/cs" className="text-[#39B54A] underline font-medium">고객센터</Link>로 문의해 주세요.
+                            도움이 필요하신가요? <Link to="/cs" className="text-[#001e45] underline font-medium">고객센터</Link>로 문의해 주세요.
                         </p>
                     </div>
                 </div>

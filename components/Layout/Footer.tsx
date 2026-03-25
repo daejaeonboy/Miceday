@@ -1,118 +1,177 @@
-import React from 'react';
-import { Container } from '../ui/Container';
-import { ArrowUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { ArrowUp, FileText, MonitorPlay } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Container } from "../ui/Container";
+import { siteBrand } from "../../src/config/siteBrand";
 
+type FooterLink = {
+  label: string;
+  to?: string;
+};
 
+const footerColumns: FooterLink[][] = [
+  [
+    { label: "\uD648", to: "/" },
+    { label: "\uC774\uC6A9\uC57D\uAD00", to: "/terms" },
+    { label: "\uAC1C\uC778\uC815\uBCF4\uCC98\uB9AC\uBC29\uCE68", to: "/privacy" },
+    { label: "\uACE0\uAC1D\uC13C\uD130", to: "/cs" },
+  ],
+  [
+    { label: "\uD68C\uC0AC\uC18C\uAC1C", to: "/company" },
+    { label: "\uC81C\uD488\uC548\uB0B4", to: "/products" },
+    { label: "\uACE0\uAC1D\uC0AC\uB840", to: "/cases" },
+    { label: "\uC0C1\uB2F4\uBB38\uC758", to: "/quote-request" },
+  ],
+];
+
+const labels = {
+  homeAria: "\uD734\uBA3C\uD30C\uD2B8\uB108 \uD648\uC73C\uB85C \uC774\uB3D9",
+  kakao: "\uCE74\uCE74\uC624 \uC0C1\uB2F4",
+  phone: "\uC804\uD654 \uBB38\uC758",
+  mail: "\uBA54\uC77C \uBB38\uC758",
+  remote: "\uC628\uB77C\uC778 \uC6D0\uACA9\uC0C1\uB2F4",
+  remoteAria: "\uC628\uB77C\uC778 \uC6D0\uACA9\uC0C1\uB2F4 \uC5F4\uAE30",
+  consult: "\uACAC\uC801\uBB38\uC758",
+  consultAria: "\uACAC\uC801\uBB38\uC758 \uD398\uC774\uC9C0\uB85C \uC774\uB3D9",
+};
 
 export function Footer() {
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+  const location = useLocation();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
     };
 
-    return (
-        <footer className="bg-white border-t border-gray-200 pt-0 pb-20 md:pb-8 text-sm text-gray-600">
-            {/* TOP LAYER: Links (Full width border) */}
-            <div className="w-full border-b border-gray-200 py-6 mb-8">
-                <Container>
-                    <div className="flex flex-wrap items-center gap-x-4 md:gap-x-6 text-[13px] md:text-sm font-semibold text-gray-600">
-                        <Link to="/" className="hover:text-black transition-colors whitespace-nowrap flex items-center h-full">홈</Link>
-                        <span className="w-px h-3.5 bg-gray-200 hidden md:block"></span>
-                        <Link to="/cs" className="hover:text-[#39B54A] font-bold text-[#39B54A] transition-colors whitespace-nowrap flex items-center h-full">고객센터</Link>
-                        <span className="w-px h-3.5 bg-gray-200 hidden md:block"></span>
-                        <Link to="/company" className="cursor-pointer hover:text-black transition-colors whitespace-nowrap flex items-center h-full">회사소개</Link>
-                        <span className="w-px h-3.5 bg-gray-200 hidden md:block"></span>
-                        <Link to="/terms" className="cursor-pointer hover:text-black transition-colors whitespace-nowrap flex items-center h-full">이용약관</Link>
-                        <span className="w-px h-3.5 bg-gray-200 hidden md:block"></span>
-                        <Link to="/privacy" className="cursor-pointer hover:text-black font-bold text-gray-800 transition-colors whitespace-nowrap flex items-center h-full">개인정보처리방침</Link>
-                    </div>
-                </Container>
-            </div>
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-            <Container>
-                {/* BOTTOM LAYER: 3 Columns on PC */}
-                <div className="flex flex-col lg:flex-row justify-between items-start gap-8 lg:gap-10">
-                    
-                    {/* LEFT: CS & Bank (Horizontal on Tablet/PC) */}
-                    <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 shrink-0">
-                        {/* C/S CENTER */}
-                        <div className="w-full sm:w-auto">
-                            <h3 className="font-bold text-gray-800 mb-2 text-[13px] tracking-wide">C/S CENTER</h3>
-                            <div className="text-2xl font-extrabold text-gray-900 mb-1 tracking-tight">1800-1985</div>
-                            <div className="text-gray-500 text-xs leading-relaxed">
-                                <p>평일 09:00~18:00 (점심 12:00~13:00)</p>
-                                <p>주말 및 공휴일 휴무</p>
-                            </div>
-                        </div>
+  const currentYear = new Date().getFullYear();
+  const footer = siteBrand.footer;
+  const hideFloatingConsultButtons = location.pathname === "/quote-request";
 
-                        {/* BANK ACCOUNT */}
-                        <div className="flex items-start pt-6 sm:pt-0 border-t sm:border-t-0 border-gray-100 relative sm:pl-10">
-                            {/* Vertical Divider for Tablet/PC */}
-                            <div className="hidden sm:block absolute left-0 top-1 w-px h-[80px] bg-gray-100"></div>
-                            
-                            <div>
-                                <h3 className="font-bold text-gray-800 mb-2 text-[13px] tracking-wide">입금계좌</h3>
-                                <div className="text-gray-800 font-bold text-sm mb-1 tracking-tight">
-                                    <span className="text-[#39B54A]">하나은행</span> 734-910239-17507
-                                </div>
-                                <div className="text-gray-500 text-[11px]">
-                                    예금주 : micepartner (이기섭)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-                    {/* RIGHT: Company Text */}
-                    <div className="flex-1 lg:pl-10 pt-6 lg:pt-0 border-t lg:border-t-0 border-gray-100 w-full relative">
-                        {/* Vertical Divider for PC */}
-                        <div className="hidden lg:block absolute left-0 top-1 w-px h-[80px] bg-gray-100"></div>
-                        
-                        <div className="text-[11px] md:text-[13px] leading-6 md:leading-7 text-gray-500">
-                            <p>
-                                법인명(상호) : micepartner <span className="mx-2 text-gray-300">|</span> 대표자(성명) : 이기섭 <span className="mx-2 text-gray-300">|</span> 사업자 등록번호 : 305-30-85537
-                            </p>
-                            <p>
-                                통신판매업 신고 : 2025-대전대덕-0526 &nbsp; <span className="underline cursor-pointer hover:text-gray-800 transition-colors">[사업자정보확인]</span>
-                            </p>
-                            <p>
-                                전화 : 010-4074-6967 <span className="mx-2 text-gray-300">|</span> 주소 : 대전광역시 대덕구 대화로106번길 66 펜타플렉스 705호 34365
-                            </p>
-                            <p>
-                                개인정보보호책임자 : 이기섭(hm_solution@naver.com)
-                            </p>
-                            <p className="mt-5 text-[11px] text-gray-400 font-medium">
-                                Copyright © 2024 micepartner. All rights reserved.
-                            </p>
-                        </div>
-                    </div>
+  return (
+    <footer className="relative border-t border-slate-200 bg-[#f7f8fb] pb-20 text-slate-800 md:pb-10">
+      <Container className="py-8 md:py-9">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-10">
+          <Link
+            to="/"
+            aria-label={labels.homeAria}
+            className="inline-block leading-none text-[48px] md:text-[64px]"
+            style={{ fontFamily: '"Pacifico", cursive' }}
+          >
+            H.
+          </Link>
 
-                </div>
+          <div className="grid w-full max-w-[980px] grid-cols-2 gap-x-10 gap-y-6 md:grid-cols-3 md:gap-x-16">
+            {footerColumns.map((column, columnIndex) => (
+              <ul key={`footer-column-${columnIndex}`} className="space-y-2.5 text-[15px] font-medium text-slate-800">
+                {column.map((item) => (
+                  <li key={`${item.label}-${item.to}`}>
+                    <Link to={item.to || "/"} className="transition-colors hover:text-[#001e45]">
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ))}
 
-                {/* Floating Action Buttons */}
-                <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[60] flex flex-col gap-2">
-                    {/* KakaoTalk Channel Button */}
-                    <a
-                        href="http://pf.kakao.com/_iRxghX/chat"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:scale-110 transition-all overflow-hidden"
-                        aria-label="카카오톡 채널 상담"
-                        title="카카오톡 상담"
-                    >
-                        <img src="/kakao.png" alt="카카오톡 채널" className="w-10 h-10 md:w-12 md:h-12" />
-                    </a>
+            <ul className="col-span-2 space-y-2.5 text-[15px] font-medium text-slate-800 md:col-span-1">
+              <li>
+                <a
+                  href={footer.kakaoChatUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center transition-colors hover:text-[#001e45]"
+                >
+                  {labels.kakao}
+                </a>
+              </li>
+              <li>
+                <a
+                  href="tel:18001985"
+                  className="flex flex-col items-start gap-0.5 transition-colors hover:text-[#001e45] md:flex-row md:items-center md:gap-2"
+                >
+                  <span className="text-[13px] font-semibold text-slate-600 md:text-[15px] md:text-slate-800">{labels.phone}</span>
+                  <span className="text-[15px] font-semibold text-slate-800">1800-1985</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:hm_solution@naver.com"
+                  className="flex flex-col items-start gap-0.5 transition-colors hover:text-[#001e45] md:flex-row md:items-center md:gap-2"
+                >
+                  <span className="text-[13px] font-semibold text-slate-600 md:text-[15px] md:text-slate-800">{labels.mail}</span>
+                  <span className="break-all text-[14px] font-semibold text-slate-800 md:break-normal">hm_solution@naver.com</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-                    {/* Scroll to Top Button */}
-                    <button
-                        onClick={scrollToTop}
-                        className="w-10 h-10 md:w-12 md:h-12 bg-black text-white hover:bg-gray-800 transition-all flex items-center justify-center"
-                        aria-label="Scroll to top"
-                    >
-                        <ArrowUp size={18} />
-                    </button>
-                </div>
+        <div className="mt-8 border-t border-dashed border-slate-300 pt-4 text-xs leading-relaxed text-slate-600">
+          <p>{footer.companyInfoLines.join(" | ")}</p>
+          <p className="mt-1">Copyright {currentYear}. {footer.copyrightOwner}. All rights reserved.</p>
+        </div>
+      </Container>
 
-            </Container>
-        </footer>
-    );
+      {!hideFloatingConsultButtons && (
+        <>
+          <a
+            href="https://367.co.kr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group fixed bottom-8 left-1/2 z-[60] hidden w-[calc(100%-2rem)] max-w-[340px] -translate-x-1/2 items-center justify-center gap-2 rounded-full border border-[#4d6f9f] bg-[#001e45] px-5 py-3.5 text-[14px] font-semibold tracking-[0.01em] text-white transition-all duration-300 hover:-translate-x-1/2 hover:-translate-y-1 hover:border-[#6f8cb0] hover:bg-[#03285d] lg:inline-flex"
+            aria-label={labels.remoteAria}
+          >
+            <MonitorPlay size={16} className="transition-transform duration-300 group-hover:scale-105" />
+            <span>{labels.remote}</span>
+          </a>
+
+          <Link
+            to="/quote-request"
+            className="group fixed bottom-8 left-1/2 z-[60] inline-flex w-[calc(100%-2rem)] max-w-[188px] -translate-x-1/2 items-center justify-center gap-2 rounded-full border border-[#4d6f9f] bg-[#001e45] px-3.5 py-3 text-[13px] font-semibold tracking-[0.01em] text-white transition-all duration-300 hover:-translate-x-1/2 hover:-translate-y-1 hover:border-[#6f8cb0] hover:bg-[#03285d] lg:hidden"
+            aria-label={labels.consultAria}
+          >
+            <FileText size={16} className="transition-transform duration-300 group-hover:scale-105" />
+            <span>{labels.consult}</span>
+          </Link>
+        </>
+      )}
+
+      <div className="fixed bottom-[100px] right-4 z-[60] flex flex-col gap-3 md:bottom-12 md:right-8">
+        <a
+          href={footer.kakaoChatUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full border border-black/10 bg-[#fde500] shadow-[0_8px_20px_-8px_rgba(2,6,23,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_24px_-12px_rgba(253,229,0,0.78)] md:h-14 md:w-14"
+          aria-label={footer.kakaoButtonAriaLabel}
+        >
+          <img
+            src={footer.kakaoImagePath}
+            alt={footer.kakaoButtonAriaLabel}
+            className="h-[65%] w-[65%] object-contain transition-transform duration-300 group-hover:scale-110"
+          />
+        </a>
+
+        <button
+          onClick={scrollToTop}
+          className={`group flex h-[48px] w-[48px] items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-[0_8px_20px_-8px_rgba(2,6,23,0.35)] backdrop-blur-sm transition-all duration-500 hover:border-[#001e45] hover:bg-[#001e45] hover:text-white hover:shadow-[0_18px_24px_-12px_rgba(0,30,69,0.5)] md:h-[52px] md:w-[52px] ${
+            showScrollTop
+              ? "translate-y-0 scale-100 opacity-100 blur-0"
+              : "pointer-events-none translate-y-4 scale-90 opacity-0 blur-[2px]"
+          }`}
+          aria-label={footer.scrollTopAriaLabel}
+        >
+          <ArrowUp size={20} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+        </button>
+      </div>
+    </footer>
+  );
 }

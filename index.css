@@ -1,7 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
 /* Restored empty file to fix build error. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --font-base:
+    "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR",
+    "Malgun Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --brand-ink: #0f172a;
+  --brand-ink-soft: #1e293b;
+  --brand-cloud: #eef3fa;
+  --brand-sky: #d7e4f8;
+  --brand-mint: #e4ebf7;
+  --radius-panel: 28px;
+  --radius-card: 18px;
+  --radius-button: 10px;
+}
+
+:root,
+html[data-theme="light"] {
+  /* Header theme tokens */
+  --header-surface: rgba(255, 255, 255, 0.92);
+  --header-surface-solid: #ffffff;
+  --header-border: #e2e8f0;
+  --header-logo-color: #0f172a;
+
+  --header-utility-bg: #0f172a;
+  --header-utility-text: #f8fafc;
+  --header-utility-muted: rgba(248, 250, 252, 0.74);
+  --header-utility-link: rgba(248, 250, 252, 0.86);
+  --header-utility-link-hover: #ffffff;
+
+  --header-search-bg: #f8fafc;
+  --header-search-border: #e2e8f0;
+  --header-search-text: #334155;
+  --header-search-placeholder: #94a3b8;
+
+  --header-cta-bg: #001e45;
+  --header-cta-hover: #001430;
+  --header-cta-text: #ffffff;
+
+  --header-nav-link: #334155;
+  --header-nav-link-hover-bg: #f1f5f9;
+  --header-nav-active-bg: #e2e8f0;
+  --header-nav-active-text: #001e45;
+
+  --header-dropdown-surface: #ffffff;
+  --header-dropdown-card-bg: #f8fafc;
+  --header-dropdown-title: #0f172a;
+  --header-dropdown-label: #001e45;
+
+  --header-chip-bg: #ffffff;
+  --header-chip-border: #e2e8f0;
+  --header-chip-text: #334155;
+  --header-chip-hover-border: #94a3b8;
+  --header-chip-hover-bg: #f8fafc;
+
+  --header-mobile-backdrop: rgba(15, 23, 42, 0.45);
+  --header-mobile-surface: #ffffff;
+
+  /* Footer theme tokens */
+  --footer-bg: #ffffff;
+  --footer-sub-bg: #f8fafc;
+  --footer-border: #e2e8f0;
+  --footer-text: #475569;
+  --footer-muted: #94a3b8;
+  --footer-heading: #0f172a;
+  --footer-divider: #cbd5e1;
+  --footer-card-bg: #ffffff;
+  --footer-card-border: #e2e8f0;
+  --footer-cta-bg: #001e45;
+  --footer-cta-hover: #001430;
+  --footer-cta-text: #ffffff;
+  --footer-floating-bg: rgba(255, 255, 255, 0.95);
+  --footer-floating-border: #e2e8f0;
+}
+
+html[data-theme="dark"] {
+  /* Header theme tokens */
+  --header-surface: rgba(2, 6, 23, 0.94);
+  --header-surface-solid: #020617;
+  --header-border: #334155;
+  --header-logo-color: #f8fafc;
+
+  --header-utility-bg: #01040b;
+  --header-utility-text: #e2e8f0;
+  --header-utility-muted: #94a3b8;
+  --header-utility-link: #cbd5e1;
+  --header-utility-link-hover: #f8fafc;
+
+  --header-search-bg: #0f172a;
+  --header-search-border: #334155;
+  --header-search-text: #e2e8f0;
+  --header-search-placeholder: #94a3b8;
+
+  --header-cta-bg: #2563eb;
+  --header-cta-hover: #3b82f6;
+  --header-cta-text: #eff6ff;
+
+  --header-nav-link: #cbd5e1;
+  --header-nav-link-hover-bg: #0f172a;
+  --header-nav-active-bg: #1e3a8a;
+  --header-nav-active-text: #dbeafe;
+
+  --header-dropdown-surface: #020617;
+  --header-dropdown-card-bg: #0f172a;
+  --header-dropdown-title: #f8fafc;
+  --header-dropdown-label: #93c5fd;
+
+  --header-chip-bg: #0f172a;
+  --header-chip-border: #334155;
+  --header-chip-text: #cbd5e1;
+  --header-chip-hover-border: #60a5fa;
+  --header-chip-hover-bg: #1e293b;
+
+  --header-mobile-backdrop: rgba(2, 6, 23, 0.68);
+  --header-mobile-surface: #020617;
+
+  /* Footer theme tokens */
+  --footer-bg: #01050d;
+  --footer-sub-bg: rgba(15, 23, 42, 0.82);
+  --footer-border: #334155;
+  --footer-text: #cbd5e1;
+  --footer-muted: #94a3b8;
+  --footer-heading: #f8fafc;
+  --footer-divider: #475569;
+  --footer-card-bg: rgba(15, 23, 42, 0.74);
+  --footer-card-border: #334155;
+  --footer-cta-bg: #2563eb;
+  --footer-cta-hover: #3b82f6;
+  --footer-cta-text: #f8fafc;
+  --footer-floating-bg: rgba(2, 6, 23, 0.95);
+  --footer-floating-border: #475569;
+}
+
+.header-overlay {
+  --header-surface: transparent;
+  --header-surface-solid: transparent;
+  --header-border: rgba(226, 232, 240, 0.28);
+  --header-logo-color: #ffffff;
+
+  --header-search-bg: rgba(2, 6, 23, 0.34);
+  --header-search-border: rgba(226, 232, 240, 0.3);
+  --header-search-text: #f8fafc;
+  --header-search-placeholder: rgba(226, 232, 240, 0.75);
+
+  --header-nav-link: #f8fafc;
+  --header-nav-link-hover-bg: rgba(15, 23, 42, 0.35);
+  --header-nav-active-bg: rgba(15, 23, 42, 0.5);
+  --header-nav-active-text: #ffffff;
+
+  --header-dropdown-surface: rgba(2, 6, 23, 0.94);
+  --header-dropdown-card-bg: rgba(15, 23, 42, 0.82);
+  --header-dropdown-title: #f8fafc;
+  --header-dropdown-label: #93c5fd;
+
+  --header-chip-bg: rgba(15, 23, 42, 0.78);
+  --header-chip-border: rgba(148, 163, 184, 0.5);
+  --header-chip-text: #e2e8f0;
+  --header-chip-hover-border: rgba(147, 197, 253, 0.9);
+  --header-chip-hover-bg: rgba(30, 41, 59, 0.9);
+}
 
 @layer utilities {
   @keyframes move-left-fade {
@@ -44,10 +205,255 @@
   .animate-swipe-hint {
     animation: swipe-hint 1.5s ease-in-out infinite;
   }
+
+  @keyframes marquee-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marquee-right {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-marquee-left {
+    animation: marquee-left 34s linear infinite;
+  }
+
+  .animate-marquee-right {
+    animation: marquee-right 34s linear infinite;
+  }
+
+  /* 카테고리 탭 대각선 커튼콜 효과 */
+  .tab-diagonal-fill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--tw-fill-color, #1e3a8a);
+    clip-path: polygon(0 0, 0 0, 0 0);
+    transition: clip-path 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .group:hover .tab-diagonal-fill::before {
+    clip-path: polygon(0 0, 300% 0, 0 300%);
+  }
+
+  /* 인트로 카드 하단 악센트 라인 */
+  .intro-card {
+    position: relative;
+  }
+  .intro-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 70%;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--brand-ink, #2563eb),
+      transparent
+    );
+    transform: translateX(-50%) scaleX(0);
+    transition: transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border-radius: 2px;
+  }
+  .intro-card:hover::after {
+    transform: translateX(-50%) scaleX(1);
+  }
 }
 
 @layer base {
   body {
-    line-height: 1.6; /* Increased line-height for web font readability */
+    font-family: var(--font-base);
+    background-color: var(--brand-cloud);
+    color: var(--brand-ink);
+    line-height: 1.6;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+  }
+}
+
+@layer utilities {
+  .b2b-hero-bg {
+    background:
+      radial-gradient(circle at 12% 18%, var(--brand-sky) 0%, transparent 45%),
+      radial-gradient(circle at 88% 76%, var(--brand-mint) 0%, transparent 42%),
+      linear-gradient(135deg, #f4f8fd 0%, #e7edf7 100%);
+  }
+
+  .b2b-grid-pattern {
+    background-image:
+      linear-gradient(to right, rgba(15, 23, 42, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  @keyframes section-reveal-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .section-reveal {
+    opacity: 0;
+    animation: section-reveal-fade-up 0.7s ease-out forwards;
+  }
+
+  .section-reveal-delay {
+    animation-delay: 0.14s;
+  }
+
+  /* react-datepicker UI 커스텀 (견적문의용 넓은 달력) */
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  .react-datepicker {
+    width: 100%;
+    max-width: 440px; /* 달력 최대 너비 증가 */
+    font-family: var(--font-base);
+    border: 1px solid var(--header-search-border) !important;
+    border-radius: 12px !important;
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.1),
+      0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    background-color: white !important;
+    padding: 12px;
+    font-size: 0.95rem !important;
+  }
+
+  .react-datepicker__month-container {
+    width: 100%;
+    float: none !important;
+  }
+
+  .react-datepicker__header {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--header-search-border) !important;
+    padding-top: 12px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .react-datepicker__current-month {
+    display: none !important; /* 드롭다운을 사용하므로 기존 텍스트 달 숨김 */
+  }
+
+  .react-datepicker__header__dropdown {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+
+  /* 월/년 셀렉트 박스 스타일링 */
+  .react-datepicker__month-select,
+  .react-datepicker__year-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 8px 36px 8px 16px;
+    border-radius: 9999px;
+    border: 1px solid var(--header-search-border);
+    background-color: var(--brand-cloud);
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--brand-ink-soft);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    min-width: 90px;
+    text-align: center;
+  }
+
+  .react-datepicker__month-select:hover,
+  .react-datepicker__year-select:hover {
+    background-color: var(--brand-mint);
+    border-color: #cbd5e1;
+  }
+
+  .react-datepicker__month-select:focus,
+  .react-datepicker__year-select:focus {
+    border-color: var(--header-cta-bg);
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(0, 30, 69, 0.1);
+  }
+
+  .react-datepicker__day-names {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .react-datepicker__day-name {
+    width: 2.5rem !important;
+    font-weight: 700 !important;
+    color: var(--header-search-placeholder) !important;
+  }
+
+  .react-datepicker__week {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 4px;
+  }
+
+  .react-datepicker__day {
+    width: 2.5rem !important;
+    line-height: 2.5rem !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    color: var(--brand-ink) !important;
+    transition: all 0.2s;
+  }
+
+  .react-datepicker__day:hover {
+    background-color: var(--brand-mint) !important;
+  }
+
+  .react-datepicker__day--selected,
+  .react-datepicker__day--keyboard-selected {
+    background-color: var(--header-cta-bg) !important; /* #001e45 */
+    color: white !important;
+    font-weight: 800 !important;
+  }
+
+  .react-datepicker__day--outside-month {
+    color: #cbd5e1 !important;
+  }
+
+  .react-datepicker__navigation {
+    top: 18px !important;
+  }
+
+  .react-datepicker__navigation-icon::before {
+    border-color: var(--header-search-placeholder) !important;
+    border-width: 2px 2px 0 0 !important;
+  }
+
+  .react-datepicker__navigation:hover
+    .react-datepicker__navigation-icon::before {
+    border-color: var(--header-cta-bg) !important;
   }
 }

@@ -1,310 +1,418 @@
-import React, { useState, useEffect } from 'react';
-import { Check, X, Loader2, Clock, Calendar, CheckCircle, XCircle, Trash2, Phone, Building2 } from 'lucide-react';
-import { getBookings, updateBookingStatus, deleteBooking, Booking } from '../../src/api/bookingApi';
-import { createNotification } from '../../src/api/notificationApi';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+    Building2,
+    CalendarDays,
+    CheckCircle2,
+    Clock3,
+    Loader2,
+    Mail,
+    MessageSquareText,
+    Phone,
+    RefreshCcw,
+    Send,
+    Trash2,
+    User,
+} from 'lucide-react';
+import {
+    answerInquiry,
+    deleteInquiry,
+    getQuoteInquiries,
+    Inquiry,
+    isInquiriesTableMissingError,
+    parseQuoteInquiryContent,
+    QuoteInquiryPayload,
+} from '../../src/api/inquiryApi';
 
-export const BookingList = () => {
-    const [bookings, setBookings] = useState<Booking[]>([]);
+interface QuoteInquiryRow extends Inquiry {
+    quote: QuoteInquiryPayload | null;
+}
+
+const formatDateTime = (dateStr?: string) => {
+    if (!dateStr) return '-';
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return '-';
+
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mi = String(date.getMinutes()).padStart(2, '0');
+    return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
+};
+
+const formatPreferredInstallPickupTime = (
+    value?: string,
+    installTime?: string,
+    pickupTime?: string,
+) => {
+    const directInstall = (installTime || '').trim();
+    const directPickup = (pickupTime || '').trim();
+    if (directInstall || directPickup) {
+        return `설치: ${directInstall || '-'}\n회수: ${directPickup || '-'}`;
+    }
+
+    const raw = (value || '').trim();
+    if (!raw) return '-';
+
+    const normalized = raw
+        .replace(/\r\n/g, '\n')
+        .replace(/\s*\/\s*/g, '\n')
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+    const installLine = normalized.find((line) => /^설치\s*:?\s*/.test(line));
+    const pickupLine = normalized.find((line) => /^회수\s*:?\s*/.test(line));
+
+    const install = installLine
+        ? installLine.replace(/^설치\s*:?\s*/, '').trim() || '-'
+        : normalized[0] || '-';
+    const pickup = pickupLine
+        ? pickupLine.replace(/^회수\s*:?\s*/, '').trim() || '-'
+        : normalized[1] || '-';
+
+    return `설치: ${install}\n회수: ${pickup}`;
+};
+
+const getProductSummary = (quote: QuoteInquiryPayload | null) => {
+    if (!quote || quote.neededProducts.length === 0) return '-';
+    return quote.neededProducts.join(', ');
+};
+
+const getPeriodSummary = (quote: QuoteInquiryPayload | null) => {
+    if (!quote) return '-';
+    if (quote.rentalStart && quote.rentalEnd) return `${quote.rentalStart} ~ ${quote.rentalEnd}`;
+    if (quote.rentalStart) return `${quote.rentalStart} 시작`;
+    if (quote.rentalEnd) return `${quote.rentalEnd} 종료`;
+    return '-';
+};
+
+export const BookingList: React.FC = () => {
+    const [items, setItems] = useState<QuoteInquiryRow[]>([]);
     const [loading, setLoading] = useState(true);
-    const [updatingId, setUpdatingId] = useState<string | null>(null);
+    const [loadError, setLoadError] = useState('');
+    const [savingId, setSavingId] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [filter, setFilter] = useState<'all' | 'pending' | 'answered'>('all');
+    const [answerDrafts, setAnswerDrafts] = useState<Record<string, string>>({});
 
-    useEffect(() => {
-        loadBookings();
-    }, []);
-
-    const loadBookings = async () => {
+    const loadQuoteInquiries = async () => {
+        setLoading(true);
+        setLoadError('');
         try {
-            setLoading(true);
-            const data = await getBookings();
-            setBookings(data);
+            const inquiryData = await getQuoteInquiries();
+            const mappedData = inquiryData.map((inquiry) => ({
+                ...inquiry,
+                quote: parseQuoteInquiryContent(inquiry.content),
+            }));
+            setItems(mappedData);
+            setAnswerDrafts(
+                mappedData.reduce<Record<string, string>>((acc, item) => {
+                    if (item.id) acc[item.id] = item.answer || '';
+                    return acc;
+                }, {}),
+            );
         } catch (error) {
-            console.error('Failed to load bookings:', error);
+            console.error('Failed to load quote inquiries:', error);
+            setItems([]);
+            setAnswerDrafts({});
+            setLoadError(
+                isInquiriesTableMissingError(error)
+                    ? 'inquiries 테이블이 아직 생성되지 않았습니다. Supabase SQL Editor에서 create_inquiries_table.sql을 먼저 실행해 주세요.'
+                    : '견적문의 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.',
+            );
         } finally {
             setLoading(false);
         }
     };
 
-    const handleStatusChange = async (id: string, status: Booking['status']) => {
-        const statusLabel = status === 'confirmed' ? '확정' : '취소';
-        if (!confirm(`이 예약을 ${statusLabel} 처리하시겠습니까?`)) return;
+    useEffect(() => {
+        void loadQuoteInquiries();
+    }, []);
 
-        setUpdatingId(id);
+    const filteredItems = useMemo(() => {
+        if (filter === 'all') return items;
+        return items.filter((item) => item.status === filter);
+    }, [filter, items]);
+
+    const pendingCount = useMemo(() => items.filter((item) => item.status === 'pending').length, [items]);
+    const answeredCount = useMemo(() => items.filter((item) => item.status === 'answered').length, [items]);
+
+    const handleAnswerSave = async (id: string) => {
+        const answerText = (answerDrafts[id] || '').trim();
+        if (!answerText) return;
+
+        setSavingId(id);
         try {
-            await updateBookingStatus(id, status);
-            setBookings(bookings.map(b => b.id === id ? { ...b, status } : b));
-
-            // Send Notification
-            const targetBooking = bookings.find(b => b.id === id);
-            if (targetBooking?.user_id) {
-                 await createNotification(
-                    targetBooking.user_id,
-                    status === 'confirmed' ? '예약 확정' : '예약 취소',
-                    status === 'confirmed' 
-                        ? `${targetBooking.products?.name || '상품'} 예약이 확정되었습니다. 이용해주셔서 감사합니다.` 
-                        : `${targetBooking.products?.name || '상품'} 예약이 취소되었습니다.`,
-                    status === 'confirmed' ? 'success' : 'error',
-                    '/mypage'
-                );
-            }
-
-            alert(`예약이 ${statusLabel}되었습니다.`);
+            await answerInquiry(id, answerText);
+            await loadQuoteInquiries();
         } catch (error) {
-            console.error('Failed to update status:', error);
-            alert('상태 변경에 실패했습니다.');
+            console.error('Failed to save answer:', error);
+            alert('답변 저장에 실패했습니다.');
         } finally {
-            setUpdatingId(null);
+            setSavingId(null);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('이 예약을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+        if (!confirm('해당 견적문의를 삭제하시겠습니까?')) return;
 
         setDeletingId(id);
         try {
-            await deleteBooking(id);
-            setBookings(bookings.filter(b => b.id !== id));
-            alert('예약이 삭제되었습니다.');
+            await deleteInquiry(id);
+            await loadQuoteInquiries();
         } catch (error) {
-            console.error('Failed to delete booking:', error);
+            console.error('Failed to delete inquiry:', error);
             alert('삭제에 실패했습니다.');
         } finally {
             setDeletingId(null);
         }
     };
 
-    const getStatusBadge = (status: Booking['status']) => {
-        const config = {
-            pending: { 
-                className: 'bg-orange-100 border border-orange-300 text-orange-800', 
-                icon: Calendar, 
-                label: '예약 대기 중' 
-            },
-            confirmed: { 
-                className: 'bg-blue-100 border border-blue-300 text-blue-800', 
-                icon: CheckCircle, 
-                label: '예약 확정' 
-            },
-            cancelled: { 
-                className: 'bg-gray-100 border border-gray-300 text-gray-700', 
-                icon: XCircle, 
-                label: '예약 취소' 
-            },
-        };
-        const { className, icon: Icon, label } = config[status];
-        return (
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold shadow-sm ${className}`}>
-                <Icon size={14} strokeWidth={2.5} />
-                {label}
-            </span>
-        );
-    };
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
-
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <Loader2 className="animate-spin text-[#39B54A]" size={40} />
+            <div className="flex min-h-[300px] items-center justify-center">
+                <Loader2 className="animate-spin text-[#001e45]" size={40} />
             </div>
         );
     }
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-6">
+        <div className="space-y-6">
+            <header className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800">예약 확인</h2>
-                    <p className="text-slate-500 text-sm mt-1">총 {bookings.length}건</p>
+                    <h1 className="text-2xl font-bold text-slate-900">견적문의 관리</h1>
+                    <p className="mt-1 text-sm text-slate-500">메인 견적문의서에서 접수된 요청을 확인하고 답변을 등록합니다.</p>
                 </div>
                 <button
-                    onClick={loadBookings}
-                    className="text-sm text-[#39B54A] hover:text-teal-700"
+                    type="button"
+                    onClick={() => void loadQuoteInquiries()}
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                 >
+                    <RefreshCcw size={14} />
                     새로고침
+                </button>
+            </header>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+                <button
+                    type="button"
+                    onClick={() => setFilter('all')}
+                    className={`rounded-2xl border p-4 text-left transition ${
+                        filter === 'all' ? 'border-[#001e45] bg-[#001e45] text-white' : 'border-slate-200 bg-white text-slate-700'
+                    }`}
+                >
+                    <p className="text-xs font-bold">전체</p>
+                    <p className="mt-1 text-2xl font-extrabold">{items.length}</p>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setFilter('pending')}
+                    className={`rounded-2xl border p-4 text-left transition ${
+                        filter === 'pending' ? 'border-amber-500 bg-amber-500 text-white' : 'border-slate-200 bg-white text-slate-700'
+                    }`}
+                >
+                    <p className="text-xs font-bold">답변 대기</p>
+                    <p className="mt-1 text-2xl font-extrabold">{pendingCount}</p>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setFilter('answered')}
+                    className={`rounded-2xl border p-4 text-left transition ${
+                        filter === 'answered' ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-200 bg-white text-slate-700'
+                    }`}
+                >
+                    <p className="text-xs font-bold">답변 완료</p>
+                    <p className="mt-1 text-2xl font-extrabold">{answeredCount}</p>
                 </button>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            {loadError && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+                    {loadError}
+                </div>
+            )}
+
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
                 <div className="overflow-x-auto">
-                    <table className="w-full min-w-[900px]">
-                        <thead className="bg-slate-50 border-b">
+                    <table className="min-w-[980px] w-full">
+                        <thead className="border-b border-slate-200 bg-slate-50">
                             <tr>
-                                <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">상품</th>
-                                <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">고객명</th>
-                                <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">사업자명</th>
-                                <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">연락처</th>
-                                <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">기간</th>
-                                <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">금액</th>
-                                <th className="text-center px-4 py-3 text-sm font-semibold text-slate-600">상태</th>
-                                <th className="text-center px-4 py-3 text-sm font-semibold text-slate-600">작업</th>
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">업체명</th>
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">담당자</th>
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">연락처</th>
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">필요 품목</th>
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">렌탈 기간</th>
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">접수일</th>
+                                <th className="px-4 py-3 text-center text-xs font-bold text-slate-500">상태</th>
+                                <th className="px-4 py-3 text-center text-xs font-bold text-slate-500">관리</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y">
-                            {bookings.length === 0 ? (
+                        <tbody className="divide-y divide-slate-100">
+                            {filteredItems.length === 0 && (
                                 <tr>
-                                    <td colSpan={8} className="text-center py-12 text-slate-400">
-                                        예약 내역이 없습니다.
+                                    <td colSpan={8} className="px-4 py-16 text-center text-sm font-medium text-slate-400">
+                                        표시할 견적문의가 없습니다.
                                     </td>
                                 </tr>
-                            ) : (
-                                bookings.map((booking) => (
-                                    <React.Fragment key={booking.id}>
+                            )}
+
+                            {filteredItems.map((item) => {
+                                const quote = item.quote;
+                                const contactName = quote?.contactName || item.user_name || '-';
+                                const phone = quote?.phone || '-';
+                                const status = item.status || 'pending';
+                                const rowExpanded = expandedId === item.id;
+                                const isSaving = savingId === item.id;
+                                const isDeleting = deletingId === item.id;
+
+                                return (
+                                    <React.Fragment key={item.id}>
                                         <tr
-                                            className={`hover:bg-slate-50 cursor-pointer transition-colors ${expandedId === booking.id ? 'bg-slate-50' : ''}`}
-                                            onClick={() => setExpandedId(expandedId === booking.id ? null : (booking.id || null))}
+                                            className={`cursor-pointer transition ${rowExpanded ? 'bg-slate-50' : 'hover:bg-slate-50/60'}`}
+                                            onClick={() => setExpandedId(rowExpanded ? null : item.id || null)}
                                         >
-                                            <td className="px-4 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    {booking.products?.image_url && (
-                                                        <img
-                                                            src={booking.products.image_url}
-                                                            alt={booking.products.name}
-                                                            className="w-10 h-10 object-cover rounded-lg shadow-sm"
-                                                        />
-                                                    )}
-                                                    <span className="font-bold text-slate-800">
-                                                        {booking.products?.name || booking.product_id}
+                                            <td className="px-4 py-4 text-sm font-semibold text-slate-800">
+                                                {quote?.companyName || item.company_name || '-'}
+                                            </td>
+                                            <td className="px-4 py-4 text-sm text-slate-700">{contactName}</td>
+                                            <td className="px-4 py-4 text-sm text-slate-600">{phone}</td>
+                                            <td className="px-4 py-4 text-sm text-slate-600">{getProductSummary(quote)}</td>
+                                            <td className="px-4 py-4 text-sm text-slate-600">{getPeriodSummary(quote)}</td>
+                                            <td className="px-4 py-4 text-sm text-slate-500">{formatDateTime(item.created_at)}</td>
+                                            <td className="px-4 py-4 text-center">
+                                                {status === 'answered' ? (
+                                                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-600">
+                                                        <CheckCircle2 size={13} />
+                                                        답변 완료
                                                     </span>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <div className="text-slate-900 font-bold">
-                                                    {booking.user_profiles?.name || '-'}
-                                                </div>
-                                                <div className="text-[11px] text-slate-400">
-                                                    {booking.user_email || booking.user_id}
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <div className="flex items-center gap-1.5 text-slate-600 font-medium">
-                                                    <Building2 size={14} className="text-slate-400" />
-                                                    <span>{booking.user_profiles?.company_name || '-'}</span>
-                                                </div>
-                                                {booking.user_profiles?.business_number && (
-                                                    <div className="text-[11px] text-slate-400 mt-0.5 ml-5">
-                                                        {booking.user_profiles.business_number}
-                                                    </div>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-600">
+                                                        <Clock3 size={13} />
+                                                        답변 대기
+                                                    </span>
                                                 )}
                                             </td>
-                                            <td className="px-4 py-4">
-                                                <div className="flex items-center gap-1.5 text-slate-600 font-medium">
-                                                    <Phone size={14} className="text-slate-400" />
-                                                    <span>{booking.user_profiles?.phone || '-'}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4 text-slate-600 text-sm font-medium">
-                                                <div className="flex flex-col">
-                                                    <span>{formatDate(booking.start_date)}</span>
-                                                    <span className="text-slate-300 text-[10px] py-0.5">↓</span>
-                                                    <span>{formatDate(booking.end_date)}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4 text-right font-black text-slate-900">
-                                                {booking.total_price.toLocaleString()}원
-                                            </td>
-                                            <td className="px-4 py-4 text-center">
-                                                {getStatusBadge(booking.status)}
-                                            </td>
-                                            <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
-                                                <div className="flex items-center justify-center gap-1">
-                                                    {updatingId === booking.id || deletingId === booking.id ? (
-                                                        <Loader2 className="animate-spin text-slate-400" size={20} />
-                                                    ) : (
-                                                        <>
-                                                            {booking.status !== 'confirmed' && (
-                                                                <button
-                                                                    onClick={() => handleStatusChange(booking.id!, 'confirmed')}
-                                                                    className="p-1.5 text-green-500 hover:bg-green-50 rounded-lg transition-colors"
-                                                                    title="확정"
-                                                                >
-                                                                    <Check size={18} />
-                                                                </button>
-                                                            )}
-                                                            {booking.status !== 'cancelled' && (
-                                                                <button
-                                                                    onClick={() => handleStatusChange(booking.id!, 'cancelled')}
-                                                                    className="p-1.5 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
-                                                                    title="취소"
-                                                                >
-                                                                    <X size={18} />
-                                                                </button>
-                                                            )}
-                                                            <button
-                                                                onClick={() => handleDelete(booking.id!)}
-                                                                className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                                                title="삭제"
-                                                            >
-                                                                <Trash2 size={18} />
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
+                                            <td className="px-4 py-4 text-center" onClick={(event) => event.stopPropagation()}>
+                                                <button
+                                                    type="button"
+                                                    disabled={isDeleting}
+                                                    onClick={() => item.id && handleDelete(item.id)}
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed"
+                                                    title="삭제"
+                                                >
+                                                    {isDeleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                                                </button>
                                             </td>
                                         </tr>
-                                        {expandedId === booking.id && (
-                                            <tr className="bg-slate-50/50">
-                                                <td colSpan={8} className="px-8 py-6">
-                                                    <div className="flex flex-col lg:flex-row gap-8 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                        {/* Detail Block: Basic */}
-                                                        <div className="flex-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                                                            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100">
-                                                                <div className="w-1.5 h-4 bg-slate-300 rounded-full"></div>
-                                                                <h4 className="font-bold text-slate-800 text-sm">기본 구성 품목</h4>
+
+                                        {rowExpanded && (
+                                            <tr className="bg-slate-50/80">
+                                                <td colSpan={8} className="px-6 py-6">
+                                                    <div className="grid gap-4 lg:grid-cols-2">
+                                                        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+                                                            <h3 className="mb-4 text-sm font-bold text-slate-900">문의 정보</h3>
+                                                            <div className="space-y-2 text-sm text-slate-700">
+                                                                <p className="flex items-start gap-2">
+                                                                    <Building2 size={15} className="mt-0.5 text-slate-400" />
+                                                                    <span>업체명: {quote?.companyName || item.company_name || '-'}</span>
+                                                                </p>
+                                                                <p className="flex items-start gap-2">
+                                                                    <User size={15} className="mt-0.5 text-slate-400" />
+                                                                    <span>담당자: {quote?.contactName || item.user_name || '-'}</span>
+                                                                </p>
+                                                                <p className="flex items-start gap-2">
+                                                                    <Phone size={15} className="mt-0.5 text-slate-400" />
+                                                                    <span>전화번호: {quote?.phone || '-'}</span>
+                                                                </p>
+                                                                <p className="flex items-start gap-2">
+                                                                    <Mail size={15} className="mt-0.5 text-slate-400" />
+                                                                    <span>이메일: {quote?.email || item.user_email || '-'}</span>
+                                                                </p>
+                                                                <p className="flex items-start gap-2">
+                                                                    <CalendarDays size={15} className="mt-0.5 text-slate-400" />
+                                                                    <span>렌탈 기간: {getPeriodSummary(quote)}</span>
+                                                                </p>
+                                                                <p className="flex items-start gap-2">
+                                                                    <Clock3 size={15} className="mt-0.5 text-slate-400" />
+                                                                    <span className="whitespace-pre-line">
+                                                                        {formatPreferredInstallPickupTime(
+                                                                            quote?.preferredInstallPickupTime,
+                                                                            quote?.preferredInstallTime,
+                                                                            quote?.preferredPickupTime,
+                                                                        )}
+                                                                    </span>
+                                                                </p>
+                                                                <p className="flex items-start gap-2">
+                                                                    <MessageSquareText size={15} className="mt-0.5 text-slate-400" />
+                                                                    <span>접수일: {formatDateTime(item.created_at)}</span>
+                                                                </p>
                                                             </div>
-                                                            {booking.basic_components && booking.basic_components.length > 0 ? (
-                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
-                                                                    {booking.basic_components.map((comp, i) => (
-                                                                        <div key={i} className="flex justify-between items-center text-base">
-                                                                            <div className="flex flex-col">
-                                                                                <span className="text-slate-700 font-medium">{comp.name}</span>
-                                                                                {comp.model_name && <span className="text-xs text-slate-400">{comp.model_name}</span>}
-                                                                            </div>
-                                                                            <span className="font-bold text-slate-900 bg-slate-50 px-2.5 py-1 rounded border border-slate-100">{comp.quantity}</span>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            ) : (
-                                                                <p className="text-xs text-slate-400 italic py-2">기본 구성 정보가 없습니다.</p>
-                                                            )}
                                                         </div>
 
-                                                        {/* Detail Block: Options */}
-                                                        <div className="flex-1 bg-white p-5 rounded-xl border border-[#39B54A]/10 shadow-sm">
-                                                            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100">
-                                                                <div className="w-1.5 h-4 bg-[#39B54A] rounded-full"></div>
-                                                                <h4 className="font-bold text-slate-800 text-sm">추가 선택 옵션</h4>
-                                                            </div>
-                                                            {booking.selected_options && booking.selected_options.length > 0 ? (
-                                                                <div className="space-y-3">
-                                                                    {booking.selected_options.map((opt, i) => (
-                                                                        <div key={i} className="flex justify-between items-center bg-[#FFF9F9] p-3 rounded-lg border border-[#FFEAEA]">
-                                                                            <div className="flex flex-col">
-                                                                                <span className="text-base font-bold text-slate-800">{opt.name}</span>
-                                                                                <span className="text-xs text-slate-400">{opt.price.toLocaleString()}원 × {opt.quantity}개</span>
-                                                                            </div>
-                                                                            <span className="font-black text-[#39B54A] text-base">{(opt.price * opt.quantity).toLocaleString()}원</span>
-                                                                        </div>
-                                                                    ))}
+                                                        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+                                                            <h3 className="mb-4 text-sm font-bold text-slate-900">요청 상세</h3>
+                                                            {quote ? (
+                                                                <div className="space-y-3 text-sm text-slate-700">
+                                                                    <p>필요 품목: {getProductSummary(quote)}</p>
+                                                                    <p>설치 장소: {quote.location || '-'}</p>
+                                                                    <p className="whitespace-pre-line">
+                                                                        {formatPreferredInstallPickupTime(
+                                                                            quote.preferredInstallPickupTime,
+                                                                            quote.preferredInstallTime,
+                                                                            quote.preferredPickupTime,
+                                                                        )}
+                                                                    </p>
+                                                                    <p>결제방법: {quote.paymentMethod || '-'}</p>
+                                                                    <p>예산: {quote.budget || '-'}</p>
+                                                                    <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                                                                        <p className="mb-1 text-xs font-bold text-slate-500">요청 메모</p>
+                                                                        <p className="whitespace-pre-wrap leading-relaxed text-slate-700">{quote.notes}</p>
+                                                                    </div>
                                                                 </div>
                                                             ) : (
-                                                                <p className="text-xs text-slate-400 italic py-2">선택한 추가 옵션이 없습니다.</p>
+                                                                <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                                                                    <p className="mb-1 text-xs font-bold text-slate-500">원본 내용</p>
+                                                                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">{item.content}</p>
+                                                                </div>
                                                             )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50/50 p-5">
+                                                        <label className="mb-2 block text-sm font-bold text-blue-800">관리자 답변</label>
+                                                        <textarea
+                                                            rows={4}
+                                                            value={item.id ? answerDrafts[item.id] || '' : ''}
+                                                            onChange={(event) =>
+                                                                item.id &&
+                                                                setAnswerDrafts((prev) => ({
+                                                                    ...prev,
+                                                                    [item.id as string]: event.target.value,
+                                                                }))
+                                                            }
+                                                            placeholder="고객에게 전달할 답변을 입력해 주세요."
+                                                            className="w-full resize-none rounded-xl border border-blue-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                                                        />
+                                                        <div className="mt-3 flex justify-end">
+                                                            <button
+                                                                type="button"
+                                                                disabled={!item.id || isSaving || !(answerDrafts[item.id] || '').trim()}
+                                                                onClick={() => item.id && handleAnswerSave(item.id)}
+                                                                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                                                            >
+                                                                {isSaving ? <Loader2 size={15} className="animate-spin" /> : <Send size={14} />}
+                                                                답변 저장
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </td>
                                             </tr>
                                         )}
                                     </React.Fragment>
-                                ))
-                            )}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

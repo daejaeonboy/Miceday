@@ -3,13 +3,43 @@ import { auth } from '../config/firebaseAdmin';
 
 const router = express.Router();
 
+const getBearerToken = (req: Request): string | null => {
+    const header = req.headers.authorization;
+    if (!header?.startsWith('Bearer ')) {
+        return null;
+    }
+
+    return header.slice('Bearer '.length).trim();
+};
+
+const getAuthenticatedUid = async (req: Request): Promise<string | null> => {
+    const token = getBearerToken(req);
+    if (!token) {
+        return null;
+    }
+
+    const decoded = await auth.verifyIdToken(token);
+    return decoded.uid;
+};
+
 // 사용자 이메일 변경
 router.put('/update-email', async (req: Request, res: Response) => {
     try {
         const { firebaseUid, newEmail } = req.body;
+        const authenticatedUid = await getAuthenticatedUid(req);
+
+        if (!authenticatedUid) {
+            res.status(401).json({ error: '인증이 필요합니다.' });
+            return;
+        }
 
         if (!firebaseUid || !newEmail) {
             res.status(400).json({ error: 'firebaseUid와 newEmail이 필요합니다.' });
+            return;
+        }
+
+        if (authenticatedUid !== firebaseUid) {
+            res.status(403).json({ error: '본인 계정만 변경할 수 있습니다.' });
             return;
         }
 
@@ -36,9 +66,20 @@ router.put('/update-email', async (req: Request, res: Response) => {
 router.put('/update-password', async (req: Request, res: Response) => {
     try {
         const { firebaseUid, newPassword } = req.body;
+        const authenticatedUid = await getAuthenticatedUid(req);
+
+        if (!authenticatedUid) {
+            res.status(401).json({ error: '인증이 필요합니다.' });
+            return;
+        }
 
         if (!firebaseUid || !newPassword) {
             res.status(400).json({ error: 'firebaseUid와 newPassword가 필요합니다.' });
+            return;
+        }
+
+        if (authenticatedUid !== firebaseUid) {
+            res.status(403).json({ error: '본인 계정만 변경할 수 있습니다.' });
             return;
         }
 
@@ -66,6 +107,18 @@ router.put('/update-password', async (req: Request, res: Response) => {
 router.get('/:firebaseUid', async (req: Request, res: Response) => {
     try {
         const firebaseUid = req.params.firebaseUid as string;
+        const authenticatedUid = await getAuthenticatedUid(req);
+
+        if (!authenticatedUid) {
+            res.status(401).json({ error: '인증이 필요합니다.' });
+            return;
+        }
+
+        if (authenticatedUid !== firebaseUid) {
+            res.status(403).json({ error: '본인 계정만 조회할 수 있습니다.' });
+            return;
+        }
+
         const userRecord = await auth.getUser(firebaseUid);
 
         res.json({

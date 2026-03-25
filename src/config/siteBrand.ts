@@ -1,0 +1,36 @@
+export const siteBrand = {
+  header: {
+    logoText: "HUMAN PARTNER",
+    utilityTagline: "B2B OFFICE RENTAL PLATFORM",
+    supportPhoneDisplay: "1800-1985",
+    supportPhoneDial: "18001985",
+    searchPlaceholder: "상품 또는 키워드 검색",
+    consultCtaLabel: "상담 문의",
+  },
+  footer: {
+    topTagline: "HUMAN PARTNER B2B RENTAL",
+    topHeading: "기업 운영에 맞춘 렌탈 도입 상담을 지원합니다.",
+    topCtaLabel: "상담 접수하기",
+    quickLinks: [
+      { label: "홈", to: "/" },
+      { label: "회사소개", to: "/company" },
+      { label: "고객센터", to: "/cs" },
+      { label: "이용약관", to: "/terms" },
+      { label: "개인정보처리방침", to: "/privacy", emphasize: true },
+    ],
+    csLabel: "C/S CENTER",
+    csPhoneDisplay: "1800-1985",
+    csHoursLine1: "평일 09:00 - 18:00 (점심 12:00 - 13:00)",
+    csHoursLine2: "주말 및 공휴일 휴무",
+    companyInfoLines: [
+      "상호명 휴먼파트너 | 사업자등록번호 305-30-85537",
+      "통신판매신고 2025-대전유성-0526 | 이메일 hm_solution@naver.com",
+      "대표번호 010-4074-6967 | B2B 제휴/대량견적 문의 가능",
+    ],
+    copyrightOwner: "HUMAN PARTNER",
+    kakaoChatUrl: "http://pf.kakao.com/_iRxghX/chat",
+    kakaoImagePath: "/kakao.png",
+    kakaoButtonAriaLabel: "카카오톡 채널 상담",
+    scrollTopAriaLabel: "맨 위로 이동",
+  },
+} as const;

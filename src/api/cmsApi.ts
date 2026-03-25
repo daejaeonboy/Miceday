@@ -178,6 +178,7 @@ export const deleteNavMenuItem = async (id: string): Promise<void> => {
         .eq('id', id);
     if (error) throw error;
 };
+
 // ==================== Banners ====================
 export interface Banner {
     id?: string;
@@ -403,6 +404,137 @@ export const updateAllianceMember = async (id: string, updates: Partial<Alliance
 export const deleteAllianceMember = async (id: string): Promise<void> => {
     const { error } = await supabase
         .from('alliance_members')
+        .delete()
+        .eq('id', id);
+    if (error) throw error;
+};
+
+// ==================== Installation Cases ====================
+export interface InstallationCase {
+    id?: string;
+    title: string;
+    subtitle?: string;
+    image_url: string;
+    link: string;
+    content?: string;
+    display_order: number;
+    is_active: boolean;
+    created_at?: string;
+}
+
+export const getInstallationCases = async (): Promise<InstallationCase[]> => {
+    const { data, error } = await supabase
+        .from('installation_cases')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+};
+
+export const getAllInstallationCases = async (): Promise<InstallationCase[]> => {
+    const { data, error } = await supabase
+        .from('installation_cases')
+        .select('*')
+        .order('display_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+};
+
+export const addInstallationCase = async (
+    item: Omit<InstallationCase, 'id' | 'created_at'>,
+): Promise<InstallationCase> => {
+    const { data, error } = await supabase
+        .from('installation_cases')
+        .insert([item])
+        .select()
+        .single();
+    if (error) throw error;
+    return data;
+};
+
+export const updateInstallationCase = async (
+    id: string,
+    updates: Partial<InstallationCase>,
+): Promise<InstallationCase> => {
+    const { data, error } = await supabase
+        .from('installation_cases')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+    if (error) throw error;
+    return data;
+};
+
+export const deleteInstallationCase = async (id: string): Promise<void> => {
+    const { error } = await supabase
+        .from('installation_cases')
+        .delete()
+        .eq('id', id);
+    if (error) throw error;
+};
+
+// ==================== Main Review Cards (Main-only) ====================
+export interface MainReviewCard {
+    id?: string;
+    title: string; // Badge text
+    subtitle?: string; // Overlay headline on image
+    review_text: string; // Right panel review body
+    image_url: string;
+    display_order: number;
+    is_active: boolean;
+    created_at?: string;
+}
+
+export const getMainReviewCards = async (): Promise<MainReviewCard[]> => {
+    const { data, error } = await supabase
+        .from('main_review_cards')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+};
+
+export const getAllMainReviewCards = async (): Promise<MainReviewCard[]> => {
+    const { data, error } = await supabase
+        .from('main_review_cards')
+        .select('*')
+        .order('display_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+};
+
+export const addMainReviewCard = async (
+    item: Omit<MainReviewCard, 'id' | 'created_at'>,
+): Promise<MainReviewCard> => {
+    const { data, error } = await supabase
+        .from('main_review_cards')
+        .insert([item])
+        .select()
+        .single();
+    if (error) throw error;
+    return data;
+};
+
+export const updateMainReviewCard = async (
+    id: string,
+    updates: Partial<MainReviewCard>,
+): Promise<MainReviewCard> => {
+    const { data, error } = await supabase
+        .from('main_review_cards')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+    if (error) throw error;
+    return data;
+};
+
+export const deleteMainReviewCard = async (id: string): Promise<void> => {
+    const { error } = await supabase
+        .from('main_review_cards')
         .delete()
         .eq('id', id);
     if (error) throw error;
