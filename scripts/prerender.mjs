@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const ROOT_DIR = process.cwd();
@@ -443,6 +443,9 @@ function buildProductSchemas(product, canonicalUrl, imageUrl, description) {
 
 async function main() {
   const baseHtml = await readFile(path.join(DIST_DIR, 'index.html'), 'utf8');
+
+  // Let Firebase Hosting serve /sitemap.xml via the Cloud Function rewrite.
+  await rm(path.join(DIST_DIR, 'sitemap.xml'), { force: true });
 
   for (const route of staticRoutes) {
     const html = renderHtml(baseHtml, route);
