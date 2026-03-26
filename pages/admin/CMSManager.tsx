@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     Plus, Edit2, Trash2, X, Save, Loader2, Eye, EyeOff,
-    Grid3X3, Menu, Image as ImageIcon, Upload, GripVertical, MessageSquare
+    Grid3X3, Menu, Image as ImageIcon, Upload, GripVertical, MessageSquare, Tag, Check
 } from 'lucide-react';
 import {
     getAllQuickMenuItems, addQuickMenuItem, updateQuickMenuItem, deleteQuickMenuItem, QuickMenuItem,
@@ -9,7 +9,9 @@ import {
     getAllNavMenuItems, addNavMenuItem, updateNavMenuItem, deleteNavMenuItem, NavMenuItem,
     getAllBanners, addBanner, updateBanner, deleteBanner, Banner,
     getAllPopups, addPopup, updatePopup, deletePopup, Popup,
-    getAllianceMembers, getAllAllianceMembers, addAllianceMember, updateAllianceMember, deleteAllianceMember, AllianceMember
+    getAllianceMembers, getAllAllianceMembers, addAllianceMember, updateAllianceMember, deleteAllianceMember,
+    getAllAllianceCategories, addAllianceCategory, updateAllianceCategory, deleteAllianceCategory,
+    AllianceMember, AllianceCategory, DEFAULT_ALLIANCE_CATEGORY_NAMES, normalizeAllianceCategoryName, getAllianceCategoryNames
 } from '../../src/api/cmsApi';
 import { getProducts, Product } from '../../src/api/productApi';
 import { uploadImage } from '../../src/api/storageApi';
@@ -18,10 +20,13 @@ type TabType = 'quickmenu' | 'tabmenu' | 'banners' | 'popups' | 'alliance';
 
 export const CMSManager: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('quickmenu');
+    const [allianceCategoryFilter, setAllianceCategoryFilter] = useState('전체');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showAllianceCategoryModal, setShowAllianceCategoryModal] = useState(false);
+    const [allianceCategorySaving, setAllianceCategorySaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Data states
@@ -30,15 +35,32 @@ export const CMSManager: React.FC = () => {
     const [banners, setBanners] = useState<Banner[]>([]);
     const [popups, setPopups] = useState<Popup[]>([]);
     const [allianceMembers, setAllianceMembers] = useState<AllianceMember[]>([]);
+    const [allianceCategories, setAllianceCategories] = useState<AllianceCategory[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
 
     // Form states
     const [editingItem, setEditingItem] = useState<any>(null);
     const [formData, setFormData] = useState<any>({});
+    const [newAllianceCategoryName, setNewAllianceCategoryName] = useState('');
+    const [editingAllianceCategoryId, setEditingAllianceCategoryId] = useState<string | null>(null);
+    const [editingAllianceCategoryName, setEditingAllianceCategoryName] = useState('');
 
     useEffect(() => {
         loadData();
     }, []);
+
+    useEffect(() => {
+        if (activeTab !== 'alliance') {
+            setAllianceCategoryFilter('전체');
+        }
+    }, [activeTab]);
+
+    useEffect(() => {
+        const currentCategoryTabs = getAllianceCategoryNames(allianceCategories, allianceMembers);
+        if (allianceCategoryFilter !== '전체' && !currentCategoryTabs.includes(allianceCategoryFilter)) {
+            setAllianceCategoryFilter('전체');
+        }
+    }, [allianceCategories, allianceMembers, allianceCategoryFilter]);
 
     const promoProducts = products.filter((product) => product.product_type === 'basic' || !product.product_type);
 
@@ -76,6 +98,11 @@ export const CMSManager: React.FC = () => {
         ? findProductByKey(formData.target_product_code)
         : null;
 
+    const getAllianceCategoryOptions = () => {
+        const categories = getAllianceCategoryNames(allianceCategories, allianceMembers);
+        return categories.length > 0 ? categories : [...DEFAULT_ALLIANCE_CATEGORY_NAMES];
+    };
+
     const loadData = async () => {
         setLoading(true);
         try {
@@ -84,14 +111,16 @@ export const CMSManager: React.FC = () => {
             const tabMenuPromise = getAllTabMenuItems().catch(e => { console.error("CMS Load Error (TabMenu):", e); return []; });
             const bannerPromise = getAllBanners().catch(e => { console.error("CMS Load Error (Banners):", e); return []; });
             const popupPromise = getAllPopups().catch(e => { console.error("CMS Load Error (Popups):", e); return []; });
+            const allianceCategoryPromise = getAllAllianceCategories().catch(e => { console.error("CMS Load Error (Alliance Categories):", e); return []; });
             const alliancePromise = getAllAllianceMembers().catch(e => { console.error("CMS Load Error (Alliance):", e); return []; });
             const productsPromise = getProducts().catch(e => { console.error("CMS Load Error (Products):", e); return []; });
 
-            const [quickMenu, tabMenu, bannerData, popupData, allianceData, productsData] = await Promise.all([
+            const [quickMenu, tabMenu, bannerData, popupData, allianceCategoryData, allianceData, productsData] = await Promise.all([
                 quickMenuPromise,
                 tabMenuPromise,
                 bannerPromise,
                 popupPromise,
+                allianceCategoryPromise,
                 alliancePromise,
                 productsPromise
             ]);
@@ -100,6 +129,7 @@ export const CMSManager: React.FC = () => {
             setTabMenuItems(tabMenu);
             setBanners(bannerData);
             setPopups(popupData);
+            setAllianceCategories(allianceCategoryData);
             setAllianceMembers(allianceData);
             setProducts(productsData);
         } catch (error) {
@@ -120,7 +150,8 @@ export const CMSManager: React.FC = () => {
         } else if (activeTab === 'popups') {
             setFormData({ title: '', image_url: '', link: '/', start_date: '', end_date: '', display_order: popups.length + 1, is_active: true });
         } else if (activeTab === 'alliance') {
-            setFormData({ name: '', category1: 'MICE 시설분과', category2: '호텔', address: '', phone: '', logo_url: '', display_order: allianceMembers.length + 1, is_active: true });
+            const categoryOptions = getAllianceCategoryOptions();
+            setFormData({ name: '', category1: categoryOptions[0] || 'MICE 시설분과', category2: '호텔', address: '', phone: '', logo_url: '', display_order: allianceMembers.length + 1, is_active: true });
         }
         setShowModal(true);
     };
@@ -270,6 +301,98 @@ export const CMSManager: React.FC = () => {
         }
     };
 
+    const handleAddAllianceCategory = async () => {
+        const rawCategoryName = newAllianceCategoryName.trim();
+        if (!rawCategoryName) return;
+        if (rawCategoryName === '기타') {
+            alert('기타 카테고리는 사용할 수 없습니다.');
+            return;
+        }
+
+        setAllianceCategorySaving(true);
+        try {
+            await addAllianceCategory({
+                name: rawCategoryName,
+                display_order: allianceCategories.length + 1,
+                is_active: true,
+            });
+            setNewAllianceCategoryName('');
+            await loadData();
+        } catch (error: any) {
+            console.error('Alliance category add failed:', error);
+            alert(`카테고리 추가에 실패했습니다.\n\n오류 내용: ${error.message || JSON.stringify(error)}`);
+        } finally {
+            setAllianceCategorySaving(false);
+        }
+    };
+
+    const handleUpdateAllianceCategory = async (id: string) => {
+        const rawCategoryName = editingAllianceCategoryName.trim();
+        if (!rawCategoryName) return;
+        if (rawCategoryName === '기타') {
+            alert('기타 카테고리는 사용할 수 없습니다.');
+            return;
+        }
+
+        const currentCategory = allianceCategories.find((category) => category.id === id);
+        if (!currentCategory) return;
+
+        const previousName = normalizeAllianceCategoryName(currentCategory.name);
+        const nextName = normalizeAllianceCategoryName(rawCategoryName);
+
+        setAllianceCategorySaving(true);
+        try {
+            await updateAllianceCategory(id, { name: nextName });
+
+            const affectedMembers = allianceMembers.filter(
+                (member) => normalizeAllianceCategoryName(member.category1) === previousName
+            );
+
+            await Promise.all(
+                affectedMembers
+                    .filter((member) => member.id)
+                    .map((member) => updateAllianceMember(member.id!, { category1: nextName }))
+            );
+
+            setEditingAllianceCategoryId(null);
+            setEditingAllianceCategoryName('');
+            await loadData();
+        } catch (error: any) {
+            console.error('Alliance category update failed:', error);
+            alert(`카테고리 수정에 실패했습니다.\n\n오류 내용: ${error.message || JSON.stringify(error)}`);
+        } finally {
+            setAllianceCategorySaving(false);
+        }
+    };
+
+    const handleDeleteAllianceCategory = async (id: string) => {
+        const category = allianceCategories.find((item) => item.id === id);
+        if (!category) return;
+
+        const normalizedName = normalizeAllianceCategoryName(category.name);
+        const usedCount = allianceMembers.filter(
+            (member) => normalizeAllianceCategoryName(member.category1) === normalizedName
+        ).length;
+
+        if (usedCount > 0) {
+            alert(`이 카테고리를 사용 중인 회원사가 ${usedCount}개 있습니다. 먼저 회원사의 분과를 변경해주세요.`);
+            return;
+        }
+
+        if (!confirm(`'${normalizedName}' 카테고리를 삭제하시겠습니까?`)) return;
+
+        setAllianceCategorySaving(true);
+        try {
+            await deleteAllianceCategory(id);
+            await loadData();
+        } catch (error: any) {
+            console.error('Alliance category delete failed:', error);
+            alert(`카테고리 삭제에 실패했습니다.\n\n오류 내용: ${error.message || JSON.stringify(error)}`);
+        } finally {
+            setAllianceCategorySaving(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
@@ -286,11 +409,18 @@ export const CMSManager: React.FC = () => {
         { id: 'alliance' as TabType, label: 'MICE 회원사', icon: Grid3X3, count: allianceMembers.length },
     ];
 
+    const allianceCategoryTabs = ['전체', ...getAllianceCategoryOptions()];
+    const filteredAllianceMembers = allianceMembers.filter((member) =>
+        allianceCategoryFilter === '전체' ||
+        normalizeAllianceCategoryName(member.category1) === allianceCategoryFilter
+    );
+
     const currentItems = activeTab === 'quickmenu' ? quickMenuItems
         : activeTab === 'tabmenu' ? tabMenuItems
             : activeTab === 'banners' ? banners
                 : activeTab === 'popups' ? popups
-                    : allianceMembers;
+                    : filteredAllianceMembers;
+    const allianceCategoryOptions = getAllianceCategoryOptions();
 
     return (
         <div>
@@ -326,6 +456,45 @@ export const CMSManager: React.FC = () => {
                     </button>
                 ))}
             </div>
+
+            {activeTab === 'alliance' && (
+                <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex flex-wrap gap-2">
+                        {allianceCategoryTabs.map((category) => {
+                            const categoryCount = category === '전체'
+                                ? allianceMembers.length
+                                : allianceMembers.filter((member) => normalizeAllianceCategoryName(member.category1) === category).length;
+
+                            return (
+                                <button
+                                    key={category}
+                                    onClick={() => setAllianceCategoryFilter(category)}
+                                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${allianceCategoryFilter === category
+                                        ? 'border-[#39B54A] bg-[#EEF9EF] text-[#2F9A3F]'
+                                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-700'
+                                        }`}
+                                >
+                                    {category}
+                                    <span className={`rounded-full px-2 py-0.5 text-xs ${allianceCategoryFilter === category
+                                        ? 'bg-white/80 text-[#2F9A3F]'
+                                        : 'bg-slate-100 text-slate-500'
+                                        }`}>
+                                        {categoryCount}
+                                    </span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <button
+                        onClick={() => setShowAllianceCategoryModal(true)}
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                    >
+                        <Tag size={16} />
+                        카테고리 관리
+                    </button>
+                </div>
+            )}
 
             {/* Items List */}
             <div className="bg-white rounded-lg shadow-sm border border-slate-200">
@@ -373,12 +542,12 @@ export const CMSManager: React.FC = () => {
                                         {activeTab === 'alliance' && (
                                             <>
                                                 <span className={`text-[11px] font-bold px-2 py-0.5 rounded border
-                                                    ${item.category1 === 'MICE 시설분과' ? 'text-[#e69b00] bg-[#fff9ea] border-[#ffe099]' :
-                                                        item.category1 === 'MICE 기획 · 운영분과' || item.category1 === 'MICE 기획분과' ? 'text-[#3b5bdb] bg-[#edf2ff] border-[#bac8ff]' :
-                                                            item.category1 === 'MICE 지원분과' ? 'text-[#0ca678] bg-[#e6fcf5] border-[#63e6be]' :
+                                                    ${normalizeAllianceCategoryName(item.category1) === 'MICE 시설분과' ? 'text-[#e69b00] bg-[#fff9ea] border-[#ffe099]' :
+                                                        normalizeAllianceCategoryName(item.category1) === 'MICE 기획 · 운영분과' ? 'text-[#3b5bdb] bg-[#edf2ff] border-[#bac8ff]' :
+                                                            normalizeAllianceCategoryName(item.category1) === 'MICE 지원분과' ? 'text-[#0ca678] bg-[#e6fcf5] border-[#63e6be]' :
                                                                 'text-gray-600 bg-gray-100 border-gray-300'}`}
                                                 >
-                                                    {item.category1 === 'MICE 기획분과' ? 'MICE 기획 · 운영분과' : item.category1}
+                                                    {normalizeAllianceCategoryName(item.category1)}
                                                 </span>
                                                 <span className="text-[11px] text-gray-500 bg-white px-2 py-0.5 rounded border border-gray-200">
                                                     {item.category2}
@@ -858,14 +1027,13 @@ export const CMSManager: React.FC = () => {
                                         <div className="flex-1">
                                             <label className="block text-sm font-medium text-slate-700 mb-1">1차 카테고리 (분과)</label>
                                             <select
-                                                value={formData.category1 || 'MICE 시설분과'}
+                                                value={formData.category1 || allianceCategoryOptions[0] || 'MICE 시설분과'}
                                                 onChange={(e) => setFormData({ ...formData, category1: e.target.value })}
                                                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A]"
                                             >
-                                                <option value="MICE 시설분과">MICE 시설분과</option>
-                                                <option value="MICE 기획 · 운영분과">MICE 기획 · 운영분과</option>
-                                                <option value="MICE 지원분과">MICE 지원분과</option>
-                                                <option value="기타">기타</option>
+                                                {allianceCategoryOptions.map((category) => (
+                                                    <option key={category} value={category}>{category}</option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div className="flex-1">
@@ -972,6 +1140,163 @@ export const CMSManager: React.FC = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {showAllianceCategoryModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+                        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+                            <h2 className="flex items-center gap-2 text-lg font-bold text-slate-800">
+                                <Tag size={18} className="text-[#39B54A]" />
+                                회원사 카테고리 관리
+                            </h2>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowAllianceCategoryModal(false);
+                                    setEditingAllianceCategoryId(null);
+                                    setEditingAllianceCategoryName('');
+                                }}
+                                className="text-slate-400 transition-colors hover:text-slate-600"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4 p-5">
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={newAllianceCategoryName}
+                                    onChange={(e) => setNewAllianceCategoryName(e.target.value)}
+                                    placeholder="새 카테고리명 입력"
+                                    className="flex-1 rounded-lg border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition-all focus:border-[#39B54A] focus:ring-2 focus:ring-[#39B54A]/10"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddAllianceCategory();
+                                        }
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddAllianceCategory}
+                                    disabled={allianceCategorySaving || !newAllianceCategoryName.trim()}
+                                    className="inline-flex items-center gap-1 rounded-lg bg-[#39B54A] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#2F9A3F] disabled:bg-slate-300"
+                                >
+                                    {allianceCategorySaving ? <Loader2 className="animate-spin" size={16} /> : <Plus size={16} />}
+                                    추가
+                                </button>
+                            </div>
+
+                            <div className="max-h-[420px] space-y-2 overflow-y-auto">
+                                {allianceCategories.length === 0 ? (
+                                    <div className="rounded-xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-400">
+                                        <Tag size={28} className="mx-auto mb-3 text-slate-300" />
+                                        <p>등록된 카테고리가 없습니다.</p>
+                                        <p className="mt-1 text-xs">먼저 SQL 파일을 실행한 뒤 카테고리를 추가해주세요.</p>
+                                    </div>
+                                ) : (
+                                    allianceCategories
+                                        .filter((category) => category.is_active !== false)
+                                        .sort((a, b) => a.display_order - b.display_order)
+                                        .map((category, index) => {
+                                            const usedCount = allianceMembers.filter(
+                                                (member) =>
+                                                    normalizeAllianceCategoryName(member.category1) === normalizeAllianceCategoryName(category.name)
+                                            ).length;
+
+                                            return (
+                                                <div
+                                                    key={category.id}
+                                                    className="group flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 transition-colors hover:border-slate-200"
+                                                >
+                                                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-xs font-bold text-slate-500">
+                                                        {index + 1}
+                                                    </span>
+
+                                                    {editingAllianceCategoryId === category.id ? (
+                                                        <div className="flex flex-1 gap-2">
+                                                            <input
+                                                                type="text"
+                                                                value={editingAllianceCategoryName}
+                                                                onChange={(e) => setEditingAllianceCategoryName(e.target.value)}
+                                                                className="flex-1 rounded-lg border border-[#39B54A] px-3 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-[#39B54A]/10"
+                                                                autoFocus
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter') {
+                                                                        e.preventDefault();
+                                                                        handleUpdateAllianceCategory(category.id!);
+                                                                    }
+                                                                    if (e.key === 'Escape') {
+                                                                        setEditingAllianceCategoryId(null);
+                                                                        setEditingAllianceCategoryName('');
+                                                                    }
+                                                                }}
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleUpdateAllianceCategory(category.id!)}
+                                                                className="rounded-lg p-2 text-[#39B54A] transition-colors hover:bg-[#EEF9EF]"
+                                                            >
+                                                                <Check size={16} />
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setEditingAllianceCategoryId(null);
+                                                                    setEditingAllianceCategoryName('');
+                                                                }}
+                                                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="truncate text-sm font-semibold text-slate-800">
+                                                                    {normalizeAllianceCategoryName(category.name)}
+                                                                </p>
+                                                                <p className="mt-0.5 text-xs text-slate-400">
+                                                                    사용 중 회원사 {usedCount}개
+                                                                </p>
+                                                            </div>
+                                                            <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setEditingAllianceCategoryId(category.id!);
+                                                                        setEditingAllianceCategoryName(normalizeAllianceCategoryName(category.name));
+                                                                    }}
+                                                                    className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-[#EEF9EF] hover:text-[#39B54A]"
+                                                                    title="수정"
+                                                                >
+                                                                    <Edit2 size={14} />
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleDeleteAllianceCategory(category.id!)}
+                                                                    className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                                                                    title="삭제"
+                                                                >
+                                                                    <Trash2 size={14} />
+                                                                </button>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            );
+                                        })
+                                )}
+                            </div>
+
+                            <p className="text-center text-xs text-slate-400">
+                                카테고리명을 수정하면 기존 회원사의 1차 카테고리 값도 함께 변경됩니다.
+                            </p>
+                        </div>
                     </div>
                 </div>
             )}

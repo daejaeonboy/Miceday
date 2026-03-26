@@ -346,6 +346,94 @@ export const deletePopup = async (id: string): Promise<void> => {
         .eq('id', id);
     if (error) throw error;
 };
+
+// ==================== Alliance Categories ====================
+export interface AllianceCategory {
+    id?: string;
+    name: string;
+    display_order: number;
+    is_active: boolean;
+    created_at?: string;
+}
+
+const ALLIANCE_CATEGORY_TABLE = 'alliance_categories';
+
+export const DEFAULT_ALLIANCE_CATEGORY_NAMES = [
+    'MICE 시설분과',
+    'MICE 기획 · 운영분과',
+    'MICE 지원분과',
+] as const;
+
+export const normalizeAllianceCategoryName = (category?: string | null) => {
+    const normalized = category?.trim() || '';
+    if (normalized === 'MICE 기획분과') return 'MICE 기획 · 운영분과';
+    if (normalized === '기타') return 'MICE 지원분과';
+    return normalized;
+};
+
+const getAllianceCategoryOrderWeight = (name: string) => {
+    const defaultIndex = DEFAULT_ALLIANCE_CATEGORY_NAMES.indexOf(name as typeof DEFAULT_ALLIANCE_CATEGORY_NAMES[number]);
+    return defaultIndex === -1 ? Number.MAX_SAFE_INTEGER : defaultIndex;
+};
+
+export const getAllianceCategories = async (): Promise<AllianceCategory[]> => {
+    const { data, error } = await supabase
+        .from(ALLIANCE_CATEGORY_TABLE)
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+};
+
+export const getAllAllianceCategories = async (): Promise<AllianceCategory[]> => {
+    const { data, error } = await supabase
+        .from(ALLIANCE_CATEGORY_TABLE)
+        .select('*')
+        .order('display_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+};
+
+export const addAllianceCategory = async (category: Omit<AllianceCategory, 'id' | 'created_at'>): Promise<AllianceCategory> => {
+    const payload = {
+        ...category,
+        name: normalizeAllianceCategoryName(category.name),
+    };
+
+    const { data, error } = await supabase
+        .from(ALLIANCE_CATEGORY_TABLE)
+        .insert([payload])
+        .select()
+        .single();
+    if (error) throw error;
+    return data;
+};
+
+export const updateAllianceCategory = async (id: string, updates: Partial<AllianceCategory>): Promise<AllianceCategory> => {
+    const payload = {
+        ...updates,
+        ...(typeof updates.name === 'string' ? { name: normalizeAllianceCategoryName(updates.name) } : {}),
+    };
+
+    const { data, error } = await supabase
+        .from(ALLIANCE_CATEGORY_TABLE)
+        .update(payload)
+        .eq('id', id)
+        .select()
+        .single();
+    if (error) throw error;
+    return data;
+};
+
+export const deleteAllianceCategory = async (id: string): Promise<void> => {
+    const { error } = await supabase
+        .from(ALLIANCE_CATEGORY_TABLE)
+        .delete()
+        .eq('id', id);
+    if (error) throw error;
+};
+
 // ==================== Alliance Members ====================
 export interface AllianceMember {
     id?: string;
@@ -359,6 +447,47 @@ export interface AllianceMember {
     is_active: boolean;
     created_at?: string;
 }
+
+export const getAllianceCategoryNames = (
+    categories: Pick<AllianceCategory, 'name' | 'display_order' | 'is_active'>[] = [],
+    members: Array<{ category1?: string | null }> = []
+) => {
+    const memberCategoryNames = Array.from(
+        new Set(
+            members
+                .map((member) => normalizeAllianceCategoryName(member.category1))
+                .filter(Boolean)
+        )
+    );
+
+    const tableCategoryNames = categories
+        .filter((category) => category.is_active !== false)
+        .map((category) => ({
+            name: normalizeAllianceCategoryName(category.name),
+            display_order: category.display_order ?? 0,
+        }))
+        .filter((category) => Boolean(category.name))
+        .sort((a, b) =>
+            a.display_order - b.display_order ||
+            getAllianceCategoryOrderWeight(a.name) - getAllianceCategoryOrderWeight(b.name) ||
+            a.name.localeCompare(b.name, 'ko-KR')
+        )
+        .map((category) => category.name);
+
+    if (tableCategoryNames.length === 0) {
+        const orderedDefaults = DEFAULT_ALLIANCE_CATEGORY_NAMES.filter((category) =>
+            memberCategoryNames.includes(category)
+        );
+        const extraCategories = memberCategoryNames.filter(
+            (category) => !DEFAULT_ALLIANCE_CATEGORY_NAMES.includes(category as typeof DEFAULT_ALLIANCE_CATEGORY_NAMES[number])
+        );
+
+        return [...orderedDefaults, ...extraCategories];
+    }
+
+    const extraCategories = memberCategoryNames.filter((category) => !tableCategoryNames.includes(category));
+    return [...tableCategoryNames, ...extraCategories];
+};
 
 export const getAllianceMembers = async (): Promise<AllianceMember[]> => {
     const { data, error } = await supabase

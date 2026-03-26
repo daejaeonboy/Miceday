@@ -227,8 +227,8 @@ export const Header: React.FC = () => {
       {/* Smart Reveal Header Container - SWITCHED TO FIXED */}
       <div
         className={`
-        fixed top-0 left-0 w-full z-40 transition-all duration-300 ease-in-out bg-white border-b border-gray-200
-        ${isVisible ? "translate-y-0 shadow-sm" : "-translate-y-full shadow-none"}
+        fixed top-0 left-0 w-full z-40 transition-all duration-300 ease-in-out bg-white
+        ${isVisible ? "translate-y-0 shadow-none" : "-translate-y-full shadow-none"}
       `}
       >
         {/* Top Utility Links - Premium Subtle Style */}
@@ -350,18 +350,18 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Premium GNB - Centered and Generous Spacing */}
-        <div className="border-t border-b border-gray-100 relative bg-white shadow-sm z-40">
+        <div className="border-t border-b border-gray-100 relative bg-white z-40">
           <Container>
             <div className="relative flex justify-start w-full">
-              <nav className="flex items-center justify-between sm:justify-start sm:gap-6 md:gap-2 w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth snap-x md:-ml-4 px-0">
+              <nav className="flex items-stretch justify-between sm:justify-start sm:gap-6 md:gap-2 w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth snap-x md:-ml-4 px-0">
                 <div
-                  className="hidden md:block"
+                  className="hidden md:flex self-stretch"
                   onMouseEnter={() => setShowDesktopMenu(true)}
                   onMouseLeave={() => setShowDesktopMenu(false)}
                 >
                   <button
                     onClick={() => navigate("/products")}
-                    className={`flex items-center gap-2 whitespace-nowrap text-[15px] font-[550] px-4 py-4 border-b-2 transition-all ${showDesktopMenu ? "text-[#39B54A] border-[#39B54A]" : "text-gray-900 border-transparent hover:text-[#39B54A] hover:border-[#39B54A]"}`}
+                    className={`relative z-10 flex h-full items-center gap-2 whitespace-nowrap px-4 py-4 text-[15px] font-[550] transition-all after:pointer-events-none after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[4px] after:content-[''] ${showDesktopMenu ? "text-[#39B54A] after:bg-[#39B54A]" : "text-gray-900 after:bg-transparent hover:text-[#39B54A] hover:after:bg-[#39B54A]"}`}
                   >
                     <MenuIcon className="w-[18px] h-[18px]" /> 전체 서비스
                   </button>
@@ -369,9 +369,9 @@ export const Header: React.FC = () => {
 
                 <Link
                   to="/alliance"
-                  className={`whitespace-nowrap text-[14px] min-[357px]:text-[15px] font-[550] transition-all px-0.5 min-[375px]:px-2 sm:px-4 py-4 border-b-2 ${location.pathname === '/alliance'
-                    ? 'text-[#39B54A] border-[#39B54A]'
-                    : 'text-gray-900 border-transparent hover:text-[#39B54A] hover:border-[#39B54A]'
+                  className={`relative z-10 inline-flex self-stretch items-center whitespace-nowrap px-0.5 py-4 text-[14px] font-[550] transition-all min-[357px]:text-[15px] min-[375px]:px-2 sm:px-4 after:pointer-events-none after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[4px] after:content-[''] ${location.pathname === '/alliance'
+                    ? 'text-[#39B54A] after:bg-[#39B54A]'
+                    : 'text-gray-900 after:bg-transparent hover:text-[#39B54A] hover:after:bg-[#39B54A]'
                     }`}
                 >
                   MICE 회원사

@@ -339,16 +339,27 @@ export const ProductManager = () => {
 
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold">{viewMode === 'products' ? '패키지 목록' : '품목 목록'}</h2>
-                <button
-                    onClick={() => {
-                        const type = viewMode === 'products' ? 'basic' : viewTab;
-                        setFormData({ ...formData, product_type: type });
-                        setShowForm(true);
-                    }}
-                    className="flex items-center gap-2 bg-[#39B54A] text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-all font-medium"
-                >
-                    <Plus size={20} /> {viewMode === 'products' ? '새 패키지 추가' : '새 옵션 품목 추가'}
-                </button>
+                <div className="flex items-center gap-2">
+                    {viewMode === 'options' && (
+                        <button
+                            type="button"
+                            onClick={() => window.location.assign('/admin/menus')}
+                            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 font-medium text-slate-700 transition-all hover:bg-slate-50"
+                        >
+                            옵션 카테고리 관리
+                        </button>
+                    )}
+                    <button
+                        onClick={() => {
+                            const type = viewMode === 'products' ? 'basic' : viewTab;
+                            setFormData({ ...formData, product_type: type });
+                            setShowForm(true);
+                        }}
+                        className="flex items-center gap-2 bg-[#39B54A] text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-all font-medium"
+                    >
+                        <Plus size={20} /> {viewMode === 'products' ? '새 패키지 추가' : '새 옵션 품목 추가'}
+                    </button>
+                </div>
             </div>
 
             {/* 패키지 상품 관리 - 계층형 카테고리 필터 */}
@@ -450,6 +461,20 @@ export const ProductManager = () => {
 
             {viewMode === 'options' && (
                 <div className="space-y-4 mb-6">
+                    <div className="flex items-center justify-between rounded-xl border border-[#d9f0dd] bg-[#f5fbf6] px-4 py-3">
+                        <div>
+                            <p className="text-sm font-semibold text-slate-800">부가서비스 옵션 카테고리는 전체 메뉴 관리와 연결되어 있습니다.</p>
+                            <p className="mt-1 text-xs text-slate-500">1차/2차 카테고리를 추가, 수정, 삭제하면 옵션 필터와 상세 페이지 분류에 바로 반영됩니다.</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => window.location.assign('/admin/menus')}
+                            className="shrink-0 rounded-lg bg-[#39B54A] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2F9A3F]"
+                        >
+                            전체 메뉴 관리 열기
+                        </button>
+                    </div>
+
                     {/* 상품 타입 탭 */}
                     <div className="flex gap-2 bg-slate-100 p-1 rounded-lg w-fit">
                         {['cooperative', 'additional'].map(t => (

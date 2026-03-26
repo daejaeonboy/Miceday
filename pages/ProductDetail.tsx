@@ -94,11 +94,15 @@ const OptionItem = ({
   return (
     <div className="flex items-center gap-3 sm:gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative">
       {/* Image */}
-      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-100">
+      <div className="relative w-20 sm:w-24 aspect-[4/3] rounded-lg bg-white flex-shrink-0 overflow-hidden border border-gray-100">
         {imageUrl ? (
-          <img src={imageUrl} alt={item.name} className="w-full h-full object-cover" />
+          <div className="absolute inset-[10%] flex items-center justify-center">
+            <img src={imageUrl} alt={item.name} className="w-full h-full object-contain" />
+          </div>
         ) : (
-          <Package size={20} className="text-gray-300" />
+          <div className="absolute inset-[10%] flex items-center justify-center">
+            <Package size={20} className="text-gray-300" />
+          </div>
         )}
       </div>
 
@@ -107,12 +111,14 @@ const OptionItem = ({
         <h5 className="font-bold text-gray-900 text-sm sm:text-[15px] leading-snug line-clamp-1">
           {item.name}
         </h5>
-        <p className="text-[11px] sm:text-xs text-gray-400 mt-0.5 line-clamp-2 sm:line-clamp-1">
+        <p className="mt-1 text-xs sm:text-sm text-gray-500 leading-relaxed line-clamp-2">
           {item.short_description || item.description || item.model_name || "상세 설명 없음"}
         </p>
-        <p className="text-sm font-bold text-[#39B54A] mt-0.5">
-          {item.price ? `${item.price.toLocaleString()}원` : "가격문의"}
-        </p>
+        {item.price > 0 && (
+          <p className="text-sm font-bold text-[#39B54A] mt-0.5">
+            {item.price.toLocaleString()}원
+          </p>
+        )}
       </div>
 
       {/* Desktop (PC) UI: Original Framed Style */}
@@ -272,6 +278,28 @@ const getCategorizedGroups = (items: Product[], menuItems: NavMenuItem[], tabTyp
       return a.name.localeCompare(b.name, 'ko-KR');
     });
 };
+
+const getQuantityUnit = (item: Product) => {
+  const name = item.name || "";
+
+  if (/복합기|프린터|노트북|모니터|키오스크|냉장고|카메라|프로젝터|빔|마이크|스피커|TV|태블릿|PC/i.test(name)) {
+    return "대";
+  }
+
+  if (
+    item.product_type === "cooperative" ||
+    item.product_type === "place" ||
+    item.product_type === "food" ||
+    /촬영|대관|제작|케이터링|운영|설치|철거|통역|사회|진행/i.test(name)
+  ) {
+    return "건";
+  }
+
+  return "개";
+};
+
+const formatQuantityLabel = (item: Product, quantity: number) =>
+  `${quantity}${getQuantityUnit(item)}`;
 
 const OptionListTypeA = ({
   items,
@@ -734,30 +762,50 @@ export const ProductDetailPage: React.FC = () => {
 
   // Calculate selected options summary
   const getSelectedOptionsSummary = () => {
-    const summary: { name: string; qty: number; subtotal: number }[] = [];
+    const summary: { name: string; qty: number; subtotal: number; quantityLabel: string }[] = [];
     Object.entries(selectedCooperative).forEach(([key, qty]) => {
       const quantity = qty as number;
       const item = globalCooperative.find((p) => p.id === key);
       if (item && quantity > 0)
-        summary.push({ name: item.name, qty: quantity, subtotal: item.price * quantity });
+        summary.push({
+          name: item.name,
+          qty: quantity,
+          subtotal: item.price * quantity,
+          quantityLabel: formatQuantityLabel(item, quantity),
+        });
     });
     Object.entries(selectedAdditional).forEach(([key, qty]) => {
       const quantity = qty as number;
       const item = globalAdditional.find((p) => p.id === key);
       if (item && quantity > 0)
-        summary.push({ name: item.name, qty: quantity, subtotal: item.price * quantity });
+        summary.push({
+          name: item.name,
+          qty: quantity,
+          subtotal: item.price * quantity,
+          quantityLabel: formatQuantityLabel(item, quantity),
+        });
     });
     Object.entries(selectedPlaces).forEach(([key, qty]) => {
       const quantity = qty as number;
       const item = globalPlaces.find((p) => p.id === key);
       if (item && quantity > 0)
-        summary.push({ name: item.name, qty: quantity, subtotal: item.price * quantity });
+        summary.push({
+          name: item.name,
+          qty: quantity,
+          subtotal: item.price * quantity,
+          quantityLabel: formatQuantityLabel(item, quantity),
+        });
     });
     Object.entries(selectedFoods).forEach(([key, qty]) => {
       const quantity = qty as number;
       const item = globalFoods.find((p) => p.id === key);
       if (item && quantity > 0)
-        summary.push({ name: item.name, qty: quantity, subtotal: item.price * quantity });
+        summary.push({
+          name: item.name,
+          qty: quantity,
+          subtotal: item.price * quantity,
+          quantityLabel: formatQuantityLabel(item, quantity),
+        });
     });
     return summary;
   };
@@ -1136,26 +1184,30 @@ export const ProductDetailPage: React.FC = () => {
                           return (
                             <div
                               key={idx}
-                              className="flex items-center gap-4 py-4 border-b border-dashed border-gray-200 last:border-0"
+                              className="flex items-center gap-3 sm:gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-50 last:border-0"
                             >
-                              <div className="w-16 h-16 flex-shrink-0 rounded-lg bg-white flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative">
+                              <div className="relative w-20 sm:w-24 aspect-[4/3] flex-shrink-0 rounded-lg bg-white border border-gray-100 shadow-sm overflow-hidden">
                                 {imageUrl ? (
-                                  <img
-                                    src={imageUrl}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      e.currentTarget.style.display = "none";
-                                      e.currentTarget.parentElement?.classList.add(
-                                        "fallback-icon",
-                                      );
-                                    }}
-                                  />
+                                  <div className="absolute inset-[10%] flex items-center justify-center">
+                                    <img
+                                      src={imageUrl}
+                                      alt={item.name}
+                                      className="w-full h-full object-contain"
+                                      onError={(e) => {
+                                        e.currentTarget.style.display = "none";
+                                        e.currentTarget.parentElement?.classList.add(
+                                          "fallback-icon",
+                                        );
+                                      }}
+                                    />
+                                  </div>
                                 ) : (
-                                  <Package
-                                    size={24}
-                                    className="text-slate-400"
-                                  />
+                                  <div className="absolute inset-[10%] flex items-center justify-center">
+                                    <Package
+                                      size={24}
+                                      className="text-slate-400"
+                                    />
+                                  </div>
                                 )}
                                 <div className="absolute inset-0 flex items-center justify-center bg-gray-50 -z-10">
                                   <Package
@@ -1328,17 +1380,15 @@ export const ProductDetailPage: React.FC = () => {
                       <p className="text-xs font-semibold text-gray-500 mb-2">
                         선택한 옵션
                       </p>
-                      <div className="space-y-2 text-sm max-h-40 overflow-y-auto">
+                      <div className="space-y-2 text-sm">
                         {selectedSummary.map((opt, idx) => (
                           <div
                             key={idx}
                             className="flex justify-between text-gray-700"
                           >
-                            <span className="truncate flex-1">
-                              {opt.name} x{opt.qty}
-                            </span>
+                            <span className="truncate flex-1">{opt.name}</span>
                             <span className="font-medium ml-2">
-                              {(opt.subtotal).toLocaleString()}원
+                              {opt.quantityLabel}
                             </span>
                           </div>
                         ))}
@@ -1516,11 +1566,9 @@ export const ProductDetailPage: React.FC = () => {
                       key={idx}
                       className="flex justify-between text-gray-700"
                     >
-                      <span className="truncate flex-1">
-                        {opt.name} x{opt.qty}
-                      </span>
+                      <span className="truncate flex-1">{opt.name}</span>
                       <span className="font-medium ml-2">
-                        {(opt.subtotal).toLocaleString()}원
+                        {opt.quantityLabel}
                       </span>
                     </div>
                   ))}

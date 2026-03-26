@@ -188,7 +188,7 @@ export const AdminDashboard = () => {
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-lg text-slate-800 group-hover:text-[#39B54A] transition-colors">전체 메뉴 관리</h3>
-                                            <p className="text-slate-500 text-sm">네비게이션 메뉴 설정</p>
+                                            <p className="text-slate-500 text-sm">네비게이션 및 옵션 카테고리 설정</p>
                                         </div>
                                     </div>
                                 </Link>

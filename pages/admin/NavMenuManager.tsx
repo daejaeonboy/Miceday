@@ -100,6 +100,9 @@ export const NavMenuManager = () => {
         setEditingItem(null);
     };
 
+    const getChildItemsForGroup = (groupName: string) =>
+        items.filter(i => i.category === groupName);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -133,14 +136,29 @@ export const NavMenuManager = () => {
     };
 
     const handleDelete = async (item: NavMenuItem | any) => {
-        if (!confirm('정말 삭제하시겠습니까? 하위 메뉴가 있다면 함께 연결이 끊길 수 있습니다.')) return;
+        const isImplicitGroup = item.id && String(item.id).startsWith('implicit-');
+        const isParentGroup = !isImplicitGroup && !item.category;
+        const children = getChildItemsForGroup(item.name);
+
+        if (isParentGroup && children.length > 0) {
+            alert(`'${item.name}' 탭 아래에 ${children.length}개의 2차 메뉴가 있습니다.\n먼저 우측에서 하위 메뉴를 삭제하거나 다른 1차 탭으로 옮겨주세요.`);
+            return;
+        }
+
+        const confirmMessage = isImplicitGroup
+            ? `'${item.name}' 유령 그룹과 연결된 ${children.length}개의 하위 메뉴를 모두 삭제하시겠습니까?`
+            : isParentGroup
+                ? `'${item.name}' 1차 탭을 삭제하시겠습니까? 상세 페이지 탭에서도 숨겨집니다.`
+                : `'${item.name}' 메뉴를 삭제하시겠습니까?`;
+
+        if (!confirm(confirmMessage)) return;
 
         try {
-            if (item.id && String(item.id).startsWith('implicit-')) {
+            if (isImplicitGroup) {
                 // Deleting an implicit group = Delete ALL children of this category
                 const categoryName = item.name;
-                const children = items.filter(i => i.category === categoryName);
-                await Promise.all(children.map(c => deleteNavMenuItem(c.id!)));
+                const orphanChildren = items.filter(i => i.category === categoryName);
+                await Promise.all(orphanChildren.map(c => deleteNavMenuItem(c.id!)));
             } else {
                 // Normal Item Delete
                 await deleteNavMenuItem(item.id!);
@@ -169,7 +187,7 @@ export const NavMenuManager = () => {
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800">전체 메뉴 관리</h2>
-                    <p className="text-slate-500 text-sm mt-1">웹사이트 전체 메뉴(사이트맵) 구조를 관리합니다.</p>
+                    <p className="text-slate-500 text-sm mt-1">웹사이트 전체 메뉴 구조와 부가서비스 옵션 카테고리를 함께 관리합니다.</p>
                 </div>
             </div>
 
@@ -177,8 +195,11 @@ export const NavMenuManager = () => {
                 {/* Left: Parent Groups (Depth 1) */}
                 <div className="w-1/3 bg-white rounded-lg shadow-md flex flex-col border border-slate-200">
                     <div className="p-4 border-b bg-slate-50 flex justify-between items-center rounded-t-xl">
-                        <h3 className="font-bold flex items-center gap-2"><Folder size={18} className="text-[#39B54A]" /> 1차 메뉴 (그룹)</h3>
-                        <button onClick={() => openModal('parent')} className="text-xs bg-[#39B54A] text-white px-2 py-1.5 rounded hover:bg-slate-800 transition flex items-center gap-1"><Plus size={14} /> 그룹 추가</button>
+                        <div>
+                            <h3 className="font-bold flex items-center gap-2"><Folder size={18} className="text-[#39B54A]" /> 1차 메뉴 (탭)</h3>
+                            <p className="mt-1 text-xs text-slate-500">상품 상세의 '기타' 같은 부가서비스 탭을 여기서 관리합니다.</p>
+                        </div>
+                        <button onClick={() => openModal('parent')} className="text-xs bg-[#39B54A] text-white px-2 py-1.5 rounded hover:bg-slate-800 transition flex items-center gap-1"><Plus size={14} /> 탭 추가</button>
                     </div>
                     <div className="flex-1 overflow-y-auto p-2 space-y-1">
                         {allGroups.map(p => (
@@ -225,7 +246,7 @@ export const NavMenuManager = () => {
                             {selectedParent && <span className="text-slate-400 font-normal text-sm ml-2">- {selectedParent.name}</span>}
                         </h3>
                         <button
-                            onClick={() => selectedParent ? openModal('child') : alert('좌측에서 1차 메뉴(그룹)를 먼저 선택해주세요.')}
+                            onClick={() => selectedParent ? openModal('child') : alert('좌측에서 1차 메뉴(탭)를 먼저 선택해주세요.')}
                             disabled={!selectedParent}
                             className="text-xs bg-[#39B54A] text-white px-2 py-1.5 rounded hover:bg-slate-800 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
@@ -236,18 +257,18 @@ export const NavMenuManager = () => {
                         {!selectedParent ? (
                             <div className="h-full flex flex-col items-center justify-center text-slate-400">
                                 <MenuIcon size={48} className="mb-4 opacity-20" />
-                                <p>좌측에서 관리할 1차 메뉴 그룹을 선택해주세요.</p>
+                                <p>좌측에서 관리할 1차 메뉴 탭을 선택해주세요.</p>
                             </div>
                         ) : (
                             <div className="space-y-2">
                                 {(selectedParent as any).type === 'implicit' && (
                                     <div className="bg-red-50 text-red-800 p-3 rounded mb-4 text-sm flex items-center gap-2 border border-red-100">
-                                        <span>⚠️ 이 그룹은 실제 그룹(1차 메뉴)이 존재하지 않지만, DB에 남아있는 메뉴 항목들로 인해 표시되었습니다. <br />삭제하려면 좌측 휴지통 아이콘을 눌러주세요 (이 그룹의 모든 항목이 삭제됩니다).</span>
+                                        <span>⚠️ 이 탭은 실제 1차 메뉴가 삭제된 뒤 하위 메뉴만 남아서 표시된 상태입니다. <br />삭제하려면 좌측 휴지통 아이콘을 눌러주세요 (이 탭의 하위 메뉴가 모두 삭제됩니다).</span>
                                     </div>
                                 )}
                                 {childItems.length === 0 ? (
                                     <div className="text-center py-12 text-slate-400 bg-slate-50 rounded-lg border border-dashed">
-                                        이 그룹에 등록된 하위 메뉴가 없습니다.
+                                        이 탭에 등록된 하위 메뉴가 없습니다.
                                     </div>
                                 ) : (
                                     <table className="w-full text-sm">
@@ -294,7 +315,7 @@ export const NavMenuManager = () => {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
                         <div className="flex justify-between items-center p-4 border-b">
-                            <h3 className="font-bold text-lg">{modalType === 'parent' ? '1차 메뉴 그룹' : '2차 하위 메뉴'} {editingItem ? '수정' : '추가'}</h3>
+                            <h3 className="font-bold text-lg">{modalType === 'parent' ? '1차 메뉴 탭' : '2차 하위 메뉴'} {editingItem ? '수정' : '추가'}</h3>
                             <button onClick={closeModal}><X size={24} className="text-slate-400 hover:text-black" /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -308,7 +329,7 @@ export const NavMenuManager = () => {
                                 <div className="flex gap-2">
                                     <input type="text" value={formData.link} onChange={e => setFormData({ ...formData, link: e.target.value })} className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#39B54A] outline-none text-sm" placeholder="예: /products" />
                                 </div>
-                                <p className="text-xs text-slate-400 mt-1">{modalType === 'parent' ? '그룹명으로만 사용하려면 # 을 입력하세요.' : '클릭 시 이동할 주소입니다.'}</p>
+                                <p className="text-xs text-slate-400 mt-1">{modalType === 'parent' ? '탭명으로만 사용하려면 # 을 입력하세요.' : '클릭 시 이동할 주소입니다.'}</p>
                             </div>
 
                             <div className="flex justify-between gap-4">
